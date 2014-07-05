@@ -15,7 +15,6 @@ typedef NS_ENUM(NSUInteger, VTAInAppPurchaseStatus) {
     VTAInAppPurchaseStatusProductsLoaded
 };
 
-
 /**
  *  This notification will be sent when the product list is updated.
  */
@@ -57,7 +56,7 @@ extern NSString * const VTAInAppPurchasesProductsAffectedUserInfoKey;
 extern NSString * const VTAInAppPurchasesNotificationErrorUserInfoKey;
 
 /**
- *  The key for NSUserDefaults that lists all non-consumable purchase identifiers
+ *  The key for NSUserDefaults that lists all non-consumable purchase identifiers. 
  */
 extern NSString * const VTAInAppPurchasesList;
 
@@ -66,17 +65,25 @@ extern NSString * const VTAInAppPurchasesList;
 @interface VTAInAppPurchases : NSObject
 
 /**
- *  The URL of a remote product plist file
+ *  The URL of a remote product plist file.
  */
 @property (nonatomic, strong) NSURL *remoteURL;
 
 /**
- *  The URL of a local product plist file
+ *  The URL of a local product plist file. If both this and the above properties are set,
+ *  the remoteURL will take precident.
  */
 @property (nonatomic, strong) NSURL *localURL;
 
 /**
- *  If the products are in the process of being loaded, this will be set to YES
+ *  Indicates the status of the product list loading. 
+ *
+ *  1. Neither the list nor the products have been loaded (`VTAInAppPurchaseStatusProductsLoading` if
+ *      they're in the process of loading or `VTAInAppPurchaseStatusProductListLoadFailed` if they failed to load)
+ *  2. The product list has been loaded and the `VTAProduct` objects have 
+ *      been initialised. (`VTAInAppPurchaseStatusProductListLoaded`)
+ *  3. The products have been loaded in from the App Store, and 
+ *      the `VTAProduct` objects have been updated (`VTAInAppPurchaseStatusProductsLoaded`)
  */
 @property (nonatomic, readonly) VTAInAppPurchaseStatus productsLoading;
 
@@ -86,15 +93,21 @@ extern NSString * const VTAInAppPurchasesList;
 @property (nonatomic, readonly) NSArray *productList;
 
 /**
- *  Load the products from one of the provided URLs, then start the queue
+ *  Load the products from one of the provided URLs, then start up the SKPaymentQueue
  */
 -(void)loadProducts;
 
+/**
+ *  Initialises the purches of a product
+ *
+ *  @param product The VTAProduct to purchase
+ */
 -(void)purchaseProduct:(VTAProduct *)product;
 
+/**
+ *  Restores all non-consumable purchases
+ */
 -(void)restoreProducts;
-
--(VTAProduct *)vtaProductForIdentifier:(NSString *)identifier;
 
 @end
 
