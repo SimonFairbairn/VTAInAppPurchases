@@ -4,7 +4,9 @@ VTAInAppPurchases
 Using VTAInAppPurchases
 
 1) Set up your In App Purchases in iTunesConnect. Make a note of the identifiers.
+
 2) Pull in the source from the `VTAInAppPurchases` repo (`VTAInAppPurchases` and `VTAProduct`).
+
 3) Create a Singleton Subclass:
 
 	+(instancetype)sharedInstance {

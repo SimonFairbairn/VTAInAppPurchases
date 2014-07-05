@@ -62,6 +62,7 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
 }
 
 -(void)loadImageAtLocation:(id)location withCompletionHandler:(void (^)(UIImage *image))completionHandler {
+
     if ( [location isKindOfClass:[NSString class]] && ![location isEqualToString:@""] ) {
         
         NSString *iconLocation = (NSString *)location;
@@ -98,25 +99,32 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
                         return;
                     }
                     
-                    
-                    NSURL *newLocation = [cachesDirectory URLByAppendingPathComponent:[[response URL] lastPathComponent]];
-                    
-                    [[NSFileManager defaultManager] removeItemAtURL:newLocation error:nil];
-                    [[NSFileManager defaultManager] copyItemAtURL:location toURL:newLocation error:&copyError];
-                    
-                    if ( !copyError ) {
-                        UIImage *loadedImage = [UIImage imageWithContentsOfFile:[newLocation path]];
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            completionHandler(loadedImage);
-                        });
+                    if ( !error ) {
+                        NSURL *newLocation = [cachesDirectory URLByAppendingPathComponent:[[response URL] lastPathComponent]];
                         
-                    } else {
+                        [[NSFileManager defaultManager] removeItemAtURL:newLocation error:nil];
+                        [[NSFileManager defaultManager] copyItemAtURL:location toURL:newLocation error:&copyError];
                         
+                        if ( !copyError ) {
+                            UIImage *loadedImage = [UIImage imageWithContentsOfFile:[newLocation path]];
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                completionHandler(loadedImage);
+                            });
+                            
+                        } else {
+                            
 #ifdef DEBUG
-                        NSLog(@"%@", copyError.localizedDescription);
+                            NSLog(@"%@", copyError.localizedDescription);
 #endif
-                        
+                            
+                        }
+                    } else {
+#ifdef DEBUG
+                        NSLog(@"%@", error.localizedDescription);
+#endif
                     }
+                    
+
                     
                 }];
                 
