@@ -28,6 +28,7 @@
 		F40C80A7196855B50004E37F /* IAPETableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40C80A6196855B50004E37F /* IAPETableViewCell.xib */; };
 		F40C80AA196855E50004E37F /* IAPETableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C80A9196855E50004E37F /* IAPETableViewCell.m */; };
 		F40C80AC19685D990004E37F /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F40C80AB19685D990004E37F /* README.md */; };
+		F40C80C1196868900004E37F /* LICENSE.md in Resources */ = {isa = PBXBuildFile; fileRef = F40C80C0196868900004E37F /* LICENSE.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +72,7 @@
 		F40C80A8196855E50004E37F /* IAPETableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPETableViewCell.h; sourceTree = "<group>"; };
 		F40C80A9196855E50004E37F /* IAPETableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAPETableViewCell.m; sourceTree = "<group>"; };
 		F40C80AB19685D990004E37F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		F40C80C0196868900004E37F /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +102,7 @@
 		F40C80541968528D0004E37F = {
 			isa = PBXGroup;
 			children = (
+				F40C80C0196868900004E37F /* LICENSE.md */,
 				F40C80AB19685D990004E37F /* README.md */,
 				F40C80661968528D0004E37F /* VTA Purchases */,
 				F40C80851968528D0004E37F /* VTA PurchasesTests */,
@@ -288,6 +291,7 @@
 				F40C80741968528D0004E37F /* Main.storyboard in Resources */,
 				F40C809E196853110004E37F /* productListExample.plist in Resources */,
 				F40C80A7196855B50004E37F /* IAPETableViewCell.xib in Resources */,
+				F40C80C1196868900004E37F /* LICENSE.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -518,6 +522,7 @@
 				F40C80911968528D0004E37F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F40C80921968528D0004E37F /* Build configuration list for PBXNativeTarget "VTA PurchasesTests" */ = {
 			isa = XCConfigurationList;
@@ -526,6 +531,7 @@
 				F40C80941968528D0004E37F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

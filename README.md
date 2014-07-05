@@ -4,9 +4,9 @@ VTAInAppPurchases
 This is designed to make dealing with In App Purchases easier but in order to do that it assumes a bunch of things.
 
 1. Information about consumable content is stored in NSUserDefaults, using the key as set in the `localStorageKey` of the plist file.
-1. Non-consumable purchases without content also use the NSUserDefaults. Currently, these keys are not synchronised with iCloud although I may add this in future).
-1. Non-consumable downloadable content is stored in `Documents` (but the `NSURLIsExcludedFromBackupKey` is set so that the content doesn't get backed up, as per the App Store guidelines).
-1. For local non-consumable content, add the content to Xcode but make sure that the `Create folder references...` radio button is set. Then make sure that the `localContentPath` is the exact name of the folder in your products plist file.
+1. Non-consumable purchases without content also use the NSUserDefaults. Currently, these keys are not synchronised with iCloud (although I may add this in future), so users will have to restore to unlock on different devices.
+1. Non-consumable downloadable content (currently only Apple-hosted content is supported) is stored in `Documents` (but the `NSURLIsExcludedFromBackupKey` is set so that the content doesn't get backed up, as per the App Store guidelines).
+1. For local non-consumable content, drag the content into Xcode and make sure that the `Create folder references...` radio button is set when adding. Then make sure that the `localContentPath` in your products plist file is the exact name of the folder you just added.
 
 ### A Five Step Guide to Getting Set Up
 
@@ -61,4 +61,4 @@ This will begin loading the product plist file and will then pull the relevant d
 1. The product list has been loaded and the `VTAProduct` objects have been initialised. (`VTAInAppPurchaseStatusProductListLoaded`)
 1. The products have been loaded in from the App Store, and the `VTAProduct` objects have been updated (`VTAInAppPurchaseStatusProductsLoaded`)
 
-Once this is complete, users can start making purchases. An example implementation of how you might set up a TableViewController to show the products and use the notifications to update the list (e.g. for a hosted product download) is available.
+Once this is complete, users can start making purchases. An example implementation of how you might set up a TableViewController to show the products and use the notifications to update the list (e.g. for a hosted product download) is included.
