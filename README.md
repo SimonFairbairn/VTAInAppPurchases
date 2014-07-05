@@ -1,13 +1,26 @@
 VTAInAppPurchases
 =================
 
-Using VTAInAppPurchases
+This is designed to make dealing with In App Purchases easier but in order to do that it assumes a bunch of things.
+
+1. Information about consumable content is stored in NSUserDefaults, using the key as set in the `localStorageKey` of the plist file.
+1. Non-consumable purchases without content also use the NSUserDefaults. Currently, these keys are not synchronised with iCloud although I may add this in future).
+1. Non-consumable downloadable content is stored in `Documents` (but the `NSURLIsExcludedFromBackupKey` is set so that the content doesn't get backed up, as per the App Store guidelines).
+1. For local non-consumable content, add the content to Xcode but make sure that the `Create folder references...` radio button is set. Then make sure that the `localContentPath` is the exact name of the folder in your products plist file.
+
+### A Five Step Guide to Getting Set Up
 
 1) Set up your In App Purchases in iTunesConnect. Make a note of the identifiers.
 
-2) Pull in the source from the `VTAInAppPurchases` repo (`VTAInAppPurchases` and `VTAProduct`).
+2) Add this repository as a submodule. Pull in the `source` folder into Xcode (uncheck `copy items`). You should have the `VTAProduct` and `VTAInAppPurchases` classes, along with the `productListExample.plist` file)
 
-3) Create a Singleton Subclass:
+3) Create a Singleton Subclass of `VTAInAppPurchases, for example:
+
+**.h**
+
+    +(instancetype)sharedInstance;
+
+**.m**
 
 	+(instancetype)sharedInstance {
 		static YOURAPPInAppPurchases *sharedInstance;
@@ -18,7 +31,7 @@ Using VTAInAppPurchases
 		return sharedInstance;
 	}
 
-4) In the `init` method of this subclass, point to either a remote or local plist file. 
+4) Then, for the `init` method of this subclass, point to either a remote or local plist file.
 
 	-(id)init {
 		if ( self = [super init] ) {
@@ -29,20 +42,23 @@ Using VTAInAppPurchases
 		return self;
 	}
 
-Valid plist keys are:
+Valid plist keys are (currently not enforced, but may be in future):
 
 	productIdentifier		(required) The identifier as set up in iTC
 	consumable				(required) A BOOL indicating whether or not this is a consumable product
+	storageKey				(required for consumables) This storage key indicates the `NSUserDefaults` key where the value of the content will be stored.
+	productValue			(required for consumables) The value of the content being unlocked.
 	localContentPath		(optional) the last path component of a local path where unlockable assets are stored, or where hosted content will be moved to (in this case, it indicates a subdirectory of `Documents`)
 	productIcon				(optional) A local or remote URL of the product's icon image
 	featuredImage			(optional) A local or remote URL pointing to a large product image
 	hosted					(optional) A BOOL indicating whether the additional content is hosted by Apple or is contained within the bundle.
-	storageKey				(optional) This storage key indicates the `NSUserDefaults` key where the value of the content will be stored.
-	productValue			(optional) The value of the content being unlocked.
 
-5) In your app delegate (or wherever you want to start loading products), call `[[DCInAppPurchases sharedInstance] loadProducts];` on the shared instance. This will load the product plist file and get the relevant details from the App Store. You can subscribe to a number of notifications to be informed about which point the loading has reached.
-6) In your list view controller, set up a NSNumberFormatter (as a property is recommended) with the following attributes:
+5) In your app delegate (or wherever you want to start loading products), call `[[YOURAPPInAppPurchases sharedInstance] loadProducts];` on the shared instance. 
 
-	NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-	formatter.formatterBehavior = NSNumberFormatterBehavior10_4;
-	[formatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+This will begin loading the product plist file and will then pull the relevant details from the App Store. You can subscribe to a number of notifications to be informed about the loading status of this list. It'll go through three stages:
+
+1. Neither the list nor the products have been loaded (`VTAInAppPurchaseStatusProductsLoading` or `VTAInAppPurchaseStatusProductListLoadFailed`)
+1. The product list has been loaded and the `VTAProduct` objects have been initialised. (`VTAInAppPurchaseStatusProductListLoaded`)
+1. The products have been loaded in from the App Store, and the `VTAProduct` objects have been updated (`VTAInAppPurchaseStatusProductsLoaded`)
+
+Once this is complete, users can start making purchases. An example implementation of how you might set up a TableViewController to show the products and use the notifications to update the list (e.g. for a hosted product download) is available.
