@@ -1,13 +1,15 @@
 //
-//  IAPEViewController.h
+//  IAPEInAppPurchases.h
 //  VTA Purchases
 //
 //  Created by Simon Fairbairn on 05/07/2014.
 //  Copyright (c) 2014 Voyage Travel Apps. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "VTAInAppPurchases.h"
 
-@interface IAPEViewController : UIViewController
+@interface IAPEInAppPurchases : VTAInAppPurchases
+
++(instancetype)sharedInstance;
 
 @end

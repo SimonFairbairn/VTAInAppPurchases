@@ -14,13 +14,19 @@
 		F40C806D1968528D0004E37F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C806C1968528D0004E37F /* main.m */; };
 		F40C80711968528D0004E37F /* IAPEAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C80701968528D0004E37F /* IAPEAppDelegate.m */; };
 		F40C80741968528D0004E37F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F40C80721968528D0004E37F /* Main.storyboard */; };
-		F40C80771968528D0004E37F /* IAPEViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C80761968528D0004E37F /* IAPEViewController.m */; };
 		F40C80791968528D0004E37F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F40C80781968528D0004E37F /* Images.xcassets */; };
 		F40C80801968528D0004E37F /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40C807F1968528D0004E37F /* XCTest.framework */; };
 		F40C80811968528D0004E37F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40C80601968528D0004E37F /* Foundation.framework */; };
 		F40C80821968528D0004E37F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40C80641968528D0004E37F /* UIKit.framework */; };
 		F40C808A1968528D0004E37F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F40C80881968528D0004E37F /* InfoPlist.strings */; };
 		F40C808C1968528D0004E37F /* VTA_PurchasesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C808B1968528D0004E37F /* VTA_PurchasesTests.m */; };
+		F40C809B196852ED0004E37F /* VTAInAppPurchases.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C8098196852ED0004E37F /* VTAInAppPurchases.m */; };
+		F40C809C196852ED0004E37F /* VTAProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C809A196852ED0004E37F /* VTAProduct.m */; };
+		F40C809E196853110004E37F /* productListExample.plist in Resources */ = {isa = PBXBuildFile; fileRef = F40C809D196853110004E37F /* productListExample.plist */; };
+		F40C80A2196854C40004E37F /* IAPEProductListTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C80A1196854C40004E37F /* IAPEProductListTableViewController.m */; };
+		F40C80A51968550F0004E37F /* IAPEInAppPurchases.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C80A41968550F0004E37F /* IAPEInAppPurchases.m */; };
+		F40C80A7196855B50004E37F /* IAPETableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40C80A6196855B50004E37F /* IAPETableViewCell.xib */; };
+		F40C80AA196855E50004E37F /* IAPETableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C80A9196855E50004E37F /* IAPETableViewCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,14 +51,24 @@
 		F40C806F1968528D0004E37F /* IAPEAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAPEAppDelegate.h; sourceTree = "<group>"; };
 		F40C80701968528D0004E37F /* IAPEAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAPEAppDelegate.m; sourceTree = "<group>"; };
 		F40C80731968528D0004E37F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		F40C80751968528D0004E37F /* IAPEViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAPEViewController.h; sourceTree = "<group>"; };
-		F40C80761968528D0004E37F /* IAPEViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAPEViewController.m; sourceTree = "<group>"; };
 		F40C80781968528D0004E37F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F40C807E1968528D0004E37F /* VTA PurchasesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VTA PurchasesTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F40C807F1968528D0004E37F /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		F40C80871968528D0004E37F /* VTA PurchasesTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "VTA PurchasesTests-Info.plist"; sourceTree = "<group>"; };
 		F40C80891968528D0004E37F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F40C808B1968528D0004E37F /* VTA_PurchasesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VTA_PurchasesTests.m; sourceTree = "<group>"; };
+		F40C8097196852ED0004E37F /* VTAInAppPurchases.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VTAInAppPurchases.h; sourceTree = "<group>"; };
+		F40C8098196852ED0004E37F /* VTAInAppPurchases.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VTAInAppPurchases.m; sourceTree = "<group>"; };
+		F40C8099196852ED0004E37F /* VTAProduct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VTAProduct.h; sourceTree = "<group>"; };
+		F40C809A196852ED0004E37F /* VTAProduct.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VTAProduct.m; sourceTree = "<group>"; };
+		F40C809D196853110004E37F /* productListExample.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = productListExample.plist; sourceTree = "<group>"; };
+		F40C80A0196854C40004E37F /* IAPEProductListTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPEProductListTableViewController.h; sourceTree = "<group>"; };
+		F40C80A1196854C40004E37F /* IAPEProductListTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAPEProductListTableViewController.m; sourceTree = "<group>"; };
+		F40C80A31968550F0004E37F /* IAPEInAppPurchases.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPEInAppPurchases.h; sourceTree = "<group>"; };
+		F40C80A41968550F0004E37F /* IAPEInAppPurchases.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAPEInAppPurchases.m; sourceTree = "<group>"; };
+		F40C80A6196855B50004E37F /* IAPETableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IAPETableViewCell.xib; sourceTree = "<group>"; };
+		F40C80A8196855E50004E37F /* IAPETableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPETableViewCell.h; sourceTree = "<group>"; };
+		F40C80A9196855E50004E37F /* IAPETableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAPETableViewCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,13 +128,13 @@
 		F40C80661968528D0004E37F /* VTA Purchases */ = {
 			isa = PBXGroup;
 			children = (
-				F40C806F1968528D0004E37F /* IAPEAppDelegate.h */,
-				F40C80701968528D0004E37F /* IAPEAppDelegate.m */,
-				F40C80721968528D0004E37F /* Main.storyboard */,
-				F40C80751968528D0004E37F /* IAPEViewController.h */,
-				F40C80761968528D0004E37F /* IAPEViewController.m */,
+				F40C809F196854320004E37F /* Controllers */,
+				F40C8096196852ED0004E37F /* Source */,
+				F40C80951968529F0004E37F /* Views */,
 				F40C80781968528D0004E37F /* Images.xcassets */,
 				F40C80671968528D0004E37F /* Supporting Files */,
+				F40C80A31968550F0004E37F /* IAPEInAppPurchases.h */,
+				F40C80A41968550F0004E37F /* IAPEInAppPurchases.m */,
 			);
 			path = "VTA Purchases";
 			sourceTree = "<group>";
@@ -126,6 +142,8 @@
 		F40C80671968528D0004E37F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				F40C806F1968528D0004E37F /* IAPEAppDelegate.h */,
+				F40C80701968528D0004E37F /* IAPEAppDelegate.m */,
 				F40C80681968528D0004E37F /* VTA Purchases-Info.plist */,
 				F40C80691968528D0004E37F /* InfoPlist.strings */,
 				F40C806C1968528D0004E37F /* main.m */,
@@ -150,6 +168,38 @@
 				F40C80881968528D0004E37F /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F40C80951968529F0004E37F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F40C80A8196855E50004E37F /* IAPETableViewCell.h */,
+				F40C80A9196855E50004E37F /* IAPETableViewCell.m */,
+				F40C80A6196855B50004E37F /* IAPETableViewCell.xib */,
+				F40C80721968528D0004E37F /* Main.storyboard */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F40C8096196852ED0004E37F /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				F40C809D196853110004E37F /* productListExample.plist */,
+				F40C8097196852ED0004E37F /* VTAInAppPurchases.h */,
+				F40C8098196852ED0004E37F /* VTAInAppPurchases.m */,
+				F40C8099196852ED0004E37F /* VTAProduct.h */,
+				F40C809A196852ED0004E37F /* VTAProduct.m */,
+			);
+			path = Source;
+			sourceTree = SOURCE_ROOT;
+		};
+		F40C809F196854320004E37F /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				F40C80A0196854C40004E37F /* IAPEProductListTableViewController.h */,
+				F40C80A1196854C40004E37F /* IAPEProductListTableViewController.m */,
+			);
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -232,6 +282,8 @@
 				F40C80791968528D0004E37F /* Images.xcassets in Resources */,
 				F40C806B1968528D0004E37F /* InfoPlist.strings in Resources */,
 				F40C80741968528D0004E37F /* Main.storyboard in Resources */,
+				F40C809E196853110004E37F /* productListExample.plist in Resources */,
+				F40C80A7196855B50004E37F /* IAPETableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,9 +302,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F40C80A51968550F0004E37F /* IAPEInAppPurchases.m in Sources */,
+				F40C809B196852ED0004E37F /* VTAInAppPurchases.m in Sources */,
 				F40C806D1968528D0004E37F /* main.m in Sources */,
 				F40C80711968528D0004E37F /* IAPEAppDelegate.m in Sources */,
-				F40C80771968528D0004E37F /* IAPEViewController.m in Sources */,
+				F40C80AA196855E50004E37F /* IAPETableViewCell.m in Sources */,
+				F40C80A2196854C40004E37F /* IAPEProductListTableViewController.m in Sources */,
+				F40C809C196852ED0004E37F /* VTAProduct.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,7 +345,8 @@
 				F40C80731968528D0004E37F /* Base */,
 			);
 			name = Main.storyboard;
-			sourceTree = "<group>";
+			path = "VTA Purchases";
+			sourceTree = SOURCE_ROOT;
 		};
 		F40C80881968528D0004E37F /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;

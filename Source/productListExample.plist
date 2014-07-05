@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>productIdentifier</key>
+		<string>com.YourCompany.ProductIdentifierAsAppearsIniTunesConnect</string>
+		<key>productIcon</key>
+		<string>localProductIcon.png</string>
+		<key>featuredImage</key>
+		<string>http://YourWebsite.com/path/to/featureImage.png</string>
+		<key>consumable</key>
+		<false/>
+		<key>localContentPath</key>
+		<string>localFolder</string>
+		<key>hosted</key>
+		<true/>
+	</dict>
+	<dict>
+		<key>productIdentifier</key>
+		<string>com.YourCompany.ConsumableProductLike50Coins</string>
+		<key>productIcon</key>
+		<string>http://YourWebsite.com/path/to/RemoteProductIcon50Coins.png</string>
+		<key>featuredImage</key>
+		<string>localFeaturedImage50Coins.png</string>
+		<key>consumable</key>
+		<true/>
+		<key>storageKey</key>
+		<string>NSUserDefaultsKeyForProduct</string>
+		<key>productValue</key>
+		<integer>50</integer>
+	</dict>
+</array>
+</plist>

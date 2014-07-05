@@ -7,12 +7,16 @@
 //
 
 #import "IAPEAppDelegate.h"
+#import "IAPEInAppPurchases.h"
+
 
 @implementation IAPEAppDelegate
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    // Override point for customization after application launch.
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    // Load in the products
+    [[IAPEInAppPurchases sharedInstance] loadProducts];
+    
     return YES;
 }
 							
