@@ -1,0 +1,472 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F40C80611968528D0004E37F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40C80601968528D0004E37F /* Foundation.framework */; };
+		F40C80631968528D0004E37F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40C80621968528D0004E37F /* CoreGraphics.framework */; };
+		F40C80651968528D0004E37F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40C80641968528D0004E37F /* UIKit.framework */; };
+		F40C806B1968528D0004E37F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F40C80691968528D0004E37F /* InfoPlist.strings */; };
+		F40C806D1968528D0004E37F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C806C1968528D0004E37F /* main.m */; };
+		F40C80711968528D0004E37F /* IAPEAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C80701968528D0004E37F /* IAPEAppDelegate.m */; };
+		F40C80741968528D0004E37F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F40C80721968528D0004E37F /* Main.storyboard */; };
+		F40C80771968528D0004E37F /* IAPEViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C80761968528D0004E37F /* IAPEViewController.m */; };
+		F40C80791968528D0004E37F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F40C80781968528D0004E37F /* Images.xcassets */; };
+		F40C80801968528D0004E37F /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40C807F1968528D0004E37F /* XCTest.framework */; };
+		F40C80811968528D0004E37F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40C80601968528D0004E37F /* Foundation.framework */; };
+		F40C80821968528D0004E37F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F40C80641968528D0004E37F /* UIKit.framework */; };
+		F40C808A1968528D0004E37F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F40C80881968528D0004E37F /* InfoPlist.strings */; };
+		F40C808C1968528D0004E37F /* VTA_PurchasesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C808B1968528D0004E37F /* VTA_PurchasesTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F40C80831968528D0004E37F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F40C80551968528D0004E37F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F40C805C1968528D0004E37F;
+			remoteInfo = "VTA Purchases";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F40C805D1968528D0004E37F /* VTA Purchases.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VTA Purchases.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F40C80601968528D0004E37F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F40C80621968528D0004E37F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		F40C80641968528D0004E37F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		F40C80681968528D0004E37F /* VTA Purchases-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "VTA Purchases-Info.plist"; sourceTree = "<group>"; };
+		F40C806A1968528D0004E37F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F40C806C1968528D0004E37F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F40C806E1968528D0004E37F /* VTA Purchases-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VTA Purchases-Prefix.pch"; sourceTree = "<group>"; };
+		F40C806F1968528D0004E37F /* IAPEAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAPEAppDelegate.h; sourceTree = "<group>"; };
+		F40C80701968528D0004E37F /* IAPEAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAPEAppDelegate.m; sourceTree = "<group>"; };
+		F40C80731968528D0004E37F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		F40C80751968528D0004E37F /* IAPEViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAPEViewController.h; sourceTree = "<group>"; };
+		F40C80761968528D0004E37F /* IAPEViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAPEViewController.m; sourceTree = "<group>"; };
+		F40C80781968528D0004E37F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		F40C807E1968528D0004E37F /* VTA PurchasesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "VTA PurchasesTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F40C807F1968528D0004E37F /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		F40C80871968528D0004E37F /* VTA PurchasesTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "VTA PurchasesTests-Info.plist"; sourceTree = "<group>"; };
+		F40C80891968528D0004E37F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F40C808B1968528D0004E37F /* VTA_PurchasesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VTA_PurchasesTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F40C805A1968528D0004E37F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40C80631968528D0004E37F /* CoreGraphics.framework in Frameworks */,
+				F40C80651968528D0004E37F /* UIKit.framework in Frameworks */,
+				F40C80611968528D0004E37F /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F40C807B1968528D0004E37F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40C80801968528D0004E37F /* XCTest.framework in Frameworks */,
+				F40C80821968528D0004E37F /* UIKit.framework in Frameworks */,
+				F40C80811968528D0004E37F /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F40C80541968528D0004E37F = {
+			isa = PBXGroup;
+			children = (
+				F40C80661968528D0004E37F /* VTA Purchases */,
+				F40C80851968528D0004E37F /* VTA PurchasesTests */,
+				F40C805F1968528D0004E37F /* Frameworks */,
+				F40C805E1968528D0004E37F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F40C805E1968528D0004E37F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F40C805D1968528D0004E37F /* VTA Purchases.app */,
+				F40C807E1968528D0004E37F /* VTA PurchasesTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F40C805F1968528D0004E37F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F40C80601968528D0004E37F /* Foundation.framework */,
+				F40C80621968528D0004E37F /* CoreGraphics.framework */,
+				F40C80641968528D0004E37F /* UIKit.framework */,
+				F40C807F1968528D0004E37F /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F40C80661968528D0004E37F /* VTA Purchases */ = {
+			isa = PBXGroup;
+			children = (
+				F40C806F1968528D0004E37F /* IAPEAppDelegate.h */,
+				F40C80701968528D0004E37F /* IAPEAppDelegate.m */,
+				F40C80721968528D0004E37F /* Main.storyboard */,
+				F40C80751968528D0004E37F /* IAPEViewController.h */,
+				F40C80761968528D0004E37F /* IAPEViewController.m */,
+				F40C80781968528D0004E37F /* Images.xcassets */,
+				F40C80671968528D0004E37F /* Supporting Files */,
+			);
+			path = "VTA Purchases";
+			sourceTree = "<group>";
+		};
+		F40C80671968528D0004E37F /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F40C80681968528D0004E37F /* VTA Purchases-Info.plist */,
+				F40C80691968528D0004E37F /* InfoPlist.strings */,
+				F40C806C1968528D0004E37F /* main.m */,
+				F40C806E1968528D0004E37F /* VTA Purchases-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F40C80851968528D0004E37F /* VTA PurchasesTests */ = {
+			isa = PBXGroup;
+			children = (
+				F40C808B1968528D0004E37F /* VTA_PurchasesTests.m */,
+				F40C80861968528D0004E37F /* Supporting Files */,
+			);
+			path = "VTA PurchasesTests";
+			sourceTree = "<group>";
+		};
+		F40C80861968528D0004E37F /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F40C80871968528D0004E37F /* VTA PurchasesTests-Info.plist */,
+				F40C80881968528D0004E37F /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F40C805C1968528D0004E37F /* VTA Purchases */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F40C808F1968528D0004E37F /* Build configuration list for PBXNativeTarget "VTA Purchases" */;
+			buildPhases = (
+				F40C80591968528D0004E37F /* Sources */,
+				F40C805A1968528D0004E37F /* Frameworks */,
+				F40C805B1968528D0004E37F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "VTA Purchases";
+			productName = "VTA Purchases";
+			productReference = F40C805D1968528D0004E37F /* VTA Purchases.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F40C807D1968528D0004E37F /* VTA PurchasesTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F40C80921968528D0004E37F /* Build configuration list for PBXNativeTarget "VTA PurchasesTests" */;
+			buildPhases = (
+				F40C807A1968528D0004E37F /* Sources */,
+				F40C807B1968528D0004E37F /* Frameworks */,
+				F40C807C1968528D0004E37F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F40C80841968528D0004E37F /* PBXTargetDependency */,
+			);
+			name = "VTA PurchasesTests";
+			productName = "VTA PurchasesTests";
+			productReference = F40C807E1968528D0004E37F /* VTA PurchasesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F40C80551968528D0004E37F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = IAPE;
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "Voyage Travel Apps";
+				TargetAttributes = {
+					F40C807D1968528D0004E37F = {
+						TestTargetID = F40C805C1968528D0004E37F;
+					};
+				};
+			};
+			buildConfigurationList = F40C80581968528D0004E37F /* Build configuration list for PBXProject "VTA Purchases" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F40C80541968528D0004E37F;
+			productRefGroup = F40C805E1968528D0004E37F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F40C805C1968528D0004E37F /* VTA Purchases */,
+				F40C807D1968528D0004E37F /* VTA PurchasesTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F40C805B1968528D0004E37F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40C80791968528D0004E37F /* Images.xcassets in Resources */,
+				F40C806B1968528D0004E37F /* InfoPlist.strings in Resources */,
+				F40C80741968528D0004E37F /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F40C807C1968528D0004E37F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40C808A1968528D0004E37F /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F40C80591968528D0004E37F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40C806D1968528D0004E37F /* main.m in Sources */,
+				F40C80711968528D0004E37F /* IAPEAppDelegate.m in Sources */,
+				F40C80771968528D0004E37F /* IAPEViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F40C807A1968528D0004E37F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F40C808C1968528D0004E37F /* VTA_PurchasesTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F40C80841968528D0004E37F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F40C805C1968528D0004E37F /* VTA Purchases */;
+			targetProxy = F40C80831968528D0004E37F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		F40C80691968528D0004E37F /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F40C806A1968528D0004E37F /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		F40C80721968528D0004E37F /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F40C80731968528D0004E37F /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		F40C80881968528D0004E37F /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F40C80891968528D0004E37F /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F40C808D1968528D0004E37F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		F40C808E1968528D0004E37F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F40C80901968528D0004E37F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "VTA Purchases/VTA Purchases-Prefix.pch";
+				INFOPLIST_FILE = "VTA Purchases/VTA Purchases-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		F40C80911968528D0004E37F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "VTA Purchases/VTA Purchases-Prefix.pch";
+				INFOPLIST_FILE = "VTA Purchases/VTA Purchases-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		F40C80931968528D0004E37F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/VTA Purchases.app/VTA Purchases";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "VTA Purchases/VTA Purchases-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "VTA PurchasesTests/VTA PurchasesTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		F40C80941968528D0004E37F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/VTA Purchases.app/VTA Purchases";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "VTA Purchases/VTA Purchases-Prefix.pch";
+				INFOPLIST_FILE = "VTA PurchasesTests/VTA PurchasesTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F40C80581968528D0004E37F /* Build configuration list for PBXProject "VTA Purchases" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F40C808D1968528D0004E37F /* Debug */,
+				F40C808E1968528D0004E37F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F40C808F1968528D0004E37F /* Build configuration list for PBXNativeTarget "VTA Purchases" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F40C80901968528D0004E37F /* Debug */,
+				F40C80911968528D0004E37F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		F40C80921968528D0004E37F /* Build configuration list for PBXNativeTarget "VTA PurchasesTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F40C80931968528D0004E37F /* Debug */,
+				F40C80941968528D0004E37F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F40C80551968528D0004E37F /* Project object */;
+}
