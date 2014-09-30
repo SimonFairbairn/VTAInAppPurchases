@@ -398,11 +398,11 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                 break;
             }
                 // iOS 8
-//            case SKPaymentTransactionDeferred: {
-//                // Allow user to continue to use the app
-//                // It may be some time (up to 24 hours)
-//                break;					
-//            }
+            case SKPaymentTransactionStateDeferred: {
+                // Allow user to continue to use the app
+                // It may be some time (up to 24 hours)
+                break;					
+            }
         }
     }
 
