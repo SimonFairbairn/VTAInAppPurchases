@@ -76,6 +76,7 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
             NSURL *fileURL = [cachesDirectory URLByAppendingPathComponent:[iconLocation lastPathComponent]];
             
 #ifdef DEBUG
+            NSLog(@"%@", fileURL);
             fileURL = nil;
 #endif
             

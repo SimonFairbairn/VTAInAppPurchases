@@ -109,6 +109,19 @@ extern NSString * const VTAInAppPurchasesList;
  */
 -(void)restoreProducts;
 
+/**
+ *  Use this to bypass the store and immediately unlock a non-consumable product. 
+ *
+ *  WARNING: USING THIS METHOD WILL NOT GENERATE A PAYMENT AND WILL GIVE USERS IMMEDIATE ACCESS
+ 
+ *
+ *  @param product The product to
+ */
+-(void)unlockNonConsumableProduct:(VTAProduct *)product;
+
+/**
+ *  @return The singleton instance of this class
+ */
 +(instancetype)sharedInstance;
 
 @end

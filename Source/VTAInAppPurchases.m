@@ -11,6 +11,8 @@
 #import "VTAInAppPurchases.h"
 #import "VTAProduct.h"
 
+#define VTAInAppPurchasesDebug 0
+
 NSString * const VTAInAppPurchasesProductListDidUpdateNotification = @"VTAInAppPurchasesProductListDidUpdateNotification";
 NSString * const VTAInAppPurchasesProductsDidFinishUpdatingNotification = @"VTAInAppPurchasesProductsDidFinishUpdatingNotification";
 NSString * const VTAInAppPurchasesPurchasesDidCompleteNotification = @"VTAInAppPurchasesPurchasesDidCompleteNotification";
@@ -72,7 +74,10 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
         NSNumber *secondsSinceLastUpdate = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesCacheRequestKey];
 
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
+        NSLog(@"%@", secondsSinceLastUpdate);
         secondsSinceLastUpdate = nil;
+#endif
 #endif
 
         NSDate *lastUpdate = [NSDate dateWithTimeIntervalSinceReferenceDate:([secondsSinceLastUpdate intValue] + 24 * 60 * 60)];
@@ -85,7 +90,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
         if ( !secondsSinceLastUpdate || [[now laterDate:lastUpdate] isEqualToDate:now]  ) {
             
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
             NSLog(@"Cache not available or expired");
+#endif
 #endif
             
             NSURLSession *fetchSession = [NSURLSession sharedSession];
@@ -97,7 +104,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                 if ( error ) {
                     
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
                     NSLog(@"Error connection: %@", error.localizedDescription);
+#endif
 #endif
 
                     [self productLoadingDidFinishWithError:error];
@@ -109,7 +118,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                     if ( !readingError && [productIDs isKindOfClass:[NSArray class]]) {
                 
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
                         NSLog(@"Products successfully loaded from network");
+#endif
 #endif
                         
                         products = (NSArray *)productIDs;
@@ -121,7 +132,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                         
                     } else {
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
                         NSLog(@"Error reading: %@\n%@", readingError.localizedDescription, readingError.localizedFailureReason);
+#endif
 #endif
                         [self productLoadingDidFinishWithError:readingError];
                         
@@ -135,7 +148,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
         } else {
             
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
             NSLog(@"Loading from cache");
+#endif
 #endif
             [self setupProductsWithPropertyList:cachedData];
             
@@ -155,7 +170,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 -(void)setupProductsWithPropertyList:(NSArray *)propertyList {
     
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
     NSLog(@"%s ", __PRETTY_FUNCTION__);
+#endif
 #endif
     
     if ( !propertyList ) {
@@ -237,7 +254,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
         
         // Handle not allowed error
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
         NSLog(@"Can't make payments");
+#endif
 #endif
         
     }
@@ -251,7 +270,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 -(void)handleStoreKitError:(NSError *)error forTransaction:(SKPaymentTransaction *)transaction {
     
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
     NSLog(@"%s\n%@", __PRETTY_FUNCTION__, [error localizedDescription]);
+#endif
 #endif
     
     NSMutableDictionary *userInfo = [NSMutableDictionary new];
@@ -292,18 +313,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     
     if ( !product.consumable ) {
         
-        NSArray *purchasedObjects = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesList];
-        
-        if ( !purchasedObjects ) {
-            purchasedObjects = [NSArray new];
-        }
-    
-        NSMutableDictionary *dictionary = [NSMutableDictionary new];
-        [dictionary setObject:product.productIdentifier forKey:VTAInAppPurchasesListProductNameKey];
-
-        NSArray *updatedPurchasedObjects = [purchasedObjects arrayByAddingObject:dictionary];
-        [[NSUserDefaults standardUserDefaults] setObject:updatedPurchasedObjects forKey:VTAInAppPurchasesList];
-        product.purchased = YES;
+        [self unlockNonConsumableProduct:product];
         
     }
     
@@ -320,6 +330,20 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     
 }
 
+-(void)unlockNonConsumableProduct:(VTAProduct *)product {
+    NSArray *purchasedObjects = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesList];
+    
+    if ( !purchasedObjects ) {
+        purchasedObjects = [NSArray new];
+    }
+    
+    NSMutableDictionary *dictionary = [NSMutableDictionary new];
+    [dictionary setObject:product.productIdentifier forKey:VTAInAppPurchasesListProductNameKey];
+    
+    NSArray *updatedPurchasedObjects = [purchasedObjects arrayByAddingObject:dictionary];
+    [[NSUserDefaults standardUserDefaults] setObject:updatedPurchasedObjects forKey:VTAInAppPurchasesList];
+    product.purchased = YES;
+}
 
 #pragma mark - SKProductsRequestDelegate
 
@@ -357,7 +381,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
             case SKPaymentTransactionStatePurchasing: {
 
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
                 NSLog(@"Purchasing: %@", transaction.payment.productIdentifier);
+#endif
 #endif
                 
                 break;
@@ -365,7 +391,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
             case SKPaymentTransactionStateFailed: {
 
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
                 NSLog(@"Failed: %@", transaction.payment.productIdentifier);
+#endif
 #endif
                 
                 
@@ -385,7 +413,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                     [self provideContentForRestoredTransaction:transaction];
                     [queue finishTransaction:transaction];
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
                     NSLog(@"Restore completed: %@", transaction.payment.productIdentifier);
+#endif
 #endif
                 }
                 break;
@@ -401,7 +431,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                     [self provideContentForTransaction:transaction];
                     [queue finishTransaction:transaction];
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
                     NSLog(@"Purchase completed: %@", transaction.payment.productIdentifier);
+#endif
 #endif
                 }
 
@@ -466,7 +498,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                                                                                                error:nil];
                         
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
                         NSLog(@"%s Moving from %@ to %@", __PRETTY_FUNCTION__, [contentsPath stringByAppendingPathComponent:path], [[product.localContentURL URLByAppendingPathComponent:path] path]);
+#endif
 #endif
                         
                         if ( downloadError ) {
@@ -482,7 +516,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                 if ( downloadError ) {
 
 #ifdef DEBUG
+#if VTAInAppPurchasesDebug
                     NSLog(@"%s Failed to move file: %@", __PRETTY_FUNCTION__, downloadError.localizedDescription);
+#endif
 #endif
                     
                 } else {
