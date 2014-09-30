@@ -46,6 +46,17 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     return _productLookupDictionary;
 }
 
+#pragma mark - Initialisation
+
++(instancetype)sharedInstance {
+    static id sharedInstance;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[self alloc] init];
+    });
+    return sharedInstance;
+}
+
 #pragma mark - Methods
 
 /**

@@ -14,33 +14,10 @@ This is designed to make dealing with In App Purchases easier but in order to do
 
 2) Add this repository as a submodule. Pull in the `source` folder into Xcode (uncheck `copy items`). You should have the `VTAProduct` and `VTAInAppPurchases` classes, along with the `productListExample.plist` file)
 
-3) Create a Singleton Subclass of `VTAInAppPurchases, for example:
+3) Import `"VTAInAppPurchases.h"` somewhere useful (e.g. your app delegate) then set either the remote or local URL pointing to your plist file:
 
-**.h**
-
-    +(instancetype)sharedInstance;
-
-**.m**
-
-	+(instancetype)sharedInstance {
-		static YOURAPPInAppPurchases *sharedInstance;
-		static dispatch_once_t onceToken;
-		dispatch_once(&onceToken, ^{
-			sharedInstance = [[self alloc] init];
-		});
-		return sharedInstance;
-	}
-
-4) Then, for the `init` method of this subclass, point to either a remote or local plist file.
-
-	-(id)init {
-		if ( self = [super init] ) {
-			self.localURL = [[NSBundle mainBundle] URLForResource:@"ExampleProductList" withExtension:@"plist"];  
-			// OR: self.remoteURL = [NSURL URLWithString:@"http://yourwebsite.com/ExampleProductList.plist"];
-		}
-    
-		return self;
-	}
+    [VTAInAppPurchases sharedInstance].localURL = [[NSBundle mainBundle] URLForResource:@"ExampleProductList" withExtension:@"plist"];  
+    // OR: [VTAInAppPurchases sharedInstance].remoteURL = [NSURL URLWithString:@"http://yourwebsite.com/ExampleProductList.plist"];
 
 Valid plist keys are (currently not enforced, but may be in future):
 
@@ -53,7 +30,7 @@ Valid plist keys are (currently not enforced, but may be in future):
 	featuredImage			(optional) A local or remote URL pointing to a large product image
 	hosted					(optional) A BOOL indicating whether the additional content is hosted by Apple or is contained within the bundle.
 
-5) In your app delegate (or wherever you want to start loading products), call `[[YOURAPPInAppPurchases sharedInstance] loadProducts];` on the shared instance. 
+4) In your app delegate (or wherever you want to start loading products), call `[[YOURAPPInAppPurchases sharedInstance] loadProducts];` on the shared instance. 
 
 This will begin loading the product plist file and will then pull the relevant details from the App Store. You can subscribe to a number of notifications to be informed about the loading status of this list. It'll go through three stages:
 

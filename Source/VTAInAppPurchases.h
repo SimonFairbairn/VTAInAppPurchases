@@ -67,13 +67,13 @@ extern NSString * const VTAInAppPurchasesList;
 /**
  *  The URL of a remote product plist file.
  */
-@property (nonatomic, strong) NSURL *remoteURL;
+@property (nonatomic, copy) NSURL *remoteURL;
 
 /**
  *  The URL of a local product plist file. If both this and the above properties are set,
  *  the remoteURL will take precident.
  */
-@property (nonatomic, strong) NSURL *localURL;
+@property (nonatomic, copy) NSURL *localURL;
 
 /**
  *  Indicates the status of the product list loading. 
@@ -108,6 +108,8 @@ extern NSString * const VTAInAppPurchasesList;
  *  Restores all non-consumable purchases
  */
 -(void)restoreProducts;
+
++(instancetype)sharedInstance;
 
 @end
 
