@@ -7,8 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
-@import StoreKit;
+#import <StoreKit/StoreKit.h>
 
 /**
  *  Sent whenever the status of the product changed. Currently it's used to notify
