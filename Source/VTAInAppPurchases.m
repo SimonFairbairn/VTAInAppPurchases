@@ -11,7 +11,7 @@
 #import "VTAInAppPurchases.h"
 #import "VTAProduct.h"
 
-#define VTAInAppPurchasesDebug 0
+#define VTAInAppPurchasesDebug 1
 
 NSString * const VTAInAppPurchasesProductListDidUpdateNotification = @"VTAInAppPurchasesProductListDidUpdateNotification";
 NSString * const VTAInAppPurchasesProductsDidFinishUpdatingNotification = @"VTAInAppPurchasesProductsDidFinishUpdatingNotification";
@@ -176,7 +176,8 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 #endif
     
     if ( !propertyList ) {
-        [self productLoadingDidFinishWithError:nil];
+        NSError *error = [NSError errorWithDomain:@"com.voyagetravelapps.VTAInAppPurchases" code:1 userInfo:@{NSLocalizedDescriptionKey : @"Property list was nil"}];
+        [self productLoadingDidFinishWithError:error];
         _productsLoading = VTAInAppPurchaseStatusProductListLoadFailed;
     } else {
         // Load the previous purchase information from a pList stored in NSUserDefaults, which is an array of product IDs used to identify
@@ -312,7 +313,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     product.purchaseInProgress = NO;
     
     if ( !product.consumable ) {
-        
+
         [self unlockNonConsumableProduct:product];
         
     }
@@ -343,6 +344,8 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     NSArray *updatedPurchasedObjects = [purchasedObjects arrayByAddingObject:dictionary];
     [[NSUserDefaults standardUserDefaults] setObject:updatedPurchasedObjects forKey:VTAInAppPurchasesList];
     product.purchased = YES;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesProductListDidUpdateNotification object:self];
 }
 
 #pragma mark - SKProductsRequestDelegate

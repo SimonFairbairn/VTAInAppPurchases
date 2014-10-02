@@ -8,6 +8,8 @@
 
 #import "VTAProduct.h"
 
+#define VTAProductDebug 0
+
 NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidChangeNotification";
 
 @implementation VTAProduct
@@ -76,8 +78,10 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
             NSURL *fileURL = [cachesDirectory URLByAppendingPathComponent:[iconLocation lastPathComponent]];
             
 #ifdef DEBUG
+#if VTAProductDebug
             NSLog(@"%@", fileURL);
             fileURL = nil;
+#endif
 #endif
             
             UIImage *property = [UIImage imageWithContentsOfFile:[fileURL path]];
@@ -95,7 +99,9 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
                     
                     if ( !response ) {
 #ifdef DEBUG
+#if VTAProductDebug
                         NSLog(@"No response from network: %@", error.localizedDescription);
+#endif
 #endif
                         return;
                     }
@@ -115,13 +121,17 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
                         } else {
                             
 #ifdef DEBUG
+#if VTAProductDebug
                             NSLog(@"%@", copyError.localizedDescription);
+#endif
 #endif
                             
                         }
                     } else {
 #ifdef DEBUG
+#if VTAProductDebug
                         NSLog(@"%@", error.localizedDescription);
+#endif
 #endif
                     }
                     
