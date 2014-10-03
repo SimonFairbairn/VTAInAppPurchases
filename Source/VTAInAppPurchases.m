@@ -10,6 +10,9 @@
 
 #import "VTAInAppPurchases.h"
 #import "VTAProduct.h"
+#import "Bio.h"
+#import "pkcs7.h"
+#import "x509.h"
 
 #define VTAInAppPurchasesDebug 1
 
@@ -34,8 +37,10 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 @property (nonatomic, strong) NSArray *productIDs;
 @property (nonatomic, strong) NSMutableDictionary *productLookupDictionary;
 
+@property (nonatomic, strong) SKReceiptRefreshRequest *refreshRequest;
+@property (nonatomic, strong) NSMutableArray *arrayOfPurchasedIAPs;
+
 @end
- 
 
 @implementation VTAInAppPurchases
 
@@ -46,6 +51,13 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
         _productLookupDictionary = [NSMutableDictionary new];
     }
     return _productLookupDictionary;
+}
+
+-(NSMutableArray *)arrayOfPurchasedIAPs {
+    if ( !_arrayOfPurchasedIAPs ) {
+        _arrayOfPurchasedIAPs = [NSMutableArray array];
+    }
+    return _arrayOfPurchasedIAPs;
 }
 
 #pragma mark - Initialisation
@@ -61,6 +73,263 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 
 #pragma mark - Methods
 
+-(int)readInteger:(const uint8_t**)p withLength:(long)max {
+    int tag, asn1Class;
+    long length;
+    int value = 0;
+    ASN1_get_object(p, &length, &tag, &asn1Class, max);
+    if (tag == V_ASN1_INTEGER)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            value = value * 0x100 + (*p)[i];
+        }
+    }
+    *p += length;
+    return value;
+}
+
+-(NSData *)readOctet:(const uint8_t**)p withLength:(long)max {
+    int tag, asn1Class;
+    long length;
+    NSData *data = nil;
+    ASN1_get_object(p, &length, &tag, &asn1Class, max);
+    if (tag == V_ASN1_OCTET_STRING)
+    {
+        data = [NSData dataWithBytes:*p length:max];
+    }
+    *p += length;
+    return data;
+}
+
+-(NSString *)readString:(const uint8_t **)p withLength:(long)max {
+    int tag, asn1Class;
+    long length;
+    NSString *value = nil;
+    ASN1_get_object(p, &length, &tag, &asn1Class, max);
+    if (tag == V_ASN1_UTF8STRING)
+    {
+        value = [[NSString alloc] initWithBytes:*p length:length encoding:NSUTF8StringEncoding];
+    }
+    *p += length;
+    return value;
+}
+
+-(void)validateReceipt {
+    
+    OpenSSL_add_all_digests();
+    
+    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+    
+    self.refreshRequest = [[SKReceiptRefreshRequest alloc] init];
+    self.refreshRequest.delegate = self;
+    
+    if ( ![[NSFileManager defaultManager] fileExistsAtPath:receiptURL.path] ) {
+#ifdef DEBUG
+#if VTAInAppPurchasesDebug
+        NSLog(@"No receipt");
+#endif
+#endif
+        [self.refreshRequest start];
+        return;
+    }
+    
+    // Find Apple's certificate in the bundle
+    NSURL *certificateURL = [[NSBundle mainBundle] URLForResource:@"AppleIncRootCertificate" withExtension:@"cer"];
+    
+    // Read the data of both the receipt and the certificate
+    NSData *receiptData = [NSData dataWithContentsOfURL:receiptURL];
+    NSData *certificateData = [NSData dataWithContentsOfURL:certificateURL];
+    
+    // Create new BIO objects of both
+    BIO *b_receipt = BIO_new_mem_buf((void *)[receiptData bytes], (int)[receiptData length]);
+    BIO *b_x509 = BIO_new_mem_buf((void *)[certificateData bytes], (int)[certificateData length]);
+    
+    // Put the receipt data in a p7 representation
+    PKCS7 *p7 = d2i_PKCS7_bio(b_receipt, NULL);
+    
+    // Create a new certificate store and add the Apple Root CA to the store
+    X509_STORE *store = X509_STORE_new();
+    X509 *appleRootCA = d2i_X509_bio(b_x509, NULL);
+    X509_STORE_add_cert(store, appleRootCA);
+    
+    // Verify signature
+    BIO *b_receiptPayload = BIO_new(BIO_s_mem());
+    int result = PKCS7_verify(p7, NULL, store, NULL, b_receiptPayload, 0);
+    
+    // Test the result
+    if ( result == 1 ) {
+        
+        // Stream of bytes that represents the receipt
+        ASN1_OCTET_STRING *octets = p7->d.sign->contents->d.data;
+        
+        const unsigned char *p = octets->data;
+        const unsigned char *end = p + octets->length;
+        
+        int type = 0, xclass = 0;
+        long length = 0;
+        
+        ASN1_get_object(&p, &length, &type, &xclass, end - p);
+        
+        if ( type != V_ASN1_SET ) {
+            return;
+        }
+        
+        while (p < end  ) {
+            
+            // Get the sequence
+            ASN1_get_object(&p, &length, &type, &xclass, end - p);
+            
+            if ( type != V_ASN1_SEQUENCE ) {
+                break;
+            }
+            
+            const unsigned char *seq_end = p + length; // The end of this sequence is the current position + the length of the object
+            int attr_type = 0, attr_version = 0;
+            
+            ASN1_get_object(&p, &length, &type, &xclass, seq_end - p);
+            
+            if ( type == V_ASN1_INTEGER && length == 1 ) {
+                attr_type = p[0];
+            }
+            
+            // Move forward by length of object
+            p += length;
+            
+            // Get attribute version (integer)
+            ASN1_get_object(&p, &length, &type, &xclass, seq_end - p);
+            
+            if ( type == V_ASN1_INTEGER && length == 1 ) {
+                attr_version = p[0];
+                attr_version = attr_version;
+            }
+            
+            // Move forward by length of object
+            p += length;
+            
+            // Get object itself (octet string)
+            ASN1_get_object(&p, &length, &type, &xclass, seq_end - p);
+            
+            switch ( attr_type ) {
+                    
+                    // Bundle Identifier (
+                case 2: {
+                    int str_type = 0;
+                    long str_length = 0;
+                    
+                    // We copy p because we want to continue through the data separate from the outer loop
+                    const unsigned char *str_p = p;
+                    ASN1_get_object(&str_p, &str_length, &str_type, &xclass, seq_end - str_p);
+                    
+#ifdef DEBUG
+#if VTAInAppPurchasesDebug
+                    NSLog(@"%i", str_type);
+#endif
+#endif
+                    
+                    
+                    if ( str_type == V_ASN1_UTF8STRING ) {
+                        NSString *string = [[NSString alloc] initWithBytes:str_p length:(NSUInteger)str_length encoding:NSUTF8StringEncoding];
+#ifdef DEBUG
+#if VTAInAppPurchasesDebug
+                        NSLog(@"Product identifier: %@", string);
+#endif
+#endif
+                    }
+                    
+                    break;
+                }
+                    
+                    // In App Purchases
+                case 17: {
+                    int seq_type = 0;
+                    long seq_length = 0;
+                    const unsigned char *str_p = p;
+                    
+                    // Getting the actual object itself, in this case a set.
+                    ASN1_get_object(&str_p, &seq_length, &seq_type, &xclass, seq_end - str_p);
+                    
+                    // Should be a SET of SEQUENCES
+                    if ( seq_type == V_ASN1_SET ) {
+                        while ( str_p < seq_end ) {
+                            
+                            int iapType = 0;
+                            int iapVersion = 0;
+                            
+                            ASN1_get_object(&str_p, &seq_length, &seq_type, &xclass, seq_end - str_p);
+                            
+                            const unsigned char *inner_seq_end = str_p + seq_length;
+                            
+                            // Get the type
+                            iapType = [self readInteger:&str_p withLength:inner_seq_end - str_p];
+                            iapVersion = [self readInteger:&str_p withLength:inner_seq_end - str_p];
+                            NSData *data = [self readOctet:&str_p withLength:inner_seq_end - str_p];
+                            
+                            switch (iapType) {
+                                case 1702: {
+                                    const uint8_t *s = (const uint8_t*)data.bytes;
+                                    NSString *string = [self readString:&s withLength:data.length];
+                                    [self.arrayOfPurchasedIAPs addObject:string];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    break;
+                }
+                    
+                    // Original purchased version
+                case 19: {
+                    int str_type = 0;
+                    long str_length = 0;
+                    const unsigned char *str_p = p;
+                    ASN1_get_object(&str_p, &str_length, &str_type, &xclass, seq_end - str_p);
+                    
+                    if ( str_type == V_ASN1_UTF8STRING ) {
+                        NSString *string = [[NSString alloc] initWithBytes:str_p length:(NSUInteger)str_length encoding:NSUTF8StringEncoding];
+                        self.originalPurchasedVersion = string;
+                    }
+                    
+                    break;
+                }
+                default:
+                    break;
+            }
+            
+            // Move forward by the length of the object
+            p += length;
+            
+            // If there is anything left in p for this sequence, fast forward through it.
+            while (p < seq_end) {
+                ASN1_get_object(&p, &length, &type, &xclass, seq_end - p);
+                
+                p += length;
+            }
+            
+        }
+        
+    } else {
+        // Try refreshing the receipt
+        
+#ifdef DEBUG
+#if VTAInAppPurchasesDebug
+        NSLog(@"Verification failed. ");
+#endif
+#endif
+        
+        [self.refreshRequest start];
+    }
+    
+}
+
+-(void)validateProductsShouldUseDefaults:(BOOL)useDefaults {
+    // 1. Go through the list of purchased products and set the purchased property
+    //      1a. If useDefaults is set, use the NSUserDefaults to set the purchased property
+    //      1b. Otherwise, set all NSUserDefault products to NO, then set only the ones to YES that are in the list of purchased products
+    // verified by receipt
+}
+
 /**
  *  STEP 1: Load the products from the plist file. Mark the productsLoading status as loading
  */
@@ -70,16 +339,16 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     _productsLoading = VTAInAppPurchaseStatusProductsLoading;
     
     if ( self.remoteURL ) {
-
+        
         NSNumber *secondsSinceLastUpdate = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesCacheRequestKey];
-
+        
 #ifdef DEBUG
 #if VTAInAppPurchasesDebug
         NSLog(@"%@", secondsSinceLastUpdate);
         secondsSinceLastUpdate = nil;
 #endif
 #endif
-
+        
         NSDate *lastUpdate = [NSDate dateWithTimeIntervalSinceReferenceDate:([secondsSinceLastUpdate intValue] + 24 * 60 * 60)];
         NSDate *now = [NSDate date];
         NSURL *cachesURL = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] firstObject];
@@ -98,7 +367,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
             NSURLSession *fetchSession = [NSURLSession sharedSession];
             NSURLSessionDataTask *fetchRemotePlistTask = [fetchSession dataTaskWithRequest:[NSURLRequest requestWithURL:self.remoteURL] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
                 NSError *readingError;
-
+                
                 NSArray *products = cachedData;
                 
                 if ( error ) {
@@ -108,7 +377,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                     NSLog(@"Error connection: %@", error.localizedDescription);
 #endif
 #endif
-
+                    
                     [self productLoadingDidFinishWithError:error];
                     
                 } else {
@@ -116,7 +385,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                     id productIDs = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:&readingError];
                     
                     if ( !readingError && [productIDs isKindOfClass:[NSArray class]]) {
-                
+                        
 #ifdef DEBUG
 #if VTAInAppPurchasesDebug
                         NSLog(@"Products successfully loaded from network");
@@ -141,7 +410,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                         
                     }
                 }
-
+                
                 [self setupProductsWithPropertyList:products];
             }];
             [fetchRemotePlistTask resume];
@@ -155,12 +424,12 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
             [self setupProductsWithPropertyList:cachedData];
             
         }
-
+        
     } else if ( self.localURL ) {
-
+        
         [self setupProductsWithPropertyList:[NSArray arrayWithContentsOfURL:self.localURL]];
     }
-
+    
 }
 
 /**
@@ -193,12 +462,14 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
             if ( [dictionary isKindOfClass:[NSDictionary class]] ) {
                 
                 VTAProduct *product = [[VTAProduct alloc] initWithProductDetailDictionary:dictionary];
-                
+
+                // self validateProducts
                 for ( NSDictionary *productInfo in arrayOfPurchases ) {
                     if ( [dictionary[@"productIdentifier"] isEqualToString:productInfo[VTAInAppPurchasesListProductNameKey]] ) {
                         product.purchased = YES;
                     }
                 }
+                // end validations
                 
                 [array addObject:product];
                 [productIDs addObject:product.productIdentifier];
@@ -222,7 +493,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
  *  SKProduct objects or there will have been some sort of failure. Mark the productsLoading as
  */
 -(void)productLoadingDidFinishWithError:(NSError *)error {
-
+    
     if ( self.productList ) {
         [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
     }
@@ -299,7 +570,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 }
 
 -(void)provideContentForTransaction:(SKPaymentTransaction *)transaction {
-    [self provideContent:transaction];    
+    [self provideContent:transaction];
 }
 
 -(void)provideContent:(SKPaymentTransaction *)transaction {
@@ -313,7 +584,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     product.purchaseInProgress = NO;
     
     if ( !product.consumable ) {
-
+        
         [self unlockNonConsumableProduct:product];
         
     }
@@ -325,7 +596,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
         [[NSUserDefaults standardUserDefaults] setObject:number forKey:product.storageKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
-
+    
     NSDictionary *userInfo = @{VTAInAppPurchasesProductsAffectedUserInfoKey : @[product]};
     [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesPurchasesDidCompleteNotification object:self userInfo:userInfo];
     
@@ -351,7 +622,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 #pragma mark - SKProductsRequestDelegate
 
 -(void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
-
+    
     NSMutableArray *newProductList = [self.productList mutableCopy];
     for ( NSString *productID in response.invalidProductIdentifiers ) {
         VTAProduct *productToRemove = [self.productLookupDictionary objectForKey:productID];
@@ -371,8 +642,29 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 
 #pragma mark - SKRequestDelegate
 
+-(void)requestDidFinish:(SKRequest *)request {
+    
+    if ( request == self.refreshRequest ) {
+        [self validateReceipt];
+    }
+}
+
 -(void)request:(SKRequest *)request didFailWithError:(NSError *)error {
-    [self productLoadingDidFinishWithError:error];
+    if ( request == self.refreshRequest ) {
+        
+#ifdef DEBUG
+#if VTAInAppPurchasesDebug
+        NSLog(@"Receipt refresh failed");
+#endif
+#endif
+      
+        // Check unlock
+        
+        
+    } else {
+        [self productLoadingDidFinishWithError:error];
+    }
+    
 }
 
 #pragma mark - SKPaymentTransactionObserver
@@ -382,7 +674,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     for ( SKPaymentTransaction *transaction in transactions ) {
         switch(transaction.transactionState) {
             case SKPaymentTransactionStatePurchasing: {
-
+                
 #ifdef DEBUG
 #if VTAInAppPurchasesDebug
                 NSLog(@"Purchasing: %@", transaction.payment.productIdentifier);
@@ -392,7 +684,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                 break;
             }
             case SKPaymentTransactionStateFailed: {
-
+                
 #ifdef DEBUG
 #if VTAInAppPurchasesDebug
                 NSLog(@"Failed: %@", transaction.payment.productIdentifier);
@@ -424,8 +716,8 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                 break;
             }
             case SKPaymentTransactionStatePurchased: {
-//                NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
-//                NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
+                //                NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+                //                NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
                 // Process transaction
                 
                 if ( transaction.downloads ) {
@@ -439,7 +731,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 #endif
 #endif
                 }
-
+                
                 // Don't try to get a local state for this payment. Don't keep a cache!
                 break;
             }
@@ -447,11 +739,11 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
             case SKPaymentTransactionStateDeferred: {
                 // Allow user to continue to use the app
                 // It may be some time (up to 24 hours)
-                break;					
+                break;
             }
         }
     }
-
+    
 }
 
 -(void)paymentQueue:(SKPaymentQueue *)queue removedTransactions:(NSArray *)transactions {
@@ -514,10 +806,10 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
                 
                 
                 
-
+                
                 
                 if ( downloadError ) {
-
+                    
 #ifdef DEBUG
 #if VTAInAppPurchasesDebug
                     NSLog(@"%s Failed to move file: %@", __PRETTY_FUNCTION__, downloadError.localizedDescription);

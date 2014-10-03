@@ -8,6 +8,10 @@ This is designed to make dealing with In App Purchases easier but in order to do
 1. Non-consumable downloadable content (currently only Apple-hosted content is supported) is stored in `Documents` (but the `NSURLIsExcludedFromBackupKey` is set so that the content doesn't get backed up, as per the App Store guidelines).
 1. For local non-consumable content, drag the content into Xcode and make sure that the `Create folder references...` radio button is set when adding. Then make sure that the `localContentPath` in your products plist file is the exact name of the folder you just added.
 
+It also includes receipt validation but this is provided as a convenience. It includes a copy of Apple's Root Certificate and a copy of OpenSSL as a pre-built static library. However, you probably shouldn't trust me and I recommend that you grab your own copy of Apple's certificate and compile your own OpenSSL and drop them into the project instead of the ones included here.
+
+USE AT YOUR OWN RISK. Although I hope it helps you get up and running with In App Purchases quickly and easily, I can accept no responsibility for any loss of revenue resulting from the use of this code. 
+
 ### A Five Step Guide to Getting Set Up
 
 1) Set up your In App Purchases in iTunesConnect. Make a note of the identifiers.

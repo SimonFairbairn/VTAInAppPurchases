@@ -93,6 +93,20 @@ extern NSString * const VTAInAppPurchasesList;
 @property (nonatomic, readonly) NSArray *productList;
 
 /**
+ *  The version number of the app when it was first purchased
+ */
+@property (nonatomic, strong) NSString *originalPurchasedVersion;
+
+// METHODS
+
+/**
+ *  @return The singleton instance of this class
+ */
++(instancetype)sharedInstance;
+
+-(void)validateReceipt;
+
+/**
  *  Load the products from one of the provided URLs, then start up the SKPaymentQueue
  */
 -(void)loadProducts;
@@ -126,11 +140,6 @@ extern NSString * const VTAInAppPurchasesList;
  *  @return A VTAProduct object of the requested product, or nil
  */
 -(VTAProduct *)vtaProductForIdentifier:(NSString *)identifier;
-
-/**
- *  @return The singleton instance of this class
- */
-+(instancetype)sharedInstance;
 
 @end
 
