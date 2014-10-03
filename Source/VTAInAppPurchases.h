@@ -12,7 +12,8 @@ typedef NS_ENUM(NSUInteger, VTAInAppPurchaseStatus) {
     VTAInAppPurchaseStatusProductsLoading,
     VTAInAppPurchaseStatusProductListLoaded,
     VTAInAppPurchaseStatusProductListLoadFailed,
-    VTAInAppPurchaseStatusProductsLoaded
+    VTAInAppPurchaseStatusProductsLoaded,
+    VTAInAppPurchaseStatusProductLoadFailed
 };
 
 /**
@@ -91,11 +92,6 @@ extern NSString * const VTAInAppPurchasesList;
  *  A read only list of the currently loaded products. All objects will be of class VTAProduct
  */
 @property (nonatomic, readonly) NSArray *productList;
-
-/**
- *  The version number of the app when it was first purchased
- */
-@property (nonatomic, strong) NSString *originalPurchasedVersion;
 
 // METHODS
 
