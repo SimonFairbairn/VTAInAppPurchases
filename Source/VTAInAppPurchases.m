@@ -23,6 +23,9 @@ NSString * const VTAInAppPurchasesPurchasesDidCompleteNotification = @"VTAInAppP
 NSString * const VTAInAppPurchasesRestoreDidCompleteNotification = @"VTAInAppPurchasesRestoreDidCompleteNotification";
 NSString * const VTAInAppPurchasesProductDownloadStatusDidChangeNotification = @"VTAInAppPurchasesProductDownloadStatusDidChangeNotification";
 
+NSString * const VTAInAppPurchasesReceiptDidValidateNotification = @"VTAInAppPurchasesReceiptDidValidate";
+NSString * const VTAInAppPurchasesReceiptValidationDidFailNotification = @"VTAInAppPurchasesReceiptValidationDidFail";
+
 NSString * const VTAInAppPurchasesNotificationErrorUserInfoKey = @"VTAInAppPurchasesNotificationErrorUserInfoKey";
 NSString * const VTAInAppPurchasesProductsAffectedUserInfoKey = @"VTAInAppPurchasesProductsAffectedUserInfoKey";
 
@@ -85,6 +88,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 #if VTAInAppPurchasesDebug
         NSLog(@"Receipt is valid.");
 #endif
+        [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesReceiptDidValidateNotification object:self];
         _receiptValidationFailed = NO;
         _originalVersionNumber = self.validator.originalPurchasedVersion;
     }
@@ -119,6 +123,8 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     }
     _receiptValidationFailed = YES;
     _refreshingReceipt = YES;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesReceiptValidationDidFailNotification object:self];
 }
 
 /**

@@ -135,7 +135,7 @@
         
         NSData *hashData;
         NSData *opaqueValueData;
-        NSData *bundleIDData;
+//        NSData *bundleIDData;
         
         while (p < end  ) {
             
@@ -147,10 +147,10 @@
             }
             
             const unsigned char *seq_end = p + length; // The end of this sequence is the current position + the length of the object
-            int attr_type = 0, attr_version = 0;
+            int attr_type = 0;
             
             attr_type = [self readInteger:&p withLength:seq_end - p];
-            attr_version = [self readInteger:&p withLength:seq_end - p];
+            [self readInteger:&p withLength:seq_end - p];
             
             NSData *data = [self readOctet:&p withLength:seq_end - p];
             
@@ -158,7 +158,7 @@
                     
                     // Bundle Identifier (
                 case 2: {
-                    bundleIDData = [data copy];
+//                    bundleIDData = [data copy];
                     
                     const uint8_t *s = (const uint8_t*)data.bytes;
                     NSString *string = [self readString:&s withLength:data.length];
@@ -235,7 +235,7 @@
 #if VTAInAppPurchasesReceiptValidationDebug
                     NSLog(@"Creating random purchased version");
                     NSArray *array = @[@"2.0", @"2.1", @"2.0.3", @"1.0", @"1", @"1.1.2", @"1.1", @"1.2.4"];
-                    self.originalPurchasedVersion = array[arc4random_uniform([array count] - 1)];
+                    self.originalPurchasedVersion = array[arc4random_uniform((int)[array count] - 1)];
 #endif
                     
                     break;

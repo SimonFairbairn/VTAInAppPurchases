@@ -51,6 +51,17 @@ extern NSString * const VTAInAppPurchasesRestoreDidCompleteNotification;
 extern NSString * const VTAInAppPurchasesProductDownloadStatusDidChangeNotification;
 
 /**
+ *  This notification will be sent if the receipt was successfully validated.
+ */
+extern NSString * const VTAInAppPurchasesReceiptDidValidateNotification;
+
+/**
+ *  This notification will be sent if the receipt validation failed, and may be sent multiple times if validation
+ *  is attempted repeatedly. 
+ */
+extern NSString * const VTAInAppPurchasesReceiptValidationDidFailNotification;
+
+/**
  *  The keys for the UserInfo dictionary contained in some of the above notifications
  */
 extern NSString * const VTAInAppPurchasesProductsAffectedUserInfoKey;
@@ -105,6 +116,9 @@ extern NSString * const VTAInAppPurchasesList;
  */
 +(instancetype)sharedInstance;
 
+/**
+ *  Validates the receipt for the purchase or requests a new receipt if one isn't found.
+ */
 -(void)validateReceipt;
 
 /**
