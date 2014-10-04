@@ -93,6 +93,11 @@ extern NSString * const VTAInAppPurchasesList;
  */
 @property (nonatomic, readonly) NSArray *productList;
 
+/**
+ *  The original purchased version of the app
+ */
+@property (nonatomic, readonly) NSString *originalVersionNumber;
+
 // METHODS
 
 /**

@@ -13,7 +13,7 @@
 #import "sha.h"
 
 #ifdef DEBUG
-#define VTAInAppPurchasesReceiptValidationDebug 0
+#define VTAInAppPurchasesReceiptValidationDebug 1
 #endif
 
 @implementation VTAInAppPurchasesReceiptValidation
@@ -232,9 +232,10 @@
                     NSString *string = [self readString:&s withLength:data.length];
                     self.originalPurchasedVersion = string;
                     
-                    
 #if VTAInAppPurchasesReceiptValidationDebug
-                    //                    NSLog(@"Original Version: %@", string);
+                    NSLog(@"Creating random purchased version");
+                    NSArray *array = @[@"2.0", @"2.1", @"2.0.3", @"1.0", @"1", @"1.1.2", @"1.1", @"1.2.4"];
+                    self.originalPurchasedVersion = array[arc4random_uniform([array count] - 1)];
 #endif
                     
                     break;

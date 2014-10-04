@@ -86,6 +86,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
         NSLog(@"Receipt is valid.");
 #endif
         _receiptValidationFailed = NO;
+        _originalVersionNumber = self.validator.originalPurchasedVersion;
     }
 }
 
@@ -100,10 +101,21 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 #if VTAInAppPurchasesDebug
         NSLog(@"Requesting new receipt.");
 #endif
+        // Only attempt to fetch new receipt if we have a connection
+        NSURL *appleSite = [NSURL URLWithString:@"http://www.apple.com"];
+        NSURLSession *testSession = [NSURLSession sharedSession];
+        NSURLSessionDataTask *fetchRemoteSiteTask = [testSession dataTaskWithRequest:[NSURLRequest requestWithURL:appleSite] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         
-        self.refreshRequest = [[SKReceiptRefreshRequest alloc] init];
-        self.refreshRequest.delegate = self;
-        [self.refreshRequest start];
+            if ( !error ) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.refreshRequest = [[SKReceiptRefreshRequest alloc] init];
+                    self.refreshRequest.delegate = self;
+                    [self.refreshRequest start];
+                });
+            }
+            
+        }];
+        [fetchRemoteSiteTask resume];
     }
     _receiptValidationFailed = YES;
     _refreshingReceipt = YES;
