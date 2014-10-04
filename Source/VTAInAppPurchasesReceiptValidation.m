@@ -231,13 +231,6 @@
                     const uint8_t *s = (const uint8_t*)data.bytes;
                     NSString *string = [self readString:&s withLength:data.length];
                     self.originalPurchasedVersion = string;
-                    
-#if VTAInAppPurchasesReceiptValidationDebug
-                    NSLog(@"Creating random purchased version");
-                    NSArray *array = @[@"2.0", @"2.1", @"2.0.3", @"1.0", @"1", @"1.1.2", @"1.1", @"1.2.4"];
-                    self.originalPurchasedVersion = array[arc4random_uniform((int)[array count] - 1)];
-#endif
-                    
                     break;
                 }
                 default:

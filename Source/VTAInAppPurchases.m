@@ -88,9 +88,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 #if VTAInAppPurchasesDebug
         NSLog(@"Receipt is valid.");
 #endif
-        [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesReceiptDidValidateNotification object:self];
         _receiptValidationFailed = NO;
         _originalVersionNumber = self.validator.originalPurchasedVersion;
+        [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesReceiptDidValidateNotification object:self];        
     }
 }
 
@@ -424,16 +424,13 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     product.purchaseInProgress = NO;
     
     if ( !product.consumable ) {
-        
         [self unlockNonConsumableProduct:product];
-        
     } else {
         [self addProductValue:product];
     }
     
     NSDictionary *userInfo = @{VTAInAppPurchasesProductsAffectedUserInfoKey : @[product]};
     [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesPurchasesDidCompleteNotification object:self userInfo:userInfo];
-    
 }
 
 -(void)unlockNonConsumableProduct:(VTAProduct *)product {
@@ -449,6 +446,11 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 }
 
 -(void)addProductToUnlockList:(VTAProduct *)product {
+
+    if ( !product ) {
+        return;
+    }
+    
     if ( product.storageKey ) {
         [self addProductValue:product];
     }
