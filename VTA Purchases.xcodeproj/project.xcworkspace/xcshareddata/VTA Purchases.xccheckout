@@ -12,6 +12,8 @@
 	<dict>
 		<key>0DB0D15EC5497AA352ACF859F1C7052C2FF8C034</key>
 		<string>https://github.com/SimonFairbairn/VTAInAppPurchases.git</string>
+		<key>DF6EC274E89631E185F2B49364530C5AE32473B0</key>
+		<string>66.175.211.175:~/gitrepos/VTAIAPHelper.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>VTA Purchases.xcodeproj</string>
@@ -19,6 +21,8 @@
 	<dict>
 		<key>0DB0D15EC5497AA352ACF859F1C7052C2FF8C034</key>
 		<string>../..</string>
+		<key>DF6EC274E89631E185F2B49364530C5AE32473B0</key>
+		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/SimonFairbairn/VTAInAppPurchases.git</string>
@@ -28,6 +32,14 @@
 	<string>0DB0D15EC5497AA352ACF859F1C7052C2FF8C034</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>DF6EC274E89631E185F2B49364530C5AE32473B0</string>
+			<key>IDESourceControlWCCName</key>
+			<string></string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>

@@ -16,6 +16,13 @@
 #define VTAInAppPurchasesReceiptValidationDebug 1
 #endif
 
+@interface VTAInAppPurchasesReceiptValidation ()
+
+@property (nonatomic, readwrite) NSMutableArray *arrayOfPurchasedIAPs;
+@property (nonatomic, readwrite) NSString *appIdentifier;
+
+@end
+
 @implementation VTAInAppPurchasesReceiptValidation
 
 #pragma mark - Properties
@@ -212,7 +219,7 @@
                                     NSString *string = [self readString:&s withLength:data.length];
                                     
 #if VTAInAppPurchasesReceiptValidationDebug
-                                    //                                    NSLog(@"IAP Purchase: %@", string);
+                                    NSLog(@"IAP Purchase: %@", string);
 #endif
                                     
                                     [self.arrayOfPurchasedIAPs addObject:string];
@@ -230,7 +237,7 @@
                 case 19: {
                     const uint8_t *s = (const uint8_t*)data.bytes;
                     NSString *string = [self readString:&s withLength:data.length];
-                    self.originalPurchasedVersion = string;
+                    _originalPurchasedVersion = string;
                     break;
                 }
                 default:

@@ -10,17 +10,19 @@
 
 @interface VTAInAppPurchasesReceiptValidation : NSObject
 
-@property (nonatomic, strong) NSString *appIdentifier;
-@property (nonatomic, strong) NSMutableArray *arrayOfPurchasedIAPs;
+@property (nonatomic, readonly) NSString *appIdentifier;
+@property (nonatomic, readonly) NSMutableArray *arrayOfPurchasedIAPs;
 
 /**
  *  The version number of the app when it was first purchased
  */
-@property (nonatomic, strong) NSString *originalPurchasedVersion;
+@property (nonatomic, readonly) NSString *originalPurchasedVersion;
 
-
+/**
+ *  Validate the local receipt. 
+ *
+ *  @return A BOOL indicating whether or not validation was successful
+ */
 -(BOOL)validateReceipt;
-
-
 
 @end

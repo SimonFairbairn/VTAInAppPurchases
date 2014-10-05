@@ -15,6 +15,7 @@
 #ifdef DEBUG
 #define VTAInAppPurchasesDebug 1
 #define VTAInAppPurchasesPListError 0
+#define VTAInAppPurchasesForceInvalidReceipt 0
 #endif
 
 NSString * const VTAInAppPurchasesProductListDidUpdateNotification = @"VTAInAppPurchasesProductListDidUpdateNotification";
@@ -44,6 +45,8 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 
 @property (nonatomic, strong) VTAInAppPurchasesReceiptValidation *validator;
 
+@property (nonatomic, strong) NSMutableArray *instantUnlockProducts;
+
 @end
 
 @implementation VTAInAppPurchases {
@@ -66,6 +69,13 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
         _validator = [[VTAInAppPurchasesReceiptValidation alloc] init];
     }
     return _validator;
+}
+
+-(NSMutableArray *) instantUnlockProducts {
+    if ( !_instantUnlockProducts ) {
+        _instantUnlockProducts = [NSMutableArray array];
+    }
+    return _instantUnlockProducts;
 }
 
 #pragma mark - Initialisation
@@ -105,8 +115,8 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 #if VTAInAppPurchasesDebug
         NSLog(@"Requesting new receipt.");
 #endif
-        // Only attempt to fetch new receipt if we have a connection
-        NSURL *appleSite = [NSURL URLWithString:@"http://www.apple.com"];
+        // Only attempt to fetch new receipt if we have a secure connection
+        NSURL *appleSite = [NSURL URLWithString:@"https://www.apple.com"];
         NSURLSession *testSession = [NSURLSession sharedSession];
         NSURLSessionDataTask *fetchRemoteSiteTask = [testSession dataTaskWithRequest:[NSURLRequest requestWithURL:appleSite] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         
@@ -285,6 +295,11 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     NSDictionary *userInfo;
     
     if ( error ) {
+
+#if VTAInAppPurchasesDebug
+        NSLog(@"Product loading error: %@", error);
+#endif
+        
         userInfo = @{VTAInAppPurchasesNotificationErrorUserInfoKey : error };
         _productsLoading = VTAInAppPurchaseStatusProductLoadFailed;
     } else {
@@ -340,13 +355,20 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
             
             for ( NSString *identifier in self.validator.arrayOfPurchasedIAPs ) {
                 if ( [product.productIdentifier isEqualToString:identifier] ) {
-                    
+                    product.purchased = YES;
+                    [self addProductToUnlockList:product];
+                }
+            }
+            
+            for ( NSString *identifier in self.instantUnlockProducts ) {
+                if ( [product.productIdentifier isEqualToString:identifier] ) {
                     product.purchased = YES;
                     [self addProductToUnlockList:product];
                 }
             }
         }
     }
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesProductListDidUpdateNotification object:self];
 }
 
@@ -434,7 +456,11 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 }
 
 -(void)unlockNonConsumableProduct:(VTAProduct *)product {
+    if ( !product ) {
+        return;
+    }
     [self addProductToUnlockList:product];
+    [self.instantUnlockProducts addObject:product.productIdentifier];
     product.purchased = YES;
 }
 

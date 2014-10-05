@@ -9,11 +9,11 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSUInteger, VTAInAppPurchaseStatus) {
-    VTAInAppPurchaseStatusProductsLoading,
-    VTAInAppPurchaseStatusProductListLoaded,
-    VTAInAppPurchaseStatusProductListLoadFailed,
-    VTAInAppPurchaseStatusProductsLoaded,
-    VTAInAppPurchaseStatusProductLoadFailed
+    VTAInAppPurchaseStatusProductsLoading       = 0,
+    VTAInAppPurchaseStatusProductListLoaded     = 1,
+    VTAInAppPurchaseStatusProductListLoadFailed = 2,
+    VTAInAppPurchaseStatusProductsLoaded        = 3,
+    VTAInAppPurchaseStatusProductLoadFailed     = 4
 };
 
 /**
@@ -117,7 +117,8 @@ extern NSString * const VTAInAppPurchasesList;
 +(instancetype)sharedInstance;
 
 /**
- *  Validates the receipt for the purchase or requests a new receipt if one isn't found.
+ *  Validates the receipt. This method will request a new receipt if validation
+ *  fails or a receipt is not found.
  */
 -(void)validateReceipt;
 
@@ -143,7 +144,7 @@ extern NSString * const VTAInAppPurchasesList;
  *
  *  WARNING: USING THIS METHOD WILL NOT GENERATE A PAYMENT AND WILL GIVE USERS IMMEDIATE ACCESS.
  *
- *  @param product The product to
+ *  @param product The product to unlock
  */
 -(void)unlockNonConsumableProduct:(VTAProduct *)product;
 
