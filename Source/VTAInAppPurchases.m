@@ -47,6 +47,8 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 
 @property (nonatomic, strong) NSMutableArray *instantUnlockProducts;
 
+@property (nonatomic, readwrite) NSArray *productList;
+
 @end
 
 @implementation VTAInAppPurchases {
@@ -140,13 +142,13 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 /**
  *  STEP 1: Load the products from the plist file. Mark the productsLoading status as loading
  */
--(void)loadProducts {
+-(BOOL)loadProducts {
     
 #if VTAInAppPurchasesDebug
     NSLog(@"%s ", __PRETTY_FUNCTION__);
 #endif
     
-    if ( !self.remoteURL && !self.localURL ) return;
+    if ( !self.remoteURL && !self.localURL ) return NO;
     
     _productsLoading = VTAInAppPurchaseStatusProductsLoading;
     
@@ -232,9 +234,12 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 #if VTAInAppPurchasesPListError
         plist = nil;
 #endif
-        
         [self setupProductsWithPropertyList:plist];
+        if ( !plist ) {
+            return NO;
+        }
     }
+    return YES;
 }
 
 /**
@@ -265,7 +270,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
             }
         }
         
-        _productList = [array copy];
+        self.productList = [array copy];
         _productsLoading = VTAInAppPurchaseStatusProductListLoaded;
 
         [self validateProductsShouldUseDefaults:NO];
@@ -503,7 +508,13 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     
     NSMutableArray *newProductList = [self.productList mutableCopy];
     for ( NSString *productID in response.invalidProductIdentifiers ) {
+        
         VTAProduct *productToRemove = [self.productLookupDictionary objectForKey:productID];
+        
+#if VTAInAppPurchasesDebug
+        NSLog(@"Product invalid. Identifier: %@. Product: %@", productID, productToRemove);
+#endif
+        
         [newProductList removeObject:productToRemove];
     }
     
@@ -512,11 +523,9 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
         vtaProduct.product = product;
     }
     
-    _productList = [newProductList copy];
+    self.productList = [newProductList copy];
     
     if ( _receiptValidationFailed && _receiptRefreshFailed ) {
-        
-        
         _receiptRefreshFailed = NO;
         _receiptValidationFailed = NO;
         [self validateReceipt];

@@ -58,7 +58,6 @@ extern NSString * const VTAProductStatusDidChangeNotification;
  */
 @property (nonatomic) float progress;
 
-
 /**
  *  WARNING: You should not initialise this class directly.
  */

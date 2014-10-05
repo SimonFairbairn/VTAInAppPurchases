@@ -124,8 +124,10 @@ extern NSString * const VTAInAppPurchasesList;
 
 /**
  *  Load the products from one of the provided URLs, then start up the SKPaymentQueue
+ *
+ *  @return BOOL Returns YES if a valid local URL or any remote URL was provided
  */
--(void)loadProducts;
+-(BOOL)loadProducts;
 
 /**
  *  Initialises the purches of a product
