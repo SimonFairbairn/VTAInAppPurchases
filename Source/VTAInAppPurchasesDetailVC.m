@@ -14,24 +14,7 @@
 
 @interface VTAInAppPurchasesDetailViewController ()
 
-@property (nonatomic, weak) IBOutlet UILabel *titleLabel;
-@property (nonatomic, weak) IBOutlet UILabel *priceLabel;
-@property (nonatomic, weak) IBOutlet UITextView *descriptionField;
-@property (nonatomic, weak) IBOutlet UIButton *buyButton;
-@property (weak, nonatomic) IBOutlet UIImageView *featuredImage;
-
 @property (nonatomic, strong) NSNumberFormatter *priceFormatter;
-
-@property (nonatomic, weak) IBOutlet UIProgressView *progressView;
-@property (weak, nonatomic) IBOutlet UILabel *statusLabel;
-
-@property (weak, nonatomic) IBOutlet UIButton *pauseButton;
-@property (weak, nonatomic) IBOutlet UIButton *resumeButton;
-@property (weak, nonatomic) IBOutlet UIButton *cancelButton;
-
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *imageHeight;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *textviewHeight;
-@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *purchaseIndicator;
 
 @end
 
@@ -86,9 +69,11 @@
     
     [self refresh];
     
-    CGSize textViewSize = [self.descriptionField sizeThatFits:CGSizeMake(self.descriptionField.frame.size.width, FLT_MAX)];
-                           
-    self.textviewHeight.constant = textViewSize.height;
+//    CGSize textViewSize = [self.descriptionField sizeThatFits:CGSizeMake(self.descriptionField.frame.size.width, FLT_MAX)];
+    
+//    CGRect rect      = self.descriptionField.frame;
+
+    self.textviewHeight.constant = self.descriptionField.contentSize.height;
     
 }
 
