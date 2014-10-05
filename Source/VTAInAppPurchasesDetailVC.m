@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Voyage Travel Apps. All rights reserved.
 //
 
-@import StoreKit;
+#import <StoreKit/StoreKit.h>
 
 #import "VTAInAppPurchasesDetailVC.h"
 #import "VTAInAppPurchases.h"
