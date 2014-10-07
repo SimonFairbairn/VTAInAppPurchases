@@ -44,7 +44,6 @@
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePurchase:) name:VTAInAppPurchasesPurchasesDidCompleteNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDownload:) name:VTAInAppPurchasesProductDownloadStatusDidChangeNotification object:nil];
-    
 }
 
 -(void)viewWillAppear:(BOOL)animated {
@@ -68,18 +67,19 @@
     }
     
     [self refresh];
-    
-//    CGSize textViewSize = [self.descriptionField sizeThatFits:CGSizeMake(self.descriptionField.frame.size.width, FLT_MAX)];
-    
-//    CGRect rect      = self.descriptionField.frame;
-
-    self.textviewHeight.constant = self.descriptionField.contentSize.height;
-    
+    [self resizeDescriptionField];
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+-(void)resizeDescriptionField {
+    [self.descriptionField sizeToFit]; //added
+    [self.descriptionField layoutIfNeeded]; //added
+    
+    self.textviewHeight.constant = [self.descriptionField sizeThatFits:CGSizeMake(self.descriptionField.frame.size.width, CGFLOAT_MAX)].height;
 }
 
 -(void)refresh {

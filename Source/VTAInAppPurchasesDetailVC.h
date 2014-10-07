@@ -31,4 +31,6 @@
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *textviewHeight;
 @property (nonatomic, weak) IBOutlet UIActivityIndicatorView *purchaseIndicator;
 
+-(void)resizeDescriptionField;
+
 @end
