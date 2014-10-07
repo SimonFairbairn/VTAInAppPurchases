@@ -7,7 +7,7 @@
 //
 
 #import "IAPEAppDelegate.h"
-#import "IAPEInAppPurchases.h"
+#import "VTAInAppPurchases.h"
 
 
 @implementation IAPEAppDelegate
@@ -15,7 +15,9 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     // Load in the products
-    [[IAPEInAppPurchases sharedInstance] loadProducts];
+    [VTAInAppPurchases sharedInstance].localURL = [[NSBundle mainBundle] URLForResource:@"productListExample" withExtension:@"plist"];
+    // OR: [VTAInAppPurchases sharedInstance].remoteURL = [NSURL URLWithString:@"http://yourwebsite.com/ExampleProductList.plist"];
+    [[VTAInAppPurchases sharedInstance] loadProducts];
     
     return YES;
 }

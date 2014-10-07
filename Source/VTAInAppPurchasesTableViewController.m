@@ -9,10 +9,10 @@
 #import <StoreKit/StoreKit.h>
 
 #import "VTAInAppPurchasesTableViewController.h"
-#import "IAPESIAPHelper.h"
-#import "IAPESDetailVC.h"
+#import "VTAInAppPurchases.h"
+#import "VTAInAppPurchasesDetailVC.h"
 #import "VTAInAppPurchasesTableViewCell.h"
-#import "IAPESImageDetailVC.h"
+#import "VTAInAppPurchasesDetailVC.h"
 #import "VTAProduct.h"
 
 @interface VTAInAppPurchasesTableViewController ()
@@ -60,15 +60,14 @@
     [super viewDidAppear:animated];
 
     // Only refresh automatically if we haven't already loaded the products
-    
     if ( !self.products ) {
         
         [self.refreshControl beginRefreshing];
         [self.tableView setContentOffset:CGPointMake(0, self.tableView.contentOffset.y-self.refreshControl.frame.size.height) animated:YES];
-        [self reload:nil];
         
+        // Passing nil lets the method know that this was not a user-generated refresh
+        [self reload:nil];
     }
-
 }
 
 -(void)viewDidDisappear:(BOOL)animated {
@@ -79,25 +78,31 @@
 
 -(void)reload:(id)sender {
     
-    if ( [IAPESIAPHelper sharedInstance].productsLoading != VTAInAppPurchaseStatusProductsLoading &&
-        [IAPESIAPHelper sharedInstance].productsLoading != VTAInAppPurchaseStatusProductListLoaded
+    // If we're not already loading
+    if ( [VTAInAppPurchases sharedInstance].productsLoading != VTAInAppPurchaseStatusProductsLoading &&
+        [VTAInAppPurchases sharedInstance].productsLoading != VTAInAppPurchaseStatusProductListLoaded
         ) {
         
-            NSLog(@"Reloading products");
-        
+        // Make a note of all of the existing products in the list
         NSMutableArray *ips = [NSMutableArray new];
         for ( int i = 0; i < [self.products count]; i++ ) {
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
             [ips addObject:indexPath];
         }
-        self.products = nil;
         
+        // Set the model object to nil
+        self.products = nil;
+
+        // If there's a sender, then it means it's been activated by the user, so animate nicely
         if ( sender ) {
             [self.tableView deleteRowsAtIndexPaths:ips withRowAnimation:UITableViewRowAnimationAutomatic];
         } else {
+            // Otherwise, straight reload
             [self.tableView reloadData];
         }
-        [[IAPESIAPHelper sharedInstance] loadProducts];
+
+        // Call the IAP singleton to reload the products
+        [[VTAInAppPurchases sharedInstance] loadProducts];
     }
 }
 
@@ -155,6 +160,12 @@
     
 }
 
+/**
+ *  This method is called once the loading of the product list AND the loading of the products from
+ *  the store has completed. The UserInfo dictionary will be populated if an error occurred along the way.
+ *
+ *  @param note an NSNotication object.
+ */
 -(void)displayProducts:(NSNotification *)note {
     
     if ( [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey] ) {
@@ -234,7 +245,7 @@
     NSIndexPath *ip = [self.tableView indexPathForSelectedRow];
     VTAProduct *product = self.products[ip.row];
     
-    IAPESDetailVC *detailVC = (IAPESDetailVC *)[segue destinationViewController];
+    VTAInAppPurchasesDetailViewController *detailVC = (VTAInAppPurchasesDetailViewController *)[segue destinationViewController];
     detailVC.product = product;
 }
 

@@ -21,11 +21,12 @@
 		F40C808A1968528D0004E37F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F40C80881968528D0004E37F /* InfoPlist.strings */; };
 		F40C808C1968528D0004E37F /* VTA_PurchasesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C808B1968528D0004E37F /* VTA_PurchasesTests.m */; };
 		F40C80A2196854C40004E37F /* IAPEProductListTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C80A1196854C40004E37F /* IAPEProductListTableViewController.m */; };
-		F40C80A51968550F0004E37F /* IAPEInAppPurchases.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C80A41968550F0004E37F /* IAPEInAppPurchases.m */; };
-		F40C80A7196855B50004E37F /* IAPETableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F40C80A6196855B50004E37F /* IAPETableViewCell.xib */; };
-		F40C80AA196855E50004E37F /* IAPETableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F40C80A9196855E50004E37F /* IAPETableViewCell.m */; };
 		F40C80AC19685D990004E37F /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F40C80AB19685D990004E37F /* README.md */; };
 		F40C80C1196868900004E37F /* LICENSE.md in Resources */ = {isa = PBXBuildFile; fileRef = F40C80C0196868900004E37F /* LICENSE.md */; };
+		F4CA642119E485FF00D89845 /* VTAInAppPurchasesDetailVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F4CA641B19E485FF00D89845 /* VTAInAppPurchasesDetailVC.m */; };
+		F4CA642219E485FF00D89845 /* VTAInAppPurchasesTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F4CA641D19E485FF00D89845 /* VTAInAppPurchasesTableViewCell.m */; };
+		F4CA642319E485FF00D89845 /* VTAInAppPurchasesTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4CA641E19E485FF00D89845 /* VTAInAppPurchasesTableViewCell.xib */; };
+		F4CA642419E485FF00D89845 /* VTAInAppPurchasesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4CA642019E485FF00D89845 /* VTAInAppPurchasesTableViewController.m */; };
 		F4E1156719E0B7FE00E7B44E /* AppleIncRootCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = F4E1151019E0B7FE00E7B44E /* AppleIncRootCertificate.cer */; };
 		F4E1156819E0B7FE00E7B44E /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F4E1155F19E0B7FE00E7B44E /* libcrypto.a */; };
 		F4E1156919E0B7FE00E7B44E /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F4E1156019E0B7FE00E7B44E /* libssl.a */; };
@@ -64,13 +65,15 @@
 		F40C808B1968528D0004E37F /* VTA_PurchasesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VTA_PurchasesTests.m; sourceTree = "<group>"; };
 		F40C80A0196854C40004E37F /* IAPEProductListTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPEProductListTableViewController.h; sourceTree = "<group>"; };
 		F40C80A1196854C40004E37F /* IAPEProductListTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAPEProductListTableViewController.m; sourceTree = "<group>"; };
-		F40C80A31968550F0004E37F /* IAPEInAppPurchases.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPEInAppPurchases.h; sourceTree = "<group>"; };
-		F40C80A41968550F0004E37F /* IAPEInAppPurchases.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAPEInAppPurchases.m; sourceTree = "<group>"; };
-		F40C80A6196855B50004E37F /* IAPETableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IAPETableViewCell.xib; sourceTree = "<group>"; };
-		F40C80A8196855E50004E37F /* IAPETableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPETableViewCell.h; sourceTree = "<group>"; };
-		F40C80A9196855E50004E37F /* IAPETableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAPETableViewCell.m; sourceTree = "<group>"; };
 		F40C80AB19685D990004E37F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		F40C80C0196868900004E37F /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.md; sourceTree = "<group>"; };
+		F4CA641A19E485FF00D89845 /* VTAInAppPurchasesDetailVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VTAInAppPurchasesDetailVC.h; sourceTree = "<group>"; };
+		F4CA641B19E485FF00D89845 /* VTAInAppPurchasesDetailVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VTAInAppPurchasesDetailVC.m; sourceTree = "<group>"; };
+		F4CA641C19E485FF00D89845 /* VTAInAppPurchasesTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VTAInAppPurchasesTableViewCell.h; sourceTree = "<group>"; };
+		F4CA641D19E485FF00D89845 /* VTAInAppPurchasesTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VTAInAppPurchasesTableViewCell.m; sourceTree = "<group>"; };
+		F4CA641E19E485FF00D89845 /* VTAInAppPurchasesTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VTAInAppPurchasesTableViewCell.xib; sourceTree = "<group>"; };
+		F4CA641F19E485FF00D89845 /* VTAInAppPurchasesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VTAInAppPurchasesTableViewController.h; sourceTree = "<group>"; };
+		F4CA642019E485FF00D89845 /* VTAInAppPurchasesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VTAInAppPurchasesTableViewController.m; sourceTree = "<group>"; };
 		F4E1151019E0B7FE00E7B44E /* AppleIncRootCertificate.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = AppleIncRootCertificate.cer; sourceTree = "<group>"; };
 		F4E1151319E0B7FE00E7B44E /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
 		F4E1151419E0B7FE00E7B44E /* asn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = asn1.h; sourceTree = "<group>"; };
@@ -223,8 +226,6 @@
 				F40C80951968529F0004E37F /* Views */,
 				F40C80781968528D0004E37F /* Images.xcassets */,
 				F40C80671968528D0004E37F /* Supporting Files */,
-				F40C80A31968550F0004E37F /* IAPEInAppPurchases.h */,
-				F40C80A41968550F0004E37F /* IAPEInAppPurchases.m */,
 			);
 			path = "VTA Purchases";
 			sourceTree = "<group>";
@@ -263,9 +264,6 @@
 		F40C80951968529F0004E37F /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				F40C80A8196855E50004E37F /* IAPETableViewCell.h */,
-				F40C80A9196855E50004E37F /* IAPETableViewCell.m */,
-				F40C80A6196855B50004E37F /* IAPETableViewCell.xib */,
 				F40C80721968528D0004E37F /* Main.storyboard */,
 			);
 			path = Views;
@@ -274,6 +272,13 @@
 		F40C8096196852ED0004E37F /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				F4CA641A19E485FF00D89845 /* VTAInAppPurchasesDetailVC.h */,
+				F4CA641B19E485FF00D89845 /* VTAInAppPurchasesDetailVC.m */,
+				F4CA641C19E485FF00D89845 /* VTAInAppPurchasesTableViewCell.h */,
+				F4CA641D19E485FF00D89845 /* VTAInAppPurchasesTableViewCell.m */,
+				F4CA641E19E485FF00D89845 /* VTAInAppPurchasesTableViewCell.xib */,
+				F4CA641F19E485FF00D89845 /* VTAInAppPurchasesTableViewController.h */,
+				F4CA642019E485FF00D89845 /* VTAInAppPurchasesTableViewController.m */,
 				F4E1151019E0B7FE00E7B44E /* AppleIncRootCertificate.cer */,
 				F4E1151119E0B7FE00E7B44E /* include */,
 				F4E1155E19E0B7FE00E7B44E /* lib */,
@@ -476,8 +481,8 @@
 				F40C80791968528D0004E37F /* Images.xcassets in Resources */,
 				F4E1156719E0B7FE00E7B44E /* AppleIncRootCertificate.cer in Resources */,
 				F40C806B1968528D0004E37F /* InfoPlist.strings in Resources */,
+				F4CA642319E485FF00D89845 /* VTAInAppPurchasesTableViewCell.xib in Resources */,
 				F40C80741968528D0004E37F /* Main.storyboard in Resources */,
-				F40C80A7196855B50004E37F /* IAPETableViewCell.xib in Resources */,
 				F40C80C1196868900004E37F /* LICENSE.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -497,13 +502,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F40C80A51968550F0004E37F /* IAPEInAppPurchases.m in Sources */,
+				F4CA642119E485FF00D89845 /* VTAInAppPurchasesDetailVC.m in Sources */,
 				F40C806D1968528D0004E37F /* main.m in Sources */,
 				F40C80711968528D0004E37F /* IAPEAppDelegate.m in Sources */,
 				F4E1156C19E0B7FE00E7B44E /* VTAProduct.m in Sources */,
+				F4CA642419E485FF00D89845 /* VTAInAppPurchasesTableViewController.m in Sources */,
 				F4E1156A19E0B7FE00E7B44E /* VTAInAppPurchases.m in Sources */,
 				F4E1156B19E0B7FE00E7B44E /* VTAInAppPurchasesReceiptValidation.m in Sources */,
-				F40C80AA196855E50004E37F /* IAPETableViewCell.m in Sources */,
+				F4CA642219E485FF00D89845 /* VTAInAppPurchasesTableViewCell.m in Sources */,
 				F40C80A2196854C40004E37F /* IAPEProductListTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

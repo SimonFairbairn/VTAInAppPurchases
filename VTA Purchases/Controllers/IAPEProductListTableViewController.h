@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Voyage Travel Apps. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "VTAInAppPurchasesTableViewController.h"
 
-@interface IAPEProductListTableViewController : UITableViewController
+@interface IAPEProductListTableViewController : VTAInAppPurchasesTableViewController
 
 @end

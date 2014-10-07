@@ -7,70 +7,21 @@
 //
 
 #import "IAPEProductListTableViewController.h"
-#import "IAPEInAppPurchases.h"
+#import "VTAInAppPurchases.h"
 #import "VTAProduct.h"
-#import "IAPETableViewCell.h"
-
-@interface IAPEProductListTableViewController ()
-
-@property (nonatomic, strong) NSNumberFormatter *formatter;
-
-@property (nonatomic, strong) NSArray *products;
-
-@end
+#import "VTAInAppPurchasesTableViewCell.h"
 
 @implementation IAPEProductListTableViewController
-#pragma mark - Properties
-
--(NSNumberFormatter *) formatter {
-    if ( !_formatter ) {
-        _formatter = [[NSNumberFormatter alloc] init];
-        _formatter.formatterBehavior = NSNumberFormatterBehavior10_4;
-        [_formatter setNumberStyle:NSNumberFormatterCurrencyStyle];
-    }
-    return _formatter;
-}
-
-#pragma mark - View Lifecycle
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    // Custom Table View cell to show price and download progress
-    [self.tableView registerNib:[UINib nibWithNibName:@"IAPESTableViewCell" bundle:nil] forCellReuseIdentifier:@"IAPCell"];
-    self.tableView.rowHeight = 93.0f;
-    self.refreshControl = [[UIRefreshControl alloc] init];
-    [self.refreshControl addTarget:self action:@selector(reload:) forControlEvents:UIControlEventValueChanged];
-}
-
--(void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    
-    // Register for the notifications: we're interested in all of them.
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(displayProducts:) name:VTAInAppPurchasesProductsDidFinishUpdatingNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePurchaseCompletion:) name:VTAInAppPurchasesPurchasesDidCompleteNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleRestoreCompletion:) name:VTAInAppPurchasesRestoreDidCompleteNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productDownloadChanged:) name:VTAInAppPurchasesProductDownloadStatusDidChangeNotification object:nil];
-    
-    [self.tableView reloadData];
-}
 
 -(void)viewDidAppear:(BOOL)animated {
     
     [super viewDidAppear:animated];
-    
-    // Only refresh automatically if we haven't already loaded the products
-    if ( !self.products ) {
-        [self.refreshControl beginRefreshing];
-        [self.tableView setContentOffset:CGPointMake(0, self.tableView.contentOffset.y-self.refreshControl.frame.size.height) animated:YES];
-        
-        // Passing nil lets the method know that this was not a user-generated refresh
-        [self reload:nil];
-    }
-    
 
-    if ( [IAPEInAppPurchases sharedInstance].productsLoading == VTAInAppPurchaseStatusProductListLoaded
-        || [IAPEInAppPurchases sharedInstance].productsLoading == VTAInAppPurchaseStatusProductsLoaded ) {
+    // Set the type of purchases we're interested in (default is all)
+    self.productType = VTAInAppPurchasesTableViewControllerProductTypeAll;
+    
+    if ( [VTAInAppPurchases sharedInstance].productsLoading == VTAInAppPurchaseStatusProductListLoaded
+        || [VTAInAppPurchases sharedInstance].productsLoading == VTAInAppPurchaseStatusProductsLoaded ) {
         
         // If we've loaded either the list or all of the products, we have enough information to provide the content
         [self unlockLocalContent];
@@ -84,7 +35,6 @@
 
 -(void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    [self.refreshControl endRefreshing];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -97,35 +47,7 @@
     self.products = nil;
     [self.tableView reloadData];
     [self.refreshControl beginRefreshing];
-    [[IAPEInAppPurchases sharedInstance] restoreProducts];
-}
-
--(IBAction)reload:(id)sender {
-    
-    // If we're not already loading
-    if ( [IAPEInAppPurchases sharedInstance].productsLoading != VTAInAppPurchaseStatusProductsLoading) {
-        
-        // Make a note of all of the existing products in the list
-        NSMutableArray *ips = [NSMutableArray new];
-        for ( int i = 0; i < [self.products count]; i++ ) {
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-            [ips addObject:indexPath];
-        }
-        
-        // Set the model object to nil
-        self.products = nil;
-        
-        // If there's a sender, then it means it's been activated by the user, so animate nicely
-        if ( sender ) {
-            [self.tableView deleteRowsAtIndexPaths:ips withRowAnimation:UITableViewRowAnimationAutomatic];
-        } else {
-            // Otherwise, straight reload
-            [self.tableView reloadData];
-        }
-        
-        // Call the IAP singleton to reload the products
-        [[IAPEInAppPurchases sharedInstance] loadProducts];
-    }
+    [[VTAInAppPurchases sharedInstance] restoreProducts];
 }
 
 #pragma mark - Notifications
@@ -175,37 +97,6 @@
 }
 
 /**
- *  This method is called once the loading of the product list AND the loading of the products from
- *  the store has completed. The UserInfo dictionary will be populated if an error occurred along the way.
- *
- *  @param note an NSNotication object.
- */
--(void)displayProducts:(NSNotification *)note {
-    
-    if ( [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey] ) {
-        
-        NSError *error = [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey];
-        
-#ifdef DEBUG
-        NSLog(@"%@", error.localizedDescription);
-#endif
-        
-    } else {
-        
-        NSMutableArray *array = [NSMutableArray new];
-        for ( VTAProduct *product in [IAPEInAppPurchases sharedInstance].productList ) {
-            
-            if ( !product.consumable ) {
-                [array addObject:product];
-            }
-        }
-        self.products = array;
-    }
-    [self.tableView reloadData];
-    [self.refreshControl endRefreshing];
-}
-
-/**
  *  This method will be called when the download status on a product changes.
  *
  *  @param note An NSNotification object with a userInfo dictionary passing along the relevant product.
@@ -222,8 +113,7 @@
         NSUInteger row = [self.products indexOfObject:product];
         NSIndexPath *ip = [NSIndexPath indexPathForRow:row inSection:0];
         
-        IAPETableViewCell *cell = (IAPETableViewCell *)[self.tableView cellForRowAtIndexPath:ip];
-        
+        VTAInAppPurchasesTableViewCell *cell = (VTAInAppPurchasesTableViewCell *)[self.tableView cellForRowAtIndexPath:ip];
 
         if ( product.purchaseInProgress && product.hosted ) {
             
@@ -247,7 +137,7 @@
  *  product with a local URL, then we need to make that content accessible to the user.
  */
 -(void)unlockLocalContent {
-    for (VTAProduct *product in [IAPEInAppPurchases sharedInstance].productList ) {
+    for (VTAProduct *product in [VTAInAppPurchases sharedInstance].productList ) {
         if ( !product.consumable && product.localContentURL ) {
             [self unlockLocalContentForProduct:product];
         }
@@ -281,7 +171,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    IAPETableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"IAPCell"  forIndexPath:indexPath];
+    VTAInAppPurchasesTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"IAPCell"  forIndexPath:indexPath];
     
     VTAProduct *product = [self.products objectAtIndex:indexPath.row];
     
