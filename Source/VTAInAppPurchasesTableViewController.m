@@ -85,7 +85,7 @@
         
         // Make a note of all of the existing products in the list
         NSMutableArray *ips = [NSMutableArray new];
-        for ( int i = 0; i < [self.products count]; i++ ) {
+        for ( int i = 0; i < (int)[self.products count]; i++ ) {
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
             [ips addObject:indexPath];
         }
