@@ -128,7 +128,7 @@
     
     [self.formatter setLocale:product.product.priceLocale];
     
-    cell.progressView.hidden = YES;
+    cell.hideProgressBar = YES;
     
     cell.nonConsumable = product.consumable;
     cell.titleLabel.text = product.product.localizedTitle;
@@ -141,6 +141,9 @@
     } else {
         cell.statusLabel.hidden = YES;
     }
+    
+    [cell setNeedsUpdateConstraints];
+    [cell updateConstraintsIfNeeded];    
     
     return cell;
 }

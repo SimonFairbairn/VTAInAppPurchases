@@ -8,10 +8,15 @@
 
 #import "VTAInAppPurchasesTableViewCell.h"
 
+#ifdef DEBUG
+#define debugCells 1
+#endif
+
 NSString * const VTAInAppPurchasesTableViewCellIdentifier = @"VTAInAppPurchasesTableViewCellIdentifier";
 
 @interface VTAInAppPurchasesTableViewCell ()
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *progressBarMargin;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *imageWidth;
 @property (nonatomic, weak) IBOutlet UIImageView *thumbnailContainer;
 
@@ -23,6 +28,11 @@ NSString * const VTAInAppPurchasesTableViewCellIdentifier = @"VTAInAppPurchasesT
 
 #pragma mark - Properties 
 
+-(void)setHideProgressBar:(BOOL)hideProgressBar {
+    _hideProgressBar = hideProgressBar;
+    self.progressBarMargin.constant = (_hideProgressBar) ? 0.0f : 10.0f;
+    [self layoutIfNeeded];
+}
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -43,8 +53,13 @@ NSString * const VTAInAppPurchasesTableViewCellIdentifier = @"VTAInAppPurchasesT
     _originalWidth = self.imageWidth.constant;
     self.imageWidth.constant = 0.0f;
     self.progressView.progress = 0.0f;
+    
+#if debugCells
+    _statusLabel.backgroundColor = [UIColor redColor];
+    _priceLabel.backgroundColor = [UIColor lightGrayColor];
+    _titleLabel.backgroundColor = [UIColor greenColor];
+#endif
 }
-
 
 -(void)addThumbnailImage:(UIImage *)image animated:(BOOL)animated {
     

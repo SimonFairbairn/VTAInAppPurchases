@@ -17,6 +17,8 @@ extern NSString * const VTAInAppPurchasesTableViewCellIdentifier;
 @property (nonatomic, weak) IBOutlet UILabel *statusLabel;
 @property (nonatomic, weak) IBOutlet UIProgressView *progressView;
 
+@property (nonatomic) BOOL hideProgressBar;
+
 @property (nonatomic, getter = isNonConsumable) BOOL nonConsumable;
 
 
