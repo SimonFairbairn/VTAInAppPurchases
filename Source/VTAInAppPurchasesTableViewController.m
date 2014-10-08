@@ -17,6 +17,7 @@
 
 @interface VTAInAppPurchasesTableViewController ()
 
+@property (nonatomic, readwrite) NSArray *products;
 
 @end
 
@@ -37,7 +38,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.tableView registerNib:[UINib nibWithNibName:@"IAPESTableViewCell" bundle:nil] forCellReuseIdentifier:IAPESTableViewCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:@"VTAInAppPurchasesTableViewCell" bundle:nil] forCellReuseIdentifier:VTAInAppPurchasesTableViewCellIdentifier];
     self.tableView.rowHeight = 93.0f;
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(reload:) forControlEvents:UIControlEventValueChanged];
@@ -76,7 +77,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
--(void)reload:(id)sender {
+-(IBAction)reload:(id)sender; {
     
     // If we're not already loading
     if ( [VTAInAppPurchases sharedInstance].productsLoading != VTAInAppPurchaseStatusProductsLoading &&
@@ -85,7 +86,7 @@
         
         // Make a note of all of the existing products in the list
         NSMutableArray *ips = [NSMutableArray new];
-        for ( int i = 0; i < [self.products count]; i++ ) {
+        for ( int i = 0; i < (int)[self.products count]; i++ ) {
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
             [ips addObject:indexPath];
         }
@@ -121,7 +122,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    VTAInAppPurchasesTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:IAPESTableViewCellIdentifier  forIndexPath:indexPath];
+    VTAInAppPurchasesTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:VTAInAppPurchasesTableViewCellIdentifier  forIndexPath:indexPath];
     
     VTAProduct *product = [self.products objectAtIndex:indexPath.row];
     
@@ -210,8 +211,14 @@
             }
         }
         
+        for ( NSString *productToIgnore in self.productsToIgnore ) {
+            VTAProduct *vtaProductToIgnore = [[VTAInAppPurchases sharedInstance] vtaProductForIdentifier:productToIgnore];
+            [array removeObject:vtaProductToIgnore];
+        }
+                
         self.products = array;
     }
+    
     
     [self.tableView reloadData];
     [self.refreshControl endRefreshing];

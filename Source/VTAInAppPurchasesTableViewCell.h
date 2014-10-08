@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+extern NSString * const VTAInAppPurchasesTableViewCellIdentifier;
+
 @interface VTAInAppPurchasesTableViewCell : UITableViewCell
 
 @property (nonatomic, weak) IBOutlet UILabel *titleLabel;
