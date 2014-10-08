@@ -9,21 +9,24 @@
 #import "VTAInAppPurchasesTableViewCell.h"
 
 #ifdef DEBUG
-#define debugCells 1
+#define debugCells 0
 #endif
 
 NSString * const VTAInAppPurchasesTableViewCellIdentifier = @"VTAInAppPurchasesTableViewCellIdentifier";
 
 @interface VTAInAppPurchasesTableViewCell ()
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *imageMargin;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *progressBarMargin;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *imageWidth;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *imageHeight;
 @property (nonatomic, weak) IBOutlet UIImageView *thumbnailContainer;
 
 @end
 
 @implementation VTAInAppPurchasesTableViewCell {
     CGFloat _originalWidth;
+    CGFloat _originalMargin;
 }
 
 #pragma mark - Properties 
@@ -31,7 +34,8 @@ NSString * const VTAInAppPurchasesTableViewCellIdentifier = @"VTAInAppPurchasesT
 -(void)setHideProgressBar:(BOOL)hideProgressBar {
     _hideProgressBar = hideProgressBar;
     self.progressBarMargin.constant = (_hideProgressBar) ? 0.0f : 10.0f;
-    [self layoutIfNeeded];
+    self.progressView.hidden = _hideProgressBar;
+
 }
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -51,13 +55,16 @@ NSString * const VTAInAppPurchasesTableViewCellIdentifier = @"VTAInAppPurchasesT
 
 -(void)setup {
     _originalWidth = self.imageWidth.constant;
+    _originalMargin = self.imageMargin.constant;
     self.imageWidth.constant = 0.0f;
+    self.imageMargin.constant = 0.0f;
     self.progressView.progress = 0.0f;
     
 #if debugCells
     _statusLabel.backgroundColor = [UIColor redColor];
     _priceLabel.backgroundColor = [UIColor lightGrayColor];
     _titleLabel.backgroundColor = [UIColor greenColor];
+    _thumbnailContainer.backgroundColor = [UIColor purpleColor];
 #endif
 }
 
@@ -68,9 +75,9 @@ NSString * const VTAInAppPurchasesTableViewCellIdentifier = @"VTAInAppPurchasesT
     if ( !self.thumbnailContainer.image ) {
         self.thumbnailContainer.image = image;
     }
-    
     [UIView animateWithDuration:time animations:^{
         self.imageWidth.constant = (image) ? _originalWidth : 0.0f;
+        self.imageMargin.constant = (image) ? _originalMargin : 0.0f;
         [self layoutIfNeeded];
     } completion:^(BOOL finished) {
         self.thumbnailContainer.image = image;

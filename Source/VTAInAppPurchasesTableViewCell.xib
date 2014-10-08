@@ -3,7 +3,6 @@
     <dependencies>
         <deployment version="2048" defaultVersion="1792" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
@@ -16,52 +15,56 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="89"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="g3c-GS-N14">
-                        <rect key="frame" x="20" y="10" width="61.5" height="61.5"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="walking-man-thumb.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="g3c-GS-N14">
+                        <rect key="frame" x="20" y="8" width="50" height="73.5"/>
                         <constraints>
-                            <constraint firstAttribute="width" secondItem="g3c-GS-N14" secondAttribute="height" id="yIW-zI-mit"/>
+                            <constraint firstAttribute="width" constant="50" id="36O-HI-qHY"/>
+                            <constraint firstAttribute="height" priority="750" constant="74" id="dKn-cY-y7T"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" ambiguous="YES" text="com.voyagetravelapps" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="6DY-hd-No5" userLabel="Product">
-                        <rect key="frame" x="89" y="10" width="210.5" height="26"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="800" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" text="com.voyagetravelapps" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="6DY-hd-No5" userLabel="Product">
+                        <rect key="frame" x="77.5" y="8" width="222" height="37.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="18"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Status" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uVt-ed-gdk" userLabel="Status Label">
-                        <rect key="frame" x="250" y="42.5" width="49.5" height="20.5"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uVt-ed-gdk" userLabel="Status Label">
+                        <rect key="frame" x="250" y="52" width="49.5" height="20.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <progressView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" ambiguous="YES" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="nI2-J3-YrS">
-                        <rect key="frame" x="90" y="69.5" width="210" height="2"/>
+                    <progressView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="nI2-J3-YrS">
+                        <rect key="frame" x="77.5" y="79" width="222.5" height="2"/>
                     </progressView>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" ambiguous="YES" text="My Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nxa-Az-Y0g" userLabel="price label">
-                        <rect key="frame" x="89" y="45.5" width="51" height="14.5"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" text="My Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nxa-Az-Y0g" userLabel="price label">
+                        <rect key="frame" x="77.5" y="55" width="51" height="14.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="g3c-GS-N14" firstAttribute="top" secondItem="6DY-hd-No5" secondAttribute="top" id="4Q8-Kg-EdB"/>
+                    <constraint firstItem="nI2-J3-YrS" firstAttribute="leading" secondItem="Nxa-Az-Y0g" secondAttribute="leading" id="6aW-J6-r2g"/>
                     <constraint firstItem="nI2-J3-YrS" firstAttribute="leading" secondItem="g3c-GS-N14" secondAttribute="trailing" constant="8" id="8E0-i8-cpK"/>
                     <constraint firstItem="g3c-GS-N14" firstAttribute="leading" secondItem="Qon-p9-qLU" secondAttribute="leading" constant="20" id="9cz-x6-OlN"/>
                     <constraint firstAttribute="trailing" secondItem="uVt-ed-gdk" secondAttribute="trailing" constant="20" id="Dlc-TY-6bs"/>
-                    <constraint firstItem="Nxa-Az-Y0g" firstAttribute="leading" secondItem="g3c-GS-N14" secondAttribute="trailing" constant="8" id="FBP-wD-TxY"/>
                     <constraint firstAttribute="trailing" secondItem="6DY-hd-No5" secondAttribute="trailing" constant="20" id="PzJ-Tl-QOu"/>
                     <constraint firstAttribute="trailing" secondItem="nI2-J3-YrS" secondAttribute="trailing" constant="20" id="QBh-yx-17U"/>
-                    <constraint firstItem="6DY-hd-No5" firstAttribute="leading" secondItem="g3c-GS-N14" secondAttribute="trailing" constant="8" id="Ucm-nE-woW" userLabel="Product"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="nI2-J3-YrS" secondAttribute="bottom" constant="10" id="bZr-s0-Dfl"/>
-                    <constraint firstItem="nI2-J3-YrS" firstAttribute="bottom" secondItem="g3c-GS-N14" secondAttribute="bottom" id="giE-LF-Wle"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="nI2-J3-YrS" secondAttribute="bottom" id="bZr-s0-Dfl"/>
                     <constraint firstItem="Nxa-Az-Y0g" firstAttribute="top" secondItem="6DY-hd-No5" secondAttribute="bottom" constant="10" id="k5P-q7-DCW"/>
                     <constraint firstItem="uVt-ed-gdk" firstAttribute="centerY" secondItem="Nxa-Az-Y0g" secondAttribute="centerY" id="lr9-Tf-a3h"/>
                     <constraint firstItem="nI2-J3-YrS" firstAttribute="top" secondItem="Nxa-Az-Y0g" secondAttribute="bottom" constant="10" id="myG-oS-Axp"/>
-                    <constraint firstItem="6DY-hd-No5" firstAttribute="top" secondItem="g3c-GS-N14" secondAttribute="top" id="wxH-z8-wNi"/>
-                    <constraint firstItem="6DY-hd-No5" firstAttribute="top" secondItem="Qon-p9-qLU" secondAttribute="topMargin" constant="2" id="zjQ-pr-7xJ"/>
+                    <constraint firstItem="nI2-J3-YrS" firstAttribute="bottom" secondItem="g3c-GS-N14" secondAttribute="bottom" id="wqH-Tr-VB6"/>
+                    <constraint firstItem="Nxa-Az-Y0g" firstAttribute="leading" secondItem="6DY-hd-No5" secondAttribute="leading" id="zcA-8V-kJa"/>
+                    <constraint firstItem="6DY-hd-No5" firstAttribute="top" secondItem="Qon-p9-qLU" secondAttribute="topMargin" id="zjQ-pr-7xJ"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
+                <outlet property="imageHeight" destination="dKn-cY-y7T" id="W9c-Ma-vhI"/>
+                <outlet property="imageMargin" destination="8E0-i8-cpK" id="23r-bH-VdJ"/>
+                <outlet property="imageWidth" destination="36O-HI-qHY" id="SaZ-RC-hcR"/>
                 <outlet property="priceLabel" destination="Nxa-Az-Y0g" id="rQ1-cY-j2Z"/>
                 <outlet property="progressBarMargin" destination="myG-oS-Axp" id="4cK-eU-rC6"/>
                 <outlet property="progressView" destination="nI2-J3-YrS" id="Ebk-NG-6Ey"/>
@@ -72,6 +75,9 @@
             <point key="canvasLocation" x="139" y="155"/>
         </tableViewCell>
     </objects>
+    <resources>
+        <image name="walking-man-thumb.jpg" width="50" height="50"/>
+    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

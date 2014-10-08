@@ -21,7 +21,6 @@ extern NSString * const VTAInAppPurchasesTableViewCellIdentifier;
 
 @property (nonatomic, getter = isNonConsumable) BOOL nonConsumable;
 
-
 -(void)addThumbnailImage:(UIImage *)image animated:(BOOL)animated;
 
 @end

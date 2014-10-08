@@ -8,7 +8,7 @@
 
 #import "VTAProduct.h"
 
-#define VTAProductDebug 0
+#define VTAProductDebug 1
 
 NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidChangeNotification";
 

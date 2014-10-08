@@ -18,12 +18,20 @@
 @interface VTAInAppPurchasesTableViewController ()
 
 @property (nonatomic, readwrite) NSArray *products;
+@property (nonatomic, strong) NSMutableArray *loadingProducts;
 
 @end
 
 @implementation VTAInAppPurchasesTableViewController
 
 #pragma mark - Properties
+
+-(NSArray *) loadingProducts {
+    if ( !_loadingProducts ) {
+        _loadingProducts = [NSMutableArray array];
+    }
+    return _loadingProducts;
+}
 
 -(NSNumberFormatter *) formatter {
     if ( !_formatter ) {
@@ -39,7 +47,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.tableView registerNib:[UINib nibWithNibName:@"VTAInAppPurchasesTableViewCell" bundle:nil] forCellReuseIdentifier:VTAInAppPurchasesTableViewCellIdentifier];
-    self.tableView.rowHeight = 93.0f;
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableView.estimatedRowHeight = 93.0f;
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(reload:) forControlEvents:UIControlEventValueChanged];
 
@@ -76,6 +85,8 @@
     [self.refreshControl endRefreshing];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+#pragma mark - Actions
 
 -(IBAction)reload:(id)sender; {
     
@@ -128,12 +139,18 @@
     
     [self.formatter setLocale:product.product.priceLocale];
     
-    cell.hideProgressBar = YES;
+    
+    if ( product.purchaseInProgress && product.hosted ) {
+        cell.hideProgressBar = NO;
+        cell.progressView.progress = product.progress;
+    } else if ( !product.purchaseInProgress ) {
+        cell.hideProgressBar = YES;
+    }
     
     cell.nonConsumable = product.consumable;
     cell.titleLabel.text = product.product.localizedTitle;
     cell.priceLabel.text = [self.formatter stringFromNumber:product.product.price];
-    [cell addThumbnailImage:product.productIcon animated:NO];
+
         
     if ( !product.consumable && product.purchased ) {
         cell.statusLabel.hidden = NO;
@@ -142,8 +159,9 @@
         cell.statusLabel.hidden = YES;
     }
     
+    [cell addThumbnailImage:product.productIcon animated:NO];
     [cell setNeedsUpdateConstraints];
-    [cell updateConstraintsIfNeeded];    
+    [cell updateConstraintsIfNeeded];
     
     return cell;
 }
@@ -238,14 +256,23 @@
         NSUInteger row = [self.products indexOfObject:product];
         NSIndexPath *ip = [NSIndexPath indexPathForRow:row inSection:0];
         
-        VTAInAppPurchasesTableViewCell *cell = (VTAInAppPurchasesTableViewCell *)[self.tableView cellForRowAtIndexPath:ip];
         
-        if ( product.purchaseInProgress && product.hosted ) {
-            cell.progressView.hidden = NO;
-            cell.progressView.progress = product.progress;
-        } else if ( !product.purchaseInProgress ) {
-            cell.progressView.hidden = YES;
+        if ( [self.loadingProducts containsObject:product] ) {
+            VTAInAppPurchasesTableViewCell *cell = (VTAInAppPurchasesTableViewCell *)[self.tableView cellForRowAtIndexPath:ip];
+            
+            if ( product.purchaseInProgress && product.hosted ) {
+                cell.progressView.progress = product.progress;
+            } else if ( !product.purchaseInProgress ) {
+                [self.tableView reloadRowsAtIndexPaths:@[ip] withRowAnimation:UITableViewRowAnimationFade];
+                [self.loadingProducts removeObject:product];
+            }
+        } else {
+            [self.tableView reloadRowsAtIndexPaths:@[ip] withRowAnimation:UITableViewRowAnimationFade];
+            [self.loadingProducts addObject:product];
         }
+        
+        
+
     }
 }
 
