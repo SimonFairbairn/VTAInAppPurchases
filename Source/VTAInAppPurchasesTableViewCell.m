@@ -8,6 +8,8 @@
 
 #import "VTAInAppPurchasesTableViewCell.h"
 
+NSString * const VTAInAppPurchasesTableViewCellIdentifier = @"VTAInAppPurchasesTableViewCellIdentifier";
+
 @interface VTAInAppPurchasesTableViewCell ()
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *imageWidth;
