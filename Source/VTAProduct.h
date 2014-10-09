@@ -25,6 +25,7 @@ extern NSString * const VTAProductStatusDidChangeNotification;
 @property (nonatomic, readonly, getter = isConsumable) BOOL consumable;
 @property (nonatomic, readonly) NSString *storageKey;
 @property (nonatomic, readonly) NSNumber *productValue;
+
 @property (nonatomic, readonly) UIImage *productIcon;
 @property (nonatomic, readonly) UIImage *productFeaturedImage;
 

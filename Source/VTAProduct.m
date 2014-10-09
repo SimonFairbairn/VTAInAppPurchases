@@ -8,7 +8,9 @@
 
 #import "VTAProduct.h"
 
+#ifdef DEBUG
 #define VTAProductDebug 1
+#endif
 
 NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidChangeNotification";
 
@@ -102,24 +104,42 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
         if ( ![urlOfIcon scheme] ) {
             completionHandler([UIImage imageNamed:iconLocation]);
         } else {
+            CGFloat scale = [[UIScreen mainScreen] scale];
             
+            // Attempt to load image from cache
             NSURL *cachesDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] firstObject];
-            NSURL *fileURL = [cachesDirectory URLByAppendingPathComponent:[iconLocation lastPathComponent]];
-
+            
+            NSString *fileName = [iconLocation lastPathComponent];
+            NSString *fileNameNoExtension = [fileName stringByDeletingPathExtension];
+            NSString *fileNameExtension = [fileName pathExtension];
+            
+            NSString *scaleString = @"";
+            if ( scale == 2.0f ) {
+                scaleString = @"@2x";
+            } else if (scale == 3.0f ) {
+                scaleString = @"@3x";
+            }
+            NSString *scaledImage = [[fileNameNoExtension stringByAppendingString:scaleString] stringByAppendingFormat:@".%@", fileNameExtension];
+            NSURL *fileURL = [cachesDirectory URLByAppendingPathComponent:scaledImage];
+            
+            NSString *scaledImageURL = [[iconLocation stringByDeletingLastPathComponent] stringByAppendingPathComponent:scaledImage];
+            
 #ifdef DEBUG
 #if VTAProductDebug
+            NSLog(@"Icon location: %@", iconLocation);
             NSLog(@"File URL: %@", fileURL);
+            NSLog(@"Scaled Image URL: %@", scaledImageURL);
             fileURL = nil;
 #endif
 #endif
-            
-            UIImage *property = [UIImage imageWithContentsOfFile:[fileURL path]];
+            NSData *imageData = [NSData dataWithContentsOfURL:fileURL];
+            UIImage *property = [UIImage imageWithData:imageData scale:scale];
             
             if ( property ) {
                 completionHandler(property);
             } else {
                 
-                NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:iconLocation]];
+                NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:scaledImageURL]];
                 NSURLSession *session = [NSURLSession sharedSession];
                 
                 NSURLSessionDownloadTask *task = [session downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
@@ -140,6 +160,10 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
                         
                         [[NSFileManager defaultManager] removeItemAtURL:newLocation error:nil];
                         [[NSFileManager defaultManager] copyItemAtURL:location toURL:newLocation error:&copyError];
+                        
+#if VTAProductDebug
+                        NSLog(@"Copying from %@\nto %@", location, newLocation );
+#endif
                         
                         if ( !copyError ) {
                             NSData *data = [NSData dataWithContentsOfURL:newLocation];
