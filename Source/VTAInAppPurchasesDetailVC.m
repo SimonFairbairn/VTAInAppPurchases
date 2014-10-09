@@ -40,7 +40,12 @@
     
     self.titleLabel.text = self.product.product.localizedTitle;
     self.priceLabel.text = [self.priceFormatter stringFromNumber:self.product.product.price];
-    self.descriptionField.text = self.product.product.localizedDescription;
+    
+    if ( self.product.longDescription ) {
+        self.descriptionField.text = self.product.longDescription;
+    } else {
+        self.descriptionField.text = self.product.product.localizedDescription;
+    }
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePurchase:) name:VTAInAppPurchasesPurchasesDidCompleteNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDownload:) name:VTAInAppPurchasesProductDownloadStatusDidChangeNotification object:nil];

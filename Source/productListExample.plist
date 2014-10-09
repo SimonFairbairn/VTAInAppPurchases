@@ -17,6 +17,11 @@
 		<true/>
 	</dict>
 	<dict>
+		<key>longDescription</key>
+		<dict>
+			<key>English</key>
+			<string>The long description in English</string>
+		</dict>
 		<key>productIdentifier</key>
 		<string>com.YourCompany.ConsumableProductLike50Coins</string>
 		<key>productIcon</key>

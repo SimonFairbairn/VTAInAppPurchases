@@ -59,6 +59,11 @@ extern NSString * const VTAProductStatusDidChangeNotification;
 @property (nonatomic) float progress;
 
 /**
+ *  An optional longer description if iTunesConnect's 255 bytes is too limiting.
+ */
+@property (nonatomic, strong) NSString *longDescription;
+
+/**
  *  WARNING: You should not initialise this class directly.
  */
 -(instancetype)initWithProductDetailDictionary:(NSDictionary *)dict;

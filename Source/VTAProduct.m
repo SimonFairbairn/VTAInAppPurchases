@@ -18,11 +18,24 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
 
     if ( self = [super init] ) {
         
+        [self objectIsDictionary:dict];
+        
         _consumable = [dict[@"consumable"] boolValue];
         _productIdentifier = dict[@"productIdentifier"];
         _productValue = dict[@"productValue"];
         _storageKey = dict[@"storageKey"];
         _hosted = [dict[@"hosted"] boolValue];
+        NSDictionary *descriptionDictionary = dict[@"longDescription"];
+        
+        [self objectIsDictionary:dict];
+        [self objectIsDictionary:descriptionDictionary];
+        
+        // Currently only supports English
+        _longDescription = descriptionDictionary[@"English"];
+        
+        [self objectIsString:_longDescription];
+        [self objectIsString:_productIdentifier];
+        [self objectIsString:_storageKey];
         
         NSString *localPath = dict[@"localContentPath"];
         if ( localPath && ![localPath isEqualToString:@""]) {
@@ -59,6 +72,22 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
     return self;
 }
 
+-(BOOL)objectIsDictionary:(id)object {
+    if ( object  && ![object isKindOfClass:[NSDictionary class]] ) {
+        [NSException raise:NSInvalidArgumentException format:@"This is not a required NSDictionary object"];
+        return NO;
+    }
+    return YES;
+}
+
+-(BOOL)objectIsString:(id)object {
+    if ( object && ![object isKindOfClass:[NSString class]]) {
+        [NSException raise:NSInvalidArgumentException format:@"This is not a required NSString object"];
+        return NO;
+    }
+    return YES;
+}
+
 -(NSString *)description {
     return [NSString stringWithFormat:@"%@, %@, %@, %i", self.productIdentifier, self.storageKey, self.productValue, self.consumable ];
 }
@@ -76,10 +105,10 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
             
             NSURL *cachesDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] firstObject];
             NSURL *fileURL = [cachesDirectory URLByAppendingPathComponent:[iconLocation lastPathComponent]];
-            
+
 #ifdef DEBUG
 #if VTAProductDebug
-            NSLog(@"%@", fileURL);
+            NSLog(@"File URL: %@", fileURL);
             fileURL = nil;
 #endif
 #endif
@@ -113,7 +142,8 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
                         [[NSFileManager defaultManager] copyItemAtURL:location toURL:newLocation error:&copyError];
                         
                         if ( !copyError ) {
-                            UIImage *loadedImage = [UIImage imageWithContentsOfFile:[newLocation path]];
+                            NSData *data = [NSData dataWithContentsOfURL:newLocation];
+                            UIImage *loadedImage = [UIImage imageWithData:data scale:[[UIScreen mainScreen] scale]];
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 completionHandler(loadedImage);
                             });
