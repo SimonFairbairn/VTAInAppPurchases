@@ -28,12 +28,6 @@
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uVt-ed-gdk" userLabel="Status Label">
-                        <rect key="frame" x="250" y="52" width="49.5" height="20.5"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                     <progressView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="nI2-J3-YrS">
                         <rect key="frame" x="77.5" y="79" width="222.5" height="2"/>
                     </progressView>
@@ -43,10 +37,17 @@
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uVt-ed-gdk" userLabel="Status Label">
+                        <rect key="frame" x="250" y="50.5" width="49.5" height="20.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
                     <constraint firstItem="g3c-GS-N14" firstAttribute="top" secondItem="6DY-hd-No5" secondAttribute="top" id="4Q8-Kg-EdB"/>
                     <constraint firstItem="nI2-J3-YrS" firstAttribute="leading" secondItem="Nxa-Az-Y0g" secondAttribute="leading" id="6aW-J6-r2g"/>
+                    <constraint firstItem="uVt-ed-gdk" firstAttribute="baseline" secondItem="Nxa-Az-Y0g" secondAttribute="baseline" id="88D-nd-vaS"/>
                     <constraint firstItem="nI2-J3-YrS" firstAttribute="leading" secondItem="g3c-GS-N14" secondAttribute="trailing" constant="8" id="8E0-i8-cpK"/>
                     <constraint firstItem="g3c-GS-N14" firstAttribute="leading" secondItem="Qon-p9-qLU" secondAttribute="leading" constant="20" id="9cz-x6-OlN"/>
                     <constraint firstAttribute="trailing" secondItem="uVt-ed-gdk" secondAttribute="trailing" constant="20" id="Dlc-TY-6bs"/>
@@ -54,7 +55,6 @@
                     <constraint firstAttribute="trailing" secondItem="nI2-J3-YrS" secondAttribute="trailing" constant="20" id="QBh-yx-17U"/>
                     <constraint firstAttribute="bottomMargin" secondItem="nI2-J3-YrS" secondAttribute="bottom" id="bZr-s0-Dfl"/>
                     <constraint firstItem="Nxa-Az-Y0g" firstAttribute="top" secondItem="6DY-hd-No5" secondAttribute="bottom" constant="10" id="k5P-q7-DCW"/>
-                    <constraint firstItem="uVt-ed-gdk" firstAttribute="centerY" secondItem="Nxa-Az-Y0g" secondAttribute="centerY" id="lr9-Tf-a3h"/>
                     <constraint firstItem="nI2-J3-YrS" firstAttribute="top" secondItem="Nxa-Az-Y0g" secondAttribute="bottom" constant="10" id="myG-oS-Axp"/>
                     <constraint firstItem="nI2-J3-YrS" firstAttribute="bottom" secondItem="g3c-GS-N14" secondAttribute="bottom" id="wqH-Tr-VB6"/>
                     <constraint firstItem="Nxa-Az-Y0g" firstAttribute="leading" secondItem="6DY-hd-No5" secondAttribute="leading" id="zcA-8V-kJa"/>

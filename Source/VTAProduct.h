@@ -29,6 +29,8 @@ extern NSString * const VTAProductStatusDidChangeNotification;
 @property (nonatomic, readonly) UIImage *productIcon;
 @property (nonatomic, readonly) UIImage *productFeaturedImage;
 
+@property (nonatomic, readonly) NSArray *childProducts;
+
 /**
  *  The full URL to the local content.
  */

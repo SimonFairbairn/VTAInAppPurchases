@@ -27,6 +27,7 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
         _productValue = dict[@"productValue"];
         _storageKey = dict[@"storageKey"];
         _hosted = [dict[@"hosted"] boolValue];
+        _childProducts = dict[@"childProducts"];
         NSDictionary *descriptionDictionary = dict[@"longDescription"];
         
         [self objectIsDictionary:dict];
@@ -34,7 +35,8 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
         
         // Currently only supports English
         _longDescription = descriptionDictionary[@"English"];
-        
+
+        [self objectIsArray:_childProducts];
         [self objectIsString:_longDescription];
         [self objectIsString:_productIdentifier];
         [self objectIsString:_storageKey];
@@ -73,6 +75,15 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
     
     return self;
 }
+
+-(BOOL)objectIsArray:(id)object {
+    if ( object  && ![object isKindOfClass:[NSArray class]] ) {
+        [NSException raise:NSInvalidArgumentException format:@"This is not a required NSArray object"];
+        return NO;
+    }
+    return YES;
+}
+
 
 -(BOOL)objectIsDictionary:(id)object {
     if ( object  && ![object isKindOfClass:[NSDictionary class]] ) {

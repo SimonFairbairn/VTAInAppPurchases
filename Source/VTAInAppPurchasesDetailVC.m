@@ -81,12 +81,8 @@
 }
 
 -(void)resizeDescriptionField {
-    
-    
     [self.descriptionField sizeToFit];
     [self.descriptionField layoutIfNeeded];
-    
-//    self.textviewHeight.constant = [self.descriptionField sizeThatFits:CGSizeMake(self.descriptionField.frame.size.width, CGFLOAT_MAX)].height;
 }
 
 -(void)refresh {

@@ -353,7 +353,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
         
         for ( VTAProduct *product in self.productList ) {
             
-            if ( product.storageKey ) {
+            if ( !product.consumable && product.storageKey ) {
                 [[NSUserDefaults standardUserDefaults] setObject:nil forKey:product.storageKey];
                 [[NSUserDefaults standardUserDefaults] synchronize];
             }
