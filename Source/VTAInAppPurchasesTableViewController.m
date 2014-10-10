@@ -18,6 +18,7 @@
 @interface VTAInAppPurchasesTableViewController ()
 
 @property (nonatomic, readwrite) NSArray *products;
+@property (nonatomic, readwrite) NSArray *purchasedProducts;
 @property (nonatomic, strong) NSMutableArray *loadingProducts;
 
 @end
@@ -101,9 +102,17 @@
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
             [ips addObject:indexPath];
         }
-        
+        for ( int i = 0; i < (int)[self.purchasedProducts count]; i++ ) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:1];
+            [ips addObject:indexPath];
+        }
+        if ( self.defaultPurchasedRow ) {
+            NSIndexPath *ip = [NSIndexPath indexPathForRow:[self.purchasedProducts count] inSection:1];
+            [ips addObject:ip];
+        }
         // Set the model object to nil
         self.products = nil;
+        self.purchasedProducts = nil;
 
         // If there's a sender, then it means it's been activated by the user, so animate nicely
         if ( sender ) {
@@ -122,11 +131,23 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     // Return the number of sections.
-    return 1;
+    return (self.separatePurchased) ? 2 : 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
+    
+    if ( section == 0 ) {
+        return [self.products count];
+    } else {
+        NSInteger count = [self.purchasedProducts count];
+        if ( self.defaultPurchasedRow ) {
+            count++;
+        }
+        
+        return count;
+    }
+    
     return [self.products count]; 
 }
 
@@ -135,11 +156,26 @@
     
     VTAInAppPurchasesTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:VTAInAppPurchasesTableViewCellIdentifier  forIndexPath:indexPath];
     
-    VTAProduct *product = [self.products objectAtIndex:indexPath.row];
-    
+    VTAProduct *product;
+    if ( indexPath.section == 1 ) {
+        NSInteger index = indexPath.row;
+        if ( self.defaultPurchasedRow ) {
+            if ( indexPath.row == 0 ) {
+                cell.titleLabel.text = self.defaultPurchasedRow;
+                cell.hideProgressBar = YES;
+                cell.priceLabel.hidden = YES;
+                return cell;
+            } else {
+                index--;
+            }
+        }
+        product = [self.purchasedProducts objectAtIndex:index];
+    } else {
+        product = [self.products objectAtIndex:indexPath.row];
+    }
+
     [self.formatter setLocale:product.product.priceLocale];
-    
-    
+        
     if ( product.purchaseInProgress && product.hosted ) {
         cell.hideProgressBar = NO;
         cell.progressView.progress = product.progress;
@@ -151,14 +187,14 @@
     cell.titleLabel.text = product.product.localizedTitle;
     cell.priceLabel.text = [self.formatter stringFromNumber:product.product.price];
 
-        
-    if ( !product.consumable && product.purchased ) {
+    if ( !indexPath.section == 1 && !product.consumable && product.purchased ) {
         cell.statusLabel.hidden = NO;
         cell.statusLabel.text = @"Purchased";
     } else {
         cell.statusLabel.hidden = YES;
     }
     
+    cell.accessoryType = UITableViewCellAccessoryNone;
     [cell addThumbnailImage:product.productIcon animated:NO];
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
@@ -170,6 +206,13 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     //    [self performSegueWithIdentifier:@"pushDetail" sender:self];
+}
+
+-(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if ( section == 1 ) {
+        return @"Purchased";
+    }
+    return nil;
 }
 
 #pragma mark - Notifications
@@ -201,18 +244,26 @@
     } else {
         
         NSMutableArray *array = [NSMutableArray new];
-        
+        NSMutableArray *purchasedProducts = [NSMutableArray new];
         for ( VTAProduct *product in [VTAInAppPurchases sharedInstance].productList ) {
-            
+ 
             switch (self.productType) {
                 case VTAInAppPurchasesTableViewControllerProductTypeAll: {
-                    [array addObject:product];
+                    if ( self.separatePurchased && product.purchased ) {
+                        [purchasedProducts addObject:product];
+                    } else {
+                        [array addObject:product];
+                    }
                     break;
                     
                 }
                 case VTAInAppPurchasesTableViewControllerProductTypeConsumables: {
                     if ( product.consumable ) {
-                        [array addObject:product];
+                        if ( self.separatePurchased && product.purchased ) {
+                            [purchasedProducts addObject:product];
+                        } else {
+                            [array addObject:product];
+                        }
                     }
 
                     break;
@@ -220,7 +271,11 @@
                 }
                 case VTAInAppPurchasesTableViewControllerProductTypeNonConsumables: {
                     if ( !product.consumable ) {
-                        [array addObject:product];
+                        if ( self.separatePurchased && product.purchased ) {
+                            [purchasedProducts addObject:product];
+                        } else {
+                            [array addObject:product];
+                        }
                     }
                     
                     break;
@@ -235,11 +290,12 @@
         for ( NSString *productToIgnore in self.productsToIgnore ) {
             VTAProduct *vtaProductToIgnore = [[VTAInAppPurchases sharedInstance] vtaProductForIdentifier:productToIgnore];
             [array removeObject:vtaProductToIgnore];
+            [purchasedProducts removeObject:vtaProductToIgnore];
         }
                 
         self.products = array;
+        self.purchasedProducts = purchasedProducts;
     }
-    
     
     [self.tableView reloadData];
     [self.refreshControl endRefreshing];

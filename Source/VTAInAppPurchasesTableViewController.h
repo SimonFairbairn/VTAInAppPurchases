@@ -29,9 +29,25 @@ typedef NS_ENUM(NSUInteger, VTAInAppPurchasesTableViewControllerProductType) {
 @property (nonatomic, readonly) NSArray *products;
 
 /**
+ *  A read-only list of the currently available products
+ */
+@property (nonatomic, readonly) NSArray *purchasedProducts;
+
+/**
  *  An array of product identifiers that should be ignored when constructing the product list
  */
 @property (nonatomic, copy) NSArray *productsToIgnore;
+
+/**
+ *  Set this to YES to have the view controller ignore any non-consumables that have already been purchased
+ */
+@property (nonatomic) BOOL separatePurchased;
+
+/**
+ *  Set this to have the first row of the purchased section be a default value, for when
+ *  you want to always have a row in the purchased section.
+ */
+@property (nonatomic, strong) NSString *defaultPurchasedRow;
 
 /**
  *  The type of products should be shown by the table view controller (All, Consumables, Non-consumables)
