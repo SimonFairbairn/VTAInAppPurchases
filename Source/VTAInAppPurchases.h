@@ -67,10 +67,6 @@ extern NSString * const VTAInAppPurchasesReceiptValidationDidFailNotification;
 extern NSString * const VTAInAppPurchasesProductsAffectedUserInfoKey;
 extern NSString * const VTAInAppPurchasesNotificationErrorUserInfoKey;
 
-/**
- *  The key for NSUserDefaults that lists all non-consumable purchase identifiers. 
- */
-extern NSString * const VTAInAppPurchasesList;
 
 @class VTAProduct;
 
@@ -148,7 +144,7 @@ extern NSString * const VTAInAppPurchasesList;
  *
  *  @param product The product to unlock
  */
--(void)unlockNonConsumableProduct:(VTAProduct *)product;
+-(void)unlockNonConsumableProduct:(VTAProduct *)product withProductTitle:(NSString *)title;
 
 /**
  *  Returns the product for the given identifier, or nil if not found

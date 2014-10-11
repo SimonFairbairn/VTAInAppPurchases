@@ -25,10 +25,8 @@ extern NSString * const VTAProductStatusDidChangeNotification;
 @property (nonatomic, readonly, getter = isConsumable) BOOL consumable;
 @property (nonatomic, readonly) NSString *storageKey;
 @property (nonatomic, readonly) NSNumber *productValue;
-
 @property (nonatomic, readonly) UIImage *productIcon;
 @property (nonatomic, readonly) UIImage *productFeaturedImage;
-
 @property (nonatomic, readonly) NSArray *childProducts;
 
 /**
@@ -52,7 +50,7 @@ extern NSString * const VTAProductStatusDidChangeNotification;
 @property (nonatomic) BOOL purchased;
 
 /**
- *  Set to YES if the content is hosted with Apple
+ *  This will be set to YES if the content is hosted with Apple
  */
 @property (nonatomic) BOOL hosted;
 
@@ -60,6 +58,13 @@ extern NSString * const VTAProductStatusDidChangeNotification;
  *  The download progress, a float between 0 and 1.
  */
 @property (nonatomic) float progress;
+
+/**
+ *  If a product has been purchased, then this will be the localized name of the product.
+ *  The localizedTitle property on the SKProduct property is preferred,
+ *  but this can be used where no network connection is available.
+ */
+@property (nonatomic, strong) NSString *productTitle;
 
 /**
  *  An optional longer description if iTunesConnect's 255 bytes is too limiting.

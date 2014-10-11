@@ -19,7 +19,8 @@ typedef NS_ENUM(NSUInteger, VTAInAppPurchasesTableViewControllerProductType) {
 @interface VTAInAppPurchasesTableViewController : UITableViewController 
 
 /**
- *  A configurable number formatter for displaying product prices.
+ *  A configurable number formatter for displaying product prices. Defaults to standard currency, and 
+ *  configures the locale to the locale of the priceLocale property of SKProduct
  */
 @property (nonatomic, strong) NSNumberFormatter *formatter;
 
@@ -44,10 +45,10 @@ typedef NS_ENUM(NSUInteger, VTAInAppPurchasesTableViewControllerProductType) {
 @property (nonatomic) BOOL separatePurchased;
 
 /**
- *  Set this to have the first row of the purchased section be a default value, for when
- *  you want to always have a row in the purchased section.
+ *  Set this to have the first row of the purchased section be a non-IAP default value, for when
+ *  you want to always have a row in the purchased section even when everything else is unpurchased.
  */
-@property (nonatomic, strong) NSString *defaultPurchasedRow;
+@property (nonatomic, copy) NSString *defaultPurchasedRow;
 
 /**
  *  The type of products should be shown by the table view controller (All, Consumables, Non-consumables)

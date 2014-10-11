@@ -33,6 +33,7 @@ Valid plist keys are (currently not enforced, but may be in future):
 	productIcon				(optional) A local or remote URL of the product's icon image
 	featuredImage			(optional) A local or remote URL pointing to a large product image
 	hosted					(optional) A BOOL indicating whether the additional content is hosted by Apple or is contained within the bundle.
+    childProducts           (optional) An array of non-consumable product identifiers that will be automatically unlocked when this one is. Good for multipacks or "buy all" IAPs.
 
 4) In your app delegate (or wherever you want to start loading products), call `[[YOURAPPInAppPurchases sharedInstance] loadProducts];` on the shared instance. 
 

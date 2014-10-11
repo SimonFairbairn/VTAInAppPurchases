@@ -30,12 +30,13 @@ NSString * const VTAInAppPurchasesReceiptValidationDidFailNotification = @"VTAIn
 NSString * const VTAInAppPurchasesNotificationErrorUserInfoKey = @"VTAInAppPurchasesNotificationErrorUserInfoKey";
 NSString * const VTAInAppPurchasesProductsAffectedUserInfoKey = @"VTAInAppPurchasesProductsAffectedUserInfoKey";
 
-NSString * const VTAInAppPurchasesList = @"purchases.plist";
+static NSString * const VTAInAppPurchasesList = @"purchases.plist";
 
 static NSString * const VTAInAppPurchasesCacheRequestKey = @"VTAInAppPurchasesCacheRequestKey";
 
 static NSString * const VTAInAppPurchasesListProductNameKey = @"VTAInAppPurchasesListProductNameKey";
 static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurchasesListProductLocationKey";
+static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchasesListProductTitleKey";
 
 @interface VTAInAppPurchases () <SKProductsRequestDelegate, SKRequestDelegate, SKPaymentTransactionObserver, NSURLSessionDelegate, NSURLSessionTaskDelegate>
 
@@ -48,6 +49,8 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 @property (nonatomic, strong) NSMutableArray *instantUnlockProducts;
 
 @property (nonatomic, readwrite) NSArray *productList;
+
+@property (nonatomic, strong) NSMutableDictionary *titleList;
 
 @end
 
@@ -78,6 +81,13 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
         _instantUnlockProducts = [NSMutableArray array];
     }
     return _instantUnlockProducts;
+}
+
+-(NSMutableDictionary *) titleList {
+    if ( !_titleList ) {
+        _titleList = [NSMutableDictionary new];
+    }
+    return _titleList;
 }
 
 #pragma mark - Initialisation
@@ -319,7 +329,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
 #if VTAInAppPurchasesDebug
     NSLog(@"%s ", __PRETTY_FUNCTION__);
     NSLog(@"Should use defaults: %i", useDefaults);
-    NSLog(@"Receipt validation status %i", _receiptValidationFailed);
+    NSLog(@"Receipt validation failed: %i", _receiptValidationFailed);
 #endif
     
     // 1. Go through the list of purchased products and set the purchased property
@@ -332,21 +342,46 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     // if a product has previously been purchased.
     // If it has, we'll set the purchased property on VTAProduct to YES.
     
-    NSArray *arrayOfPurchases = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesList];
+    NSDictionary *arrayOfPurchases = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesList];
     if ( useDefaults || _receiptValidationFailed ) {
         
         // self validateProducts
         
         for ( VTAProduct *product in self.productList ) {
-            for ( NSDictionary *productInfo in arrayOfPurchases ) {
-                if ( [product.productIdentifier isEqualToString:productInfo[VTAInAppPurchasesListProductNameKey]] ) {
-                    product.purchased = YES;
+            // If there's an entry for this product identifier
+            NSDictionary *productInfo = [arrayOfPurchases objectForKey:product.productIdentifier];
+            if ( productInfo ) {
+                product.purchased = YES;
+                product.productTitle = productInfo[VTAInAppPurchasesListProductTitleKey];
+                if ( [product.childProducts count] > 0 ) {
+                    // If there are children
+                    for ( NSString *productID in product.childProducts ) {
+                        // Grab a copy of the child product
+                        VTAProduct *childProduct = [self vtaProductForIdentifier:productID];
+                        // Look to see if there's an entry in the local NSUserDefaults dictionary
+                        NSDictionary *childProductInfo = [arrayOfPurchases objectForKey:product.productIdentifier];
+                        childProduct.purchased = YES;
+                        // Check to see if the title has been set
+                        if ( childProductInfo[VTAInAppPurchasesListProductTitleKey] ) {
+                            childProduct.productTitle = childProductInfo[VTAInAppPurchasesListProductTitleKey];
+                        } else {
+                            childProduct.productTitle = productID;
+                        }
+
+                    }
                 }
             }
         }
         
         // end validations
     } else {
+        
+        NSDictionary *currentProducts = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesList];
+        
+        for ( NSString *key in currentProducts ) {
+            NSDictionary *productDict = [currentProducts objectForKey:key];
+            [self.titleList setObject:productDict[VTAInAppPurchasesListProductTitleKey] forKey:key];
+        }
         
         [[NSUserDefaults standardUserDefaults] setObject:nil forKey:VTAInAppPurchasesList];
         [[NSUserDefaults standardUserDefaults] synchronize];
@@ -359,22 +394,32 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
             }
             
             for ( NSString *identifier in self.validator.arrayOfPurchasedIAPs ) {
-                if ( [product.productIdentifier isEqualToString:identifier] ) {
-                    product.purchased = YES;
-                    [self addProductToUnlockList:product];
-                }
+                [self checkIdentifier:identifier forProduct:product];
             }
             
             for ( NSString *identifier in self.instantUnlockProducts ) {
-                if ( [product.productIdentifier isEqualToString:identifier] ) {
-                    product.purchased = YES;
-                    [self addProductToUnlockList:product];
-                }
+                [self checkIdentifier:identifier forProduct:product];
             }
         }
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesProductListDidUpdateNotification object:self];
+}
+
+-(void)checkIdentifier:(NSString *)identifier forProduct:(VTAProduct *)product {
+    if ( [product.productIdentifier isEqualToString:identifier] ) {
+        product.purchased = YES;
+        product.productTitle = ( product.product.localizedTitle ) ? product.product.localizedTitle : product.productIdentifier;
+        [self addProductToUnlockList:product];
+        
+        // Recurse through child products
+        if ( [product.childProducts count] > 0 ) {
+            for ( NSString *childIdentifier in product.childProducts ) {
+                VTAProduct *childProduct = [self vtaProductForIdentifier:childIdentifier];
+                [self checkIdentifier:childIdentifier forProduct:childProduct];
+            }
+        }
+    }
 }
 
 -(VTAProduct *)vtaProductForIdentifier:(NSString *)identifier {
@@ -451,7 +496,7 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     product.purchaseInProgress = NO;
     
     if ( !product.consumable ) {
-        [self unlockNonConsumableProduct:product];
+        [self unlockNonConsumableProduct:product withProductTitle:product.product.localizedTitle];
     } else {
         [self addProductValue:product];
     }
@@ -460,13 +505,14 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesPurchasesDidCompleteNotification object:self userInfo:userInfo];
 }
 
--(void)unlockNonConsumableProduct:(VTAProduct *)product {
+-(void)unlockNonConsumableProduct:(VTAProduct *)product withProductTitle:(NSString *)title {
     if ( !product ) {
         return;
     }
     [self addProductToUnlockList:product];
     [self.instantUnlockProducts addObject:product.productIdentifier];
     product.purchased = YES;
+    product.productTitle = (title) ? title : product.productIdentifier;
 }
 
 -(void)addProductValue:(VTAProduct *)product {
@@ -485,19 +531,31 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     if ( product.storageKey ) {
         [self addProductValue:product];
     }
-    NSArray *purchasedObjects = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesList];
+    NSMutableDictionary *purchasedObjects = [[[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesList] mutableCopy];
     
     if ( !purchasedObjects ) {
-        purchasedObjects = [NSArray new];
+        purchasedObjects = [NSMutableDictionary new];
     }
     
     NSMutableDictionary *dictionary = [NSMutableDictionary new];
     [dictionary setObject:product.productIdentifier forKey:VTAInAppPurchasesListProductNameKey];
     
-    NSArray *updatedPurchasedObjects = [purchasedObjects arrayByAddingObject:dictionary];
-    [[NSUserDefaults standardUserDefaults] setObject:updatedPurchasedObjects forKey:VTAInAppPurchasesList];
+    if ( product.product ) {
+        [dictionary setObject:product.product.localizedTitle forKey:VTAInAppPurchasesListProductTitleKey];
+    } else {
+        if ( self.titleList[product.productIdentifier] ) {
+            [dictionary setObject:self.titleList[product.productIdentifier] forKey:VTAInAppPurchasesListProductTitleKey];
+        } else {
+            [dictionary setObject:product.productIdentifier forKey:VTAInAppPurchasesListProductTitleKey];
+        }
+    }
+
+    
+    [purchasedObjects setObject:dictionary forKey:product.productIdentifier];
+    [[NSUserDefaults standardUserDefaults] setObject:purchasedObjects forKey:VTAInAppPurchasesList];
 }
 
+#pragma mark -
 #pragma mark - SKProductsRequestDelegate
 
 -(void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
@@ -521,6 +579,19 @@ static NSString * const VTAInAppPurchasesListProductLocationKey = @"VTAInAppPurc
     for ( SKProduct *product in response.products ) {
         VTAProduct *vtaProduct = [self.productLookupDictionary objectForKey:product.productIdentifier];
         vtaProduct.product = product;
+        
+        if ( vtaProduct.purchased ) {
+            vtaProduct.productTitle = product.localizedTitle;
+            NSMutableDictionary *dictionary = [[[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesList] mutableCopy];
+            if ( dictionary[vtaProduct.productIdentifier] ) {
+                NSMutableDictionary *productDict = [dictionary[vtaProduct.productIdentifier] mutableCopy];
+                productDict[VTAInAppPurchasesListProductTitleKey] = vtaProduct.productTitle;
+                [dictionary setObject:productDict forKey:vtaProduct.productIdentifier];
+                [[NSUserDefaults standardUserDefaults] setObject:dictionary forKey:VTAInAppPurchasesList];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+            }
+
+        }
     }
     
     self.productList = [newProductList copy];

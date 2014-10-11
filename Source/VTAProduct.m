@@ -9,7 +9,7 @@
 #import "VTAProduct.h"
 
 #ifdef DEBUG
-#define VTAProductDebug 1
+#define VTAProductDebug 0
 #endif
 
 NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidChangeNotification";
@@ -102,7 +102,7 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
 }
 
 -(NSString *)description {
-    return [NSString stringWithFormat:@"%@, %@, %@, %i", self.productIdentifier, self.storageKey, self.productValue, self.consumable ];
+    return [NSString stringWithFormat:@"%@\n    Storage key: %@\n    Product Value: %@\n    Consumable: %i\n    Purchased: %i", self.productIdentifier, self.storageKey, self.productValue, self.consumable, self.purchased];
 }
 
 -(void)loadImageAtLocation:(id)location withCompletionHandler:(void (^)(UIImage *image))completionHandler {

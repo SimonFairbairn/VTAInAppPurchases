@@ -102,14 +102,14 @@
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
             [ips addObject:indexPath];
         }
-        for ( int i = 0; i < (int)[self.purchasedProducts count]; i++ ) {
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:1];
-            [ips addObject:indexPath];
+        if ( self.separatePurchased ) {
+            for ( int i = 0; i < (int)[self.purchasedProducts count]; i++ ) {
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:1];
+                [ips addObject:indexPath];
+            }
+            
         }
-        if ( self.defaultPurchasedRow ) {
-            NSIndexPath *ip = [NSIndexPath indexPathForRow:[self.purchasedProducts count] inSection:1];
-            [ips addObject:ip];
-        }
+        
         // Set the model object to nil
         self.products = nil;
         self.purchasedProducts = nil;
@@ -184,7 +184,7 @@
     }
     
     cell.nonConsumable = product.consumable;
-    cell.titleLabel.text = product.product.localizedTitle;
+    cell.titleLabel.text = (product.product.localizedTitle) ? product.product.localizedTitle : product.productTitle;
     cell.priceLabel.text = [self.formatter stringFromNumber:product.product.price];
 
     if ( !indexPath.section == 1 && !product.consumable && product.purchased ) {
@@ -193,8 +193,7 @@
     } else {
         cell.statusLabel.hidden = YES;
     }
-    
-    cell.accessoryType = UITableViewCellAccessoryNone;
+
     [cell addThumbnailImage:product.productIcon animated:NO];
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
@@ -233,24 +232,28 @@
  */
 -(void)displayProducts:(NSNotification *)note {
     
+    [self listPurchasedProducts];    
+    
     if ( [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey] ) {
         
         NSError *error = [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey];
         
 #ifdef DEBUG
-        NSLog(@"%@", error.localizedDescription);
+        NSLog(@"Couldn't display products: %@", error.localizedDescription);
 #endif
+        // List purchased non-consumables
+        
         
     } else {
         
         NSMutableArray *array = [NSMutableArray new];
-        NSMutableArray *purchasedProducts = [NSMutableArray new];
+
         for ( VTAProduct *product in [VTAInAppPurchases sharedInstance].productList ) {
  
             switch (self.productType) {
                 case VTAInAppPurchasesTableViewControllerProductTypeAll: {
                     if ( self.separatePurchased && product.purchased ) {
-                        [purchasedProducts addObject:product];
+
                     } else {
                         [array addObject:product];
                     }
@@ -260,7 +263,7 @@
                 case VTAInAppPurchasesTableViewControllerProductTypeConsumables: {
                     if ( product.consumable ) {
                         if ( self.separatePurchased && product.purchased ) {
-                            [purchasedProducts addObject:product];
+
                         } else {
                             [array addObject:product];
                         }
@@ -272,7 +275,7 @@
                 case VTAInAppPurchasesTableViewControllerProductTypeNonConsumables: {
                     if ( !product.consumable ) {
                         if ( self.separatePurchased && product.purchased ) {
-                            [purchasedProducts addObject:product];
+
                         } else {
                             [array addObject:product];
                         }
@@ -290,15 +293,58 @@
         for ( NSString *productToIgnore in self.productsToIgnore ) {
             VTAProduct *vtaProductToIgnore = [[VTAInAppPurchases sharedInstance] vtaProductForIdentifier:productToIgnore];
             [array removeObject:vtaProductToIgnore];
-            [purchasedProducts removeObject:vtaProductToIgnore];
         }
                 
         self.products = array;
-        self.purchasedProducts = purchasedProducts;
     }
     
     [self.tableView reloadData];
     [self.refreshControl endRefreshing];
+}
+
+-(void)listPurchasedProducts {
+    NSMutableArray *purchasedProducts = [NSMutableArray new];
+    
+    for ( VTAProduct *product in [VTAInAppPurchases sharedInstance].productList ) {
+        
+        switch (self.productType) {
+            case VTAInAppPurchasesTableViewControllerProductTypeAll: {
+                if ( product.purchased ) {
+                    [purchasedProducts addObject:product];
+                }
+                break;
+                
+            }
+            case VTAInAppPurchasesTableViewControllerProductTypeConsumables: {
+                if ( product.consumable ) {
+                    if ( product.purchased ) {
+                        [purchasedProducts addObject:product];
+                    }
+                }
+                
+                break;
+                
+            }
+            case VTAInAppPurchasesTableViewControllerProductTypeNonConsumables: {
+                if ( !product.consumable ) {
+                    if ( product.purchased ) {
+                        [purchasedProducts addObject:product];
+                    }
+                }
+                
+                break;
+                
+            }
+            default:
+                break;
+        }
+    }
+    
+    for ( NSString *productToIgnore in self.productsToIgnore ) {
+        VTAProduct *vtaProductToIgnore = [[VTAInAppPurchases sharedInstance] vtaProductForIdentifier:productToIgnore];
+        [purchasedProducts removeObject:vtaProductToIgnore];
+    }
+    self.purchasedProducts = purchasedProducts;
 }
 
 -(void)updateProduct:(NSNotification *)note {
