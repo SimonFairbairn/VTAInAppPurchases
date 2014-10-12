@@ -103,10 +103,15 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 
 #pragma mark - Methods
 
+/**
+ *  Validates the receipt using the receipt validator.
+ */
 -(void)validateReceipt {
+    
     if ( ![self.validator validateReceipt] ) {
         [self failValidation];
     } else {
+
 #if VTAInAppPurchasesDebug
         NSLog(@"Receipt is valid.");
 #endif
@@ -116,6 +121,9 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     }
 }
 
+/**
+ *  If validation fails, we will only attempt to refresh it once.
+ */
 -(void)failValidation {
     
 #if VTAInAppPurchasesDebug
@@ -150,7 +158,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 }
 
 /**
- *  STEP 1: Load the products from the plist file. Mark the productsLoading status as loading
+ *  STEP 1: Load the products from the plist file. Mark the productsLoading status as loading.
+ *  We'll cache the plist file for one day then merge the latest with the existing cache.
+ *
+ *  The keys we'll be adding to the plist will be a localized name and a purchased bool.
  */
 -(BOOL)loadProducts {
     
@@ -161,6 +172,8 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     if ( !self.remoteURL && !self.localURL ) return NO;
     
     _productsLoading = VTAInAppPurchaseStatusProductsLoading;
+    
+// TODO: Have both the remote and local URLs load from cache, not just remote. Lazily instantiate a property that reads from file
     
     if ( self.remoteURL ) {
         
@@ -186,8 +199,8 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
             
             NSURLSession *fetchSession = [NSURLSession sharedSession];
             NSURLSessionDataTask *fetchRemotePlistTask = [fetchSession dataTaskWithRequest:[NSURLRequest requestWithURL:self.remoteURL] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+
                 NSError *readingError;
-                
                 NSArray *products = cachedData;
                 
                 if ( error ) {
@@ -239,6 +252,8 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         
     } else if ( self.localURL ) {
         
+// TODO: Copy the local plist to a cached version that we can write to
+        
         NSArray *plist = [NSArray arrayWithContentsOfURL:self.localURL];
 
 #if VTAInAppPurchasesPListError
@@ -263,9 +278,14 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 #endif
     
     if ( !propertyList ) {
+        
+// TODO: NSInvalidArgumentException
+        
         NSError *error = [NSError errorWithDomain:@"com.voyagetravelapps.VTAInAppPurchases" code:1 userInfo:@{NSLocalizedDescriptionKey : @"Property list was nil"}];
+        
         [self productLoadingDidFinishWithError:error];
         _productsLoading = VTAInAppPurchaseStatusProductListLoadFailed;
+        
     } else {
         
         NSMutableArray *array = [NSMutableArray array];

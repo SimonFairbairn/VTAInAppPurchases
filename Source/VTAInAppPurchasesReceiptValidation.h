@@ -14,7 +14,12 @@
 @property (nonatomic, readonly) NSMutableArray *arrayOfPurchasedIAPs;
 
 /**
- *  The version number of the app when it was first purchased
+ *  Indicates whether the last validation of the receipt was successful or not
+ */
+@property (nonatomic, getter=isValid) BOOL valid;
+
+/**
+ *  The version number of the app when it was first purchased.
  */
 @property (nonatomic, readonly) NSString *originalPurchasedVersion;
 

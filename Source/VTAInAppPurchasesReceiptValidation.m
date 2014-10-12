@@ -95,6 +95,7 @@
 #if VTAInAppPurchasesReceiptValidationDebug
         NSLog(@"No receipt.");
 #endif
+        _valid = NO;
         return NO;
     }
     
@@ -137,6 +138,7 @@
         ASN1_get_object(&p, &length, &type, &xclass, end - p);
         
         if ( type != V_ASN1_SET ) {
+            _valid = NO;
             return NO;
         }
         
@@ -283,9 +285,10 @@
 #endif
             
         }
-        
+        _valid = YES;
         return YES;
-    }    
+    }
+    _valid = NO;
     return NO;
 }
 
