@@ -28,6 +28,8 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
         _storageKey = dict[@"storageKey"];
         _hosted = [dict[@"hosted"] boolValue];
         _childProducts = dict[@"childProducts"];
+        _productTitle = dict[@"productTitle"];
+        _purchased = [dict[@"purchased"] boolValue];
         NSDictionary *descriptionDictionary = dict[@"longDescription"];
         
         [self objectIsDictionary:dict];
@@ -40,6 +42,7 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
         [self objectIsString:_longDescription];
         [self objectIsString:_productIdentifier];
         [self objectIsString:_storageKey];
+        [self objectIsString:_productTitle];
         
         NSString *localPath = dict[@"localContentPath"];
         if ( localPath && ![localPath isEqualToString:@""]) {

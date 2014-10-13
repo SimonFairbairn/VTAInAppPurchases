@@ -116,14 +116,14 @@ extern NSString * const VTAInAppPurchasesNotificationErrorUserInfoKey;
  *  Validates the receipt. This method will request a new receipt if validation
  *  fails or a receipt is not found.
  */
--(void)validateReceipt;
+-(void)validateReceiptWithCompletionHandler:(void (^)(BOOL receiptIsValid))completion;
 
 /**
  *  Load the products from one of the provided URLs, then start up the SKPaymentQueue
  *
  *  @return BOOL Returns YES if a valid local URL or any remote URL was provided
  */
--(BOOL)loadProducts;
+-(void)loadProducts;
 
 /**
  *  Initialises the purches of a product
