@@ -122,8 +122,13 @@
             [self.tableView reloadData];
         }
 
-        // Call the IAP singleton to reload the products
-        [[VTAInAppPurchases sharedInstance] loadProducts];
+        if ( [VTAInAppPurchases sharedInstance].productsLoading != VTAInAppPurchaseStatusProductsLoaded ) {
+            // Call the IAP singleton to reload the products
+            [[VTAInAppPurchases sharedInstance] loadProducts];
+        } else {
+            [self displayProducts:nil];
+        }
+        
     }
 }
 
