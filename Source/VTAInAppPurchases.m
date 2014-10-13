@@ -14,9 +14,8 @@
 
 #ifdef DEBUG
 #define VTAInAppPurchasesDebug 1
-#define VTAInAppPurchasesPListError 1
+#define VTAInAppPurchasesPListError 0
 #define VTAInAppPurchasesCacheError 0
-#define VTAInAppPurchasesProductLoadError 0
 #define VTAInAppPurchasesForceInvalidReceipt 0
 #endif
 
@@ -553,6 +552,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     product.purchased = YES;
     product.productTitle = (title) ? title : product.productIdentifier;
     [self updateCache];
+    
+    NSDictionary *userInfo = @{VTAInAppPurchasesProductsAffectedUserInfoKey : product};
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:VTAProductStatusDidChangeNotification object:self userInfo:userInfo];
 }
 
 -(void)addConsumableProductValue:(VTAProduct *)product {

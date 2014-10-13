@@ -114,15 +114,17 @@
         self.products = nil;
         self.purchasedProducts = nil;
 
+        BOOL forceReload = NO;
         // If there's a sender, then it means it's been activated by the user, so animate nicely
         if ( sender ) {
+            forceReload = YES;
             [self.tableView deleteRowsAtIndexPaths:ips withRowAnimation:UITableViewRowAnimationAutomatic];
         } else {
             // Otherwise, straight reload
             [self.tableView reloadData];
         }
 
-        if ( [VTAInAppPurchases sharedInstance].productsLoading != VTAInAppPurchaseStatusProductsLoaded ) {
+        if ( forceReload || [VTAInAppPurchases sharedInstance].productsLoading != VTAInAppPurchaseStatusProductsLoaded ) {
             // Call the IAP singleton to reload the products
             [[VTAInAppPurchases sharedInstance] loadProducts];
         } else {
@@ -348,7 +350,18 @@
 }
 
 -(void)updateProduct:(NSNotification *)note {
-    
+    VTAProduct *product = note.userInfo[VTAInAppPurchasesProductsAffectedUserInfoKey];
+    if ( product ) {
+        NSUInteger index = [self.products indexOfObject:product];
+        if ( index != NSNotFound ) {
+            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+        } else {
+            index = [self.purchasedProducts indexOfObject:product];
+            if ( index != NSNotFound ) {
+                [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
+            }
+        }
+    }
 }
 
 -(void)productDownloadChanged:(NSNotification *)note {
@@ -357,8 +370,6 @@
     if ( product ) {
         NSUInteger row = [self.products indexOfObject:product];
         NSIndexPath *ip = [NSIndexPath indexPathForRow:row inSection:0];
-        
-        
         if ( [self.loadingProducts containsObject:product] ) {
             VTAInAppPurchasesTableViewCell *cell = (VTAInAppPurchasesTableViewCell *)[self.tableView cellForRowAtIndexPath:ip];
             
@@ -372,9 +383,6 @@
             [self.tableView reloadRowsAtIndexPaths:@[ip] withRowAnimation:UITableViewRowAnimationFade];
             [self.loadingProducts addObject:product];
         }
-        
-        
-
     }
 }
 
