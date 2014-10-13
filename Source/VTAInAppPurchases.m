@@ -16,6 +16,7 @@
 #define VTAInAppPurchasesDebug 1
 #define VTAInAppPurchasesPListError 1
 #define VTAInAppPurchasesCacheError 0
+#define VTAInAppPurchasesProductLoadError 0
 #define VTAInAppPurchasesForceInvalidReceipt 0
 #endif
 
@@ -333,7 +334,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 -(void)attemptRecoveryWithCacheAfterPlistError:(NSError *)error {
 
 #if VTAInAppPurchasesDebug
-    NSLog(@"%s ", __PRETTY_FUNCTION__);
+    NSLog(@"%s\n%@", __PRETTY_FUNCTION__, error.localizedDescription);
 #endif
     
     NSArray *cacheFile = self.cachedPlistFile;
@@ -424,6 +425,11 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         NSTimeInterval interval = [NSDate timeIntervalSinceReferenceDate];
         [[NSUserDefaults standardUserDefaults] setObject:@(interval) forKey:VTAInAppPurchasesCacheRequestKey];
         self.cachedPlistFile = nil;
+        
+#if VTAInAppPurchasesDebug
+        NSLog(@"Cache write success.");
+#endif
+        
         return YES;
     } else {
 #if VTAInAppPurchasesDebug
@@ -683,8 +689,6 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     if ( _receiptValidationFailed && _receiptRefreshFailed ) {
         _receiptRefreshFailed = NO;
         _receiptValidationFailed = NO;
-//        [self validateReceipt];
-//        [self validateProducts];
     }
     
     [self productLoadingDidFinishWithError:nil];
@@ -727,7 +731,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         NSLog(@"Receipt refresh failed");
 #endif
         _receiptRefreshFailed = YES;
-        [self validateProducts];
+        self.completion(NO);
     } else {
         [self productLoadingDidFinishWithError:error];
     }

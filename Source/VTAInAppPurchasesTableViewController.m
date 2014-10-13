@@ -175,24 +175,19 @@
     }
 
     [self.formatter setLocale:product.product.priceLocale];
-        
+    
+    cell.statusLabel.text = nil;
     if ( product.purchaseInProgress && product.hosted ) {
         cell.hideProgressBar = NO;
         cell.progressView.progress = product.progress;
+        cell.statusLabel.text = @"Downloading";
     } else if ( !product.purchaseInProgress ) {
         cell.hideProgressBar = YES;
     }
     
     cell.nonConsumable = product.consumable;
     cell.titleLabel.text = (product.product.localizedTitle) ? product.product.localizedTitle : product.productTitle;
-    cell.priceLabel.text = [self.formatter stringFromNumber:product.product.price];
-
-    if ( !indexPath.section == 1 && !product.consumable && product.purchased ) {
-        cell.statusLabel.hidden = NO;
-        cell.statusLabel.text = @"Purchased";
-    } else {
-        cell.statusLabel.hidden = YES;
-    }
+    cell.priceLabel.text = (!product.consumable && product.purchased) ? @"Purchased" : [self.formatter stringFromNumber:product.product.price];
 
     [cell addThumbnailImage:product.productIcon animated:NO];
     [cell setNeedsUpdateConstraints];
