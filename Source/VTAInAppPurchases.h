@@ -62,7 +62,7 @@ extern NSString * const VTAInAppPurchasesReceiptDidValidateNotification;
 extern NSString * const VTAInAppPurchasesReceiptValidationDidFailNotification;
 
 /**
- *  The keys for the UserInfo dictionary contained in some of the above notifications
+ *  The keys for the UserInfo dictionary contained in some of the above notifications.
  */
 extern NSString * const VTAInAppPurchasesProductsAffectedUserInfoKey;
 extern NSString * const VTAInAppPurchasesNotificationErrorUserInfoKey;
@@ -144,7 +144,7 @@ extern NSString * const VTAInAppPurchasesNotificationErrorUserInfoKey;
  *
  *  @param product The product to unlock
  */
--(void)unlockNonConsumableProduct:(VTAProduct *)product withProductTitle:(NSString *)title;
+-(void)unlockNonConsumableProduct:(VTAProduct *)product;
 
 /**
  *  Returns the product for the given identifier, or nil if not found

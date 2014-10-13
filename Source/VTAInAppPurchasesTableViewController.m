@@ -350,17 +350,28 @@
 }
 
 -(void)updateProduct:(NSNotification *)note {
-    VTAProduct *product = note.userInfo[VTAInAppPurchasesProductsAffectedUserInfoKey];
-    if ( product ) {
+    
+    NSArray *products = note.userInfo[VTAInAppPurchasesProductsAffectedUserInfoKey];
+    
+    NSMutableArray *productIps = [NSMutableArray array];
+    NSMutableArray *purchasedProductIps = [NSMutableArray array];
+    for ( VTAProduct *product in products ) {
         NSUInteger index = [self.products indexOfObject:product];
         if ( index != NSNotFound ) {
-            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+            [productIps addObject:[NSIndexPath indexPathForRow:index inSection:0]];
+
         } else {
             index = [self.purchasedProducts indexOfObject:product];
             if ( index != NSNotFound ) {
-                [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                [purchasedProductIps addObject:[NSIndexPath indexPathForRow:index inSection:1]];
             }
         }
+    }
+    if ( [productIps count] > 0 ) {
+        [self.tableView reloadRowsAtIndexPaths:productIps withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    if ( [self.tableView numberOfSections] > 1 && [purchasedProductIps count] > 0) {
+        [self.tableView reloadRowsAtIndexPaths:purchasedProductIps withRowAnimation:UITableViewRowAnimationAutomatic];
     }
 }
 

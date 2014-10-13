@@ -529,7 +529,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 -(void)checkIdentifier:(NSString *)identifier forProduct:(VTAProduct *)product {
     if ( [product.productIdentifier isEqualToString:identifier] ) {
         product.purchased = YES;
-        product.productTitle = ( product.product.localizedTitle ) ? product.product.localizedTitle : product.productIdentifier;
+//        product.productTitle = ( product.product.localizedTitle ) ? product.product.localizedTitle : product.productIdentifier;
         
         // Recurse through child products
         if ( [product.childProducts count] > 0 ) {
@@ -542,19 +542,20 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 }
 
 // For instant unlocks
--(void)unlockNonConsumableProduct:(VTAProduct *)product withProductTitle:(NSString *)title {
+-(void)unlockNonConsumableProduct:(VTAProduct *)product {
     
 #if VTAInAppPurchasesDebug
     NSLog(@"%s ", __PRETTY_FUNCTION__);
 #endif
     
     [self.instantUnlockProducts addObject:product.productIdentifier];
+    if ( product.product ) {
+        product.productTitle = product.product.localizedTitle;
+    }
     product.purchased = YES;
-    product.productTitle = (title) ? title : product.productIdentifier;
     [self updateCache];
     
-    NSDictionary *userInfo = @{VTAInAppPurchasesProductsAffectedUserInfoKey : product};
-    
+    NSDictionary *userInfo = @{VTAInAppPurchasesProductsAffectedUserInfoKey : @[product]};
     [[NSNotificationCenter defaultCenter] postNotificationName:VTAProductStatusDidChangeNotification object:self userInfo:userInfo];
 }
 
@@ -647,7 +648,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     product.purchaseInProgress = NO;
     
     if ( !product.consumable ) {
-        [self unlockNonConsumableProduct:product withProductTitle:product.product.localizedTitle];
+        [self unlockNonConsumableProduct:product];
     } else {
         [self addConsumableProductValue:product];
     }
