@@ -126,7 +126,10 @@
 
         if ( forceReload || [VTAInAppPurchases sharedInstance].productsLoading != VTAInAppPurchaseStatusProductsLoaded ) {
             // Call the IAP singleton to reload the products
-            [[VTAInAppPurchases sharedInstance] loadProducts];
+            [[VTAInAppPurchases sharedInstance] validateReceiptWithCompletionHandler:^(BOOL receiptIsValid) {
+                [[VTAInAppPurchases sharedInstance] loadProducts];
+            }];
+
         } else {
             [self displayProducts:nil];
         }
