@@ -342,7 +342,7 @@
         }
     }
     
-    for ( NSString *productToIgnore in self.productsToIgnore ) {
+    for ( NSString *productToIgnore in self.purchasedProductsToIgnore ) {
         VTAProduct *vtaProductToIgnore = [[VTAInAppPurchases sharedInstance] vtaProductForIdentifier:productToIgnore];
         [purchasedProducts removeObject:vtaProductToIgnore];
     }
@@ -356,10 +356,15 @@
     NSMutableArray *productIps = [NSMutableArray array];
     NSMutableArray *purchasedProductIps = [NSMutableArray array];
     for ( VTAProduct *product in products ) {
-        NSUInteger index = [self.products indexOfObject:product];
+        __block NSUInteger index = NSNotFound;
+        [self.products enumerateObjectsUsingBlock:^(VTAProduct *aProduct, NSUInteger idx, BOOL *stop) {
+            if ( [aProduct.productIdentifier isEqualToString:product.productIdentifier]) {
+                index = idx;
+                *stop = YES;
+            }
+        }];
         if ( index != NSNotFound ) {
             [productIps addObject:[NSIndexPath indexPathForRow:index inSection:0]];
-
         } else {
             index = [self.purchasedProducts indexOfObject:product];
             if ( index != NSNotFound ) {

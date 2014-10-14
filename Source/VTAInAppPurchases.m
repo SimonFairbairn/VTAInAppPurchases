@@ -16,6 +16,7 @@
 #define VTAInAppPurchasesDebug 1
 #define VTAInAppPurchasesPListError 0
 #define VTAInAppPurchasesCacheError 0
+#define VTAInAppPurchasesClearInstantUnlock 0
 #define VTAInAppPurchasesForceInvalidReceipt 0
 #endif
 
@@ -32,6 +33,7 @@ NSString * const VTAInAppPurchasesNotificationErrorUserInfoKey = @"VTAInAppPurch
 NSString * const VTAInAppPurchasesProductsAffectedUserInfoKey = @"VTAInAppPurchasesProductsAffectedUserInfoKey";
 
 static NSString * const VTAInAppPurchasesList = @"purchases.plist";
+static NSString * const VTAInAppPurchasesInstantUnlockKey = @"VTAInAppPurchasesInstantUnlockKey";
 
 static NSString * const VTAInAppPurchasesCacheRequestKey = @"VTAInAppPurchasesCacheRequestKey";
 
@@ -84,7 +86,17 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 
 -(NSMutableArray *) instantUnlockProducts {
     if ( !_instantUnlockProducts ) {
-        _instantUnlockProducts = [NSMutableArray array];
+        _instantUnlockProducts = [[[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesInstantUnlockKey] mutableCopy];
+
+#if VTAInAppPurchasesClearInstantUnlock
+        _instantUnlockProducts = nil;
+        [[NSUserDefaults standardUserDefaults] setObject:nil forKey:VTAInAppPurchasesInstantUnlockKey];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+#endif
+        
+        if ( !_instantUnlockProducts ) {
+            _instantUnlockProducts = [NSMutableArray new];
+        }
     }
     return _instantUnlockProducts;
 }
@@ -207,32 +219,6 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesProductsDidFinishUpdatingNotification object:self userInfo:userInfo];
 }
 
--(BOOL)cacheIsValid {
-    
-#if VTAInAppPurchasesDebug
-    NSLog(@"%s", __PRETTY_FUNCTION__);
-#endif
-    
-    if ( self.cachedPlistFile ) {
-    
-        NSNumber *secondsSinceLastUpdate = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesCacheRequestKey];
-        
-#if VTAInAppPurchasesDebug
-        NSLog(@"%@", secondsSinceLastUpdate);
-        secondsSinceLastUpdate = nil;
-#endif
-        
-        NSDate *lastUpdate = [NSDate dateWithTimeIntervalSinceReferenceDate:([secondsSinceLastUpdate intValue] + 24 * 60 * 60)];
-        NSDate *now = [NSDate date];
-        
-        if ( secondsSinceLastUpdate || [[now laterDate:lastUpdate] isEqualToDate:lastUpdate]  ) {
-            return YES;
-        }
-        
-    }
-    return NO;
-}
-
 /**
  *  STEP 1: Load the products from the plist file. Mark the productsLoading status as loading.
  *  We'll cache the plist file for one day then merge the latest with the existing cache.
@@ -330,6 +316,34 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     }
 }
 
+#pragma mark - Cache methods
+
+-(BOOL)cacheIsValid {
+    
+#if VTAInAppPurchasesDebug
+    NSLog(@"%s", __PRETTY_FUNCTION__);
+#endif
+    
+    if ( self.cachedPlistFile ) {
+        
+        NSNumber *secondsSinceLastUpdate = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesCacheRequestKey];
+        
+#if VTAInAppPurchasesDebug
+        NSLog(@"%@", secondsSinceLastUpdate);
+        secondsSinceLastUpdate = nil;
+#endif
+        
+        NSDate *lastUpdate = [NSDate dateWithTimeIntervalSinceReferenceDate:([secondsSinceLastUpdate intValue] + 24 * 60 * 60)];
+        NSDate *now = [NSDate date];
+        
+        if ( secondsSinceLastUpdate || [[now laterDate:lastUpdate] isEqualToDate:lastUpdate]  ) {
+            return YES;
+        }
+        
+    }
+    return NO;
+}
+
 -(void)attemptRecoveryWithCacheAfterPlistError:(NSError *)error {
 
 #if VTAInAppPurchasesDebug
@@ -365,12 +379,21 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     NSMutableArray *productIDs = [NSMutableArray array];
     
     if ( !usingCache && self.cachedPlistFile ) {
+        
+#if VTAInAppPurchasesDebug
+        NSLog(@"Previous cache file found.");
+#endif
+        
         for ( NSDictionary *incomingDictionary in self.incomingPlistFile ) {
             NSMutableDictionary *mutableIncomingDictionary = [incomingDictionary mutableCopy];
             for ( NSDictionary *cachedDictionary in self.cachedPlistFile ) {
                 if ( [incomingDictionary[@"productIdentifier"] isEqualToString:cachedDictionary[@"productIdentifier"]] ) {
-                    
                     if ( [cachedDictionary[@"purchased"] boolValue] ) {
+
+#if VTAInAppPurchasesDebug
+                        NSLog(@"Setting purchased flag on %@.", incomingDictionary[@"productIdentifier"]);
+#endif
+                        
                         [mutableIncomingDictionary setValue:@(YES) forKey:@"purchased"];
                     }
                     if ( cachedDictionary[@"productTitle"] ) {
@@ -381,8 +404,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
             [updatedIncomingFile addObject:mutableIncomingDictionary];
         }
     } else if ( usingCache && !self.cachedPlistFile ) {
-        
-    } else {
+        updatedIncomingFile = [self.incomingPlistFile mutableCopy];
+    } else if ( !usingCache && !self.cachedPlistFile ){
+        updatedIncomingFile = [self.incomingPlistFile mutableCopy];
+    } else if ( usingCache ) {
         updatedIncomingFile = [self.cachedPlistFile mutableCopy];
     }
 
@@ -438,6 +463,8 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     return NO;
 }
 
+#pragma mark - Product handling methods
+
 /**
  *  STEP 3: Once the delegate has received a response, the products will have been updated with their
  *  SKProduct objects or there will have been some sort of failure.
@@ -450,7 +477,6 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     
     if ( self.productList ) {
         [self updateCache];
-        
         [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
     }
     
@@ -495,6 +521,9 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         }
         
     }
+    
+    
+    
     [self writePlistFileToCache:arrayOfProductsInPlist];
     self.incomingPlistFile = [arrayOfProductsInPlist copy];
 }
@@ -541,22 +570,78 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     }
 }
 
-// For instant unlocks
--(void)unlockNonConsumableProduct:(VTAProduct *)product {
-    
+-(void)unlockNonConsumableProduct:(VTAProduct *)product saveToDefaults:(BOOL)shouldSave {
 #if VTAInAppPurchasesDebug
     NSLog(@"%s ", __PRETTY_FUNCTION__);
 #endif
     
-    [self.instantUnlockProducts addObject:product.productIdentifier];
+    // If we're instantly unlocking this product, we need to make a note of its identifer
+    // so that it can be saved locally
+    NSMutableArray *arrayOfProductIdentifiersToSave = [NSMutableArray array];
+    if ( shouldSave ) {
+        [arrayOfProductIdentifiersToSave addObject:product.productIdentifier];
+    }
+
+    // Regular unlocking procedure for all products
     if ( product.product ) {
         product.productTitle = product.product.localizedTitle;
     }
     product.purchased = YES;
+    
+    // Make a note of all the products to be affected
+    NSMutableArray *arrayOfPurchasedProducts = [@[product] mutableCopy];
+    
+    // If this product unlocks other products..
+    for ( NSString *childProductIdentifer in product.childProducts ) {
+        VTAProduct *childProduct = [self vtaProductForIdentifier:childProductIdentifer];
+        
+        // ..we need to force a save as it will not be logged in the receipt.
+        shouldSave = YES;
+        childProduct.purchased = YES;
+        if ( childProduct.product ) {
+            childProduct.productTitle = childProduct.product.localizedTitle;
+        }
+
+        // Add the product identifier to the list to be saved to NSUserDefaults
+        [arrayOfProductIdentifiersToSave addObject:childProduct.productIdentifier];
+        
+        // Make a note that this product was affected as well
+        [arrayOfPurchasedProducts addObject:childProduct ];
+    }
+    
+    // If we instantly unlocked a product, or there are child products...
+    if ( shouldSave ) {
+        
+        // ...go through each of the identifiers
+        for ( NSString *productIdentifier in arrayOfProductIdentifiersToSave ) {
+            
+            // If it already exists in the array, no need to add it again
+            BOOL exists = NO;
+            for (NSString *string in self.instantUnlockProducts) {
+                if ( [string isEqualToString:productIdentifier] ) {
+                    exists = YES;
+                    break;
+                }
+            }
+            if ( !exists ) {
+                [self.instantUnlockProducts addObject:productIdentifier];
+                [[NSUserDefaults standardUserDefaults] setObject:[self.instantUnlockProducts copy] forKey:VTAInAppPurchasesInstantUnlockKey];
+            }
+        }
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+
+    // Write all of these changes to the cache
     [self updateCache];
     
-    NSDictionary *userInfo = @{VTAInAppPurchasesProductsAffectedUserInfoKey : @[product]};
+    // Finally, notifiy
+    NSDictionary *userInfo = @{VTAInAppPurchasesProductsAffectedUserInfoKey : [arrayOfPurchasedProducts copy]};
     [[NSNotificationCenter defaultCenter] postNotificationName:VTAProductStatusDidChangeNotification object:self userInfo:userInfo];
+}
+
+-(void)unlockNonConsumableProduct:(VTAProduct *)product {
+    // For instant unlocks, we will require a save to the defaults
+    [self unlockNonConsumableProduct:product saveToDefaults:YES];
 }
 
 -(void)addConsumableProductValue:(VTAProduct *)product {
@@ -648,7 +733,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     product.purchaseInProgress = NO;
     
     if ( !product.consumable ) {
-        [self unlockNonConsumableProduct:product];
+        [self unlockNonConsumableProduct:product saveToDefaults:NO];
     } else {
         [self addConsumableProductValue:product];
     }

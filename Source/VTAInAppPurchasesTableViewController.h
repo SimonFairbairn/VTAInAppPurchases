@@ -30,14 +30,19 @@ typedef NS_ENUM(NSUInteger, VTAInAppPurchasesTableViewControllerProductType) {
 @property (nonatomic, readonly) NSArray *products;
 
 /**
+ *  An array of product identifiers that should be ignored when constructing the product list
+ */
+@property (nonatomic, copy) NSArray *productsToIgnore;
+
+/**
  *  A read-only list of the currently available products
  */
 @property (nonatomic, readonly) NSArray *purchasedProducts;
 
 /**
- *  An array of product identifiers that should be ignored when constructing the product list
+ *  An array of product identifiers that should be ignored when constructing the purchased product list
  */
-@property (nonatomic, copy) NSArray *productsToIgnore;
+@property (nonatomic, copy) NSArray *purchasedProductsToIgnore;
 
 /**
  *  Set this to YES to have the view controller ignore any non-consumables that have already been purchased
