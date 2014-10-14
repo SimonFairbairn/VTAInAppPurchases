@@ -174,6 +174,7 @@
                 cell.titleLabel.text = self.defaultPurchasedRow;
                 cell.hideProgressBar = YES;
                 cell.priceLabel.hidden = YES;
+                cell.statusLabel.hidden = YES;
                 return cell;
             } else {
                 index--;
