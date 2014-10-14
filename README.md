@@ -10,9 +10,9 @@ This is designed to make dealing with In App Purchases easier but in order to do
 
 It also includes receipt validation but this is provided as a convenience. It includes a copy of Apple's Root Certificate and a copy of OpenSSL as a pre-built static library. However, you probably shouldn't trust me and I recommend that you grab your own copy of Apple's certificate and compile your own OpenSSL and drop them into the project instead of the ones included here.
 
-USE AT YOUR OWN RISK. Although I hope it helps you get up and running with In App Purchases quickly and easily, I can accept no responsibility for any loss of revenue resulting from the use of this code. 
+USE AT YOUR OWN RISK. Although I hope it helps you get up and running with In App Purchases quickly and easily, I can accept no responsibility for any loss of revenue resulting from the use of this code.
 
-### A Five Step Guide to Getting Set Up
+### A Four-and-a-bit Step Guide to Getting Set Up
 
 1) Set up your In App Purchases in iTunesConnect. Make a note of the identifiers.
 
@@ -35,7 +35,13 @@ Valid plist keys are (currently not enforced, but may be in future):
 	hosted					(optional) A BOOL indicating whether the additional content is hosted by Apple or is contained within the bundle.
     childProducts           (optional) An array of non-consumable product identifiers that will be automatically unlocked when this one is. Good for multipacks or "buy all" IAPs.
 
-4) In your app delegate (or wherever you want to start loading products), call `[[YOURAPPInAppPurchases sharedInstance] loadProducts];` on the shared instance. 
+4) In your app delegate (or wherever you want to start loading products), call `[[VTAInAppPurchases sharedInstance] loadProducts];` on the shared instance. 
+
+4.b) If you want to use receipt validation, use this instead:
+
+    [[VTAInAppPurchases sharedInstance] validateReceiptWithCompletionHandler:^(BOOL receiptIsValid) {
+        [[VTAInAppPurchases sharedInstance] loadProducts];
+    }];
 
 This will begin loading the product plist file and will then pull the relevant details from the App Store. You can subscribe to a number of notifications to be informed about the loading status of this list. It'll go through three stages:
 
@@ -44,3 +50,8 @@ This will begin loading the product plist file and will then pull the relevant d
 1. The products have been loaded in from the App Store, and the `VTAProduct` objects have been updated (`VTAInAppPurchaseStatusProductsLoaded`)
 
 Once this is complete, users can start making purchases. An example implementation of how you might set up a TableViewController to show the products and use the notifications to update the list (e.g. for a hosted product download) is included.
+
+### Other Notes
+
+* There is also a notification available for the VTAProduct objects as well, `VTAProductStatusDidChangeNotification`, which is sent out when a property is changed. Useful especially when a product's purchased status changes. 
+* Products can be instantly unlocked in code and there's an `originalPurchasedVersion` property on the singleton that tells you when the user first downloaded the app. This can be useful for grandfathering in previous paid users into a freemium model. The product identifiers are stored in user defaults which is read on each launch. s
