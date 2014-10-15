@@ -93,7 +93,7 @@ extern NSString * const VTAInAppPurchasesNotificationErrorUserInfoKey;
  *  3. The products have been loaded in from the App Store, and 
  *      the `VTAProduct` objects have been updated (`VTAInAppPurchaseStatusProductsLoaded`)
  */
-@property (nonatomic, readonly) VTAInAppPurchasesStatus productsLoading;
+@property (nonatomic, readonly) VTAInAppPurchasesStatus productsLoadingStatus;
 
 /**
  *  A read only list of the currently loaded products. All objects will be of class VTAProduct
