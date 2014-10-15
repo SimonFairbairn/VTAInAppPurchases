@@ -183,13 +183,14 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         NSURL *appleSite = [NSURL URLWithString:@"https://www.apple.com"];
         NSURLSession *testSession = [NSURLSession sharedSession];
         NSURLSessionDataTask *fetchRemoteSiteTask = [testSession dataTaskWithRequest:[NSURLRequest requestWithURL:appleSite] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        
             if ( !error ) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     self.refreshRequest = [[SKReceiptRefreshRequest alloc] init];
                     self.refreshRequest.delegate = self;
                     [self.refreshRequest start];
                 });
+            } else {
+                self.completion(NO);
             }
             
         }];
