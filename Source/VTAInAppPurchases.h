@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSUInteger, VTAInAppPurchaseStatus) {
-    VTAInAppPurchaseStatusProductsLoading       = 0,
-    VTAInAppPurchaseStatusProductListLoaded     = 1,
-    VTAInAppPurchaseStatusProductListLoadFailed = 2,
-    VTAInAppPurchaseStatusProductsLoaded        = 3,
-    VTAInAppPurchaseStatusProductLoadFailed     = 4
+typedef NS_ENUM(NSUInteger, VTAInAppPurchasesStatus) {
+    VTAInAppPurchasesStatusProductsLoadFailed     = -2,
+    VTAInAppPurchasesStatusProductsListLoadFailed = -1,
+    VTAInAppPurchasesStatusProductsLoading       = 0,
+    VTAInAppPurchasesStatusProductsListLoaded     = 1,
+    VTAInAppPurchasesStatusProductsLoaded        = 2
 };
 
 /**
@@ -93,7 +93,7 @@ extern NSString * const VTAInAppPurchasesNotificationErrorUserInfoKey;
  *  3. The products have been loaded in from the App Store, and 
  *      the `VTAProduct` objects have been updated (`VTAInAppPurchaseStatusProductsLoaded`)
  */
-@property (nonatomic, readonly) VTAInAppPurchaseStatus productsLoading;
+@property (nonatomic, readonly) VTAInAppPurchasesStatus productsLoading;
 
 /**
  *  A read only list of the currently loaded products. All objects will be of class VTAProduct

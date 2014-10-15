@@ -92,8 +92,8 @@
 -(IBAction)reload:(id)sender; {
     
     // If we're not already loading
-    if ( [VTAInAppPurchases sharedInstance].productsLoading != VTAInAppPurchaseStatusProductsLoading &&
-        [VTAInAppPurchases sharedInstance].productsLoading != VTAInAppPurchaseStatusProductListLoaded
+    if ( [VTAInAppPurchases sharedInstance].productsLoading != VTAInAppPurchasesStatusProductsLoading &&
+        [VTAInAppPurchases sharedInstance].productsLoading != VTAInAppPurchasesStatusProductsListLoaded
         ) {
         
         // Make a note of all of the existing products in the list
@@ -124,7 +124,7 @@
             [self.tableView reloadData];
         }
 
-        if ( forceReload || [VTAInAppPurchases sharedInstance].productsLoading != VTAInAppPurchaseStatusProductsLoaded ) {
+        if ( forceReload || [VTAInAppPurchases sharedInstance].productsLoading != VTAInAppPurchasesStatusProductsLoaded ) {
             // Call the IAP singleton to reload the products
             [[VTAInAppPurchases sharedInstance] validateReceiptWithCompletionHandler:^(BOOL receiptIsValid) {
                 [[VTAInAppPurchases sharedInstance] loadProducts];
