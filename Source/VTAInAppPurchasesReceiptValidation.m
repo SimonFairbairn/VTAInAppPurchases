@@ -144,7 +144,7 @@
         
         NSData *hashData;
         NSData *opaqueValueData;
-//        NSData *bundleIDData;
+        NSData *bundleIDData;
         
         while (p < end  ) {
             
@@ -167,7 +167,7 @@
                     
                     // Bundle Identifier (
                 case 2: {
-//                    bundleIDData = [data copy];
+                    bundleIDData = [data copy];
                     
                     const uint8_t *s = (const uint8_t*)data.bytes;
                     NSString *string = [self readString:&s withLength:data.length];
@@ -259,20 +259,25 @@
         }
         
         // TODO: Figure out why the hash is longer
+        unsigned char hash[20];
         
         NSUUID *uuid = [[UIDevice currentDevice] identifierForVendor];
-        unsigned char uuidBytes[16];
+        uuid_t uuidBytes;
         [uuid getUUIDBytes:uuidBytes];
+        NSData *data = [NSData dataWithBytes:(const void *)uuid length:16];
         
-        NSMutableData *data = [NSMutableData data];
-        [data appendBytes:uuidBytes length:sizeof(uuidBytes)];
-        [data appendData:opaqueValueData];
-        //         [data appendData:bundleIDData];
+        SHA_CTX ctx;
+        SHA1_Init(&ctx);
+        SHA1_Update(&ctx, data.bytes, data.length);
+        SHA1_Update(&ctx, opaqueValueData.bytes, opaqueValueData.length);
+        SHA1_Update(&ctx, bundleIDData.bytes, bundleIDData.length);
+        SHA1_Final(hash, &ctx);
         
-        NSMutableData *expectedHash = [NSMutableData dataWithLength:SHA_DIGEST_LENGTH];
-        SHA1((const uint8_t*)data.bytes, data.length, (uint8_t*)expectedHash.mutableBytes);
+        NSData *computedHashData = [NSData dataWithBytes:hash length:20];
+    
+
         
-        if ( [expectedHash isEqualToData:hashData] ) {
+        if ( [computedHashData isEqualToData:hashData] ) {
             
 #if VTAInAppPurchasesReceiptValidationDebug
             NSLog(@"Matches");
