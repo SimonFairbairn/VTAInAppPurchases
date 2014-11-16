@@ -191,14 +191,14 @@
     if ( product.purchaseInProgress && product.hosted ) {
         cell.hideProgressBar = NO;
         cell.progressView.progress = product.progress;
-        cell.statusLabel.text = @"Downloading";
+        cell.statusLabel.text = NSLocalizedString(@"Downloading", nil);
     } else if ( !product.purchaseInProgress ) {
         cell.hideProgressBar = YES;
     }
     
     cell.nonConsumable = product.consumable;
     cell.titleLabel.text = (product.product.localizedTitle) ? product.product.localizedTitle : product.productTitle;
-    cell.priceLabel.text = (!product.consumable && product.purchased) ? @"Purchased" : [self.formatter stringFromNumber:product.product.price];
+    cell.priceLabel.text = (!product.consumable && product.purchased) ? NSLocalizedString(@"Purchased", nil) : [self.formatter stringFromNumber:product.product.price];
 
     [cell addThumbnailImage:product.productIcon animated:NO];
     [cell setNeedsUpdateConstraints];
@@ -215,7 +215,7 @@
 
 -(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     if ( section == 1 ) {
-        return @"Purchased";
+        return NSLocalizedString(@"Purchased", nil);
     }
     return nil;
 }

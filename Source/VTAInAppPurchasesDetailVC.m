@@ -62,7 +62,7 @@
     
     if ( !self.product.consumable && self.product.purchased ) {
         self.buyButton.enabled = NO;
-        self.statusLabel.text = @"Purchased";
+        self.statusLabel.text = NSLocalizedString(@"Purchased", nil);
         self.statusLabel.hidden = NO;
     }
     
@@ -119,7 +119,7 @@
     if ( self.product.hosted ) {
         self.progressView.hidden = NO;
         self.statusLabel.alpha = 1.0f;
-        self.statusLabel.text = @"Downloading";
+        self.statusLabel.text = NSLocalizedString(@"Downloading", nil);
     }
 }
 
@@ -137,9 +137,9 @@
 
     if ( !product.purchaseInProgress ) {
         if ( [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey] ) {
-            self.statusLabel.text = @"Error downloading";
+            self.statusLabel.text = NSLocalizedString(@"Error downloading", nil);
         } else {
-            self.statusLabel.text = @"Purchased";
+            self.statusLabel.text = NSLocalizedString(@"Purchased", nil);
         }
         self.progressView.hidden = YES;
         [self completePurchase];
@@ -154,13 +154,13 @@
     NSError *error = [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey];
     
     if ( error ) {
-        self.statusLabel.text = @"Purchase failed";
+        self.statusLabel.text = NSLocalizedString(@"Purchase failed", nil);
         
         [self completePurchase];
         
     } else if ( product ) {
         
-        self.statusLabel.text = @"Purchased";
+        self.statusLabel.text = NSLocalizedString(@"Purchased", nil);
         
         [self completePurchase];
         
