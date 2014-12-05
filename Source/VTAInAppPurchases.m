@@ -581,6 +581,8 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     NSLog(@"%s ", __PRETTY_FUNCTION__);
 #endif
     
+    if ( !product ) return;
+    
     // If we're instantly unlocking this product, we need to make a note of its identifer
     // so that it can be saved locally
     NSMutableArray *arrayOfProductIdentifiersToSave = [NSMutableArray array];
