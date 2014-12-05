@@ -47,6 +47,23 @@
         self.descriptionField.text = self.product.product.localizedDescription;
     }
 
+    if ( self.secondProduct ) {
+        self.secondTitleLabel.hidden = NO;
+        self.secondPriceLabel.hidden = NO;
+        self.secondDescriptionField.hidden = NO;
+        self.secondBuyButton.hidden = NO;
+        self.secondFeaturedImage.hidden = NO;
+
+        self.secondTitleLabel.text = self.secondProduct.product.localizedTitle;
+        self.secondPriceLabel.text = [self.priceFormatter stringFromNumber:self.secondProduct.product.price];
+        if ( self.secondProduct.longDescription ) {
+            self.secondDescriptionField.text = self.secondProduct.longDescription;
+        } else {
+            self.secondDescriptionField.text = self.secondProduct.product.localizedDescription;
+        }
+    }
+    
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePurchase:) name:VTAInAppPurchasesPurchasesDidCompleteNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDownload:) name:VTAInAppPurchasesProductDownloadStatusDidChangeNotification object:nil];
 }
@@ -79,6 +96,10 @@
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+#pragma mark - Methods
+
+
 
 -(void)resizeDescriptionField {
     [self.descriptionField sizeToFit];

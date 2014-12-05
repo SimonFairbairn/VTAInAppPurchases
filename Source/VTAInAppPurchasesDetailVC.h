@@ -13,6 +13,7 @@
 @interface VTAInAppPurchasesDetailViewController : UIViewController
 
 @property (nonatomic, strong) VTAProduct *product;
+@property (nonatomic, strong) VTAProduct *secondProduct;
 
 @property (nonatomic, weak) IBOutlet UILabel *titleLabel;
 @property (nonatomic, weak) IBOutlet UILabel *priceLabel;
@@ -30,6 +31,21 @@
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *imageHeight;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *textviewHeight;
 @property (nonatomic, weak) IBOutlet UIActivityIndicatorView *purchaseIndicator;
+
+// Secondary product
+
+@property (nonatomic, weak) IBOutlet UILabel *secondTitleLabel;
+@property (nonatomic, weak) IBOutlet UILabel *secondPriceLabel;
+@property (nonatomic, weak) IBOutlet UITextView *secondDescriptionField;
+@property (nonatomic, weak) IBOutlet UIButton *secondBuyButton;
+@property (nonatomic, weak) IBOutlet UIImageView *secondFeaturedImage;
+
+@property (nonatomic, weak) IBOutlet UIProgressView *secondProgressView;
+@property (nonatomic, weak) IBOutlet UILabel *secondStatusLabel;
+
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *secondImageHeight;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *secondTextviewHeight;
+@property (nonatomic, weak) IBOutlet UIActivityIndicatorView *secondPurchaseIndicator;
 
 -(void)resizeDescriptionField;
 
