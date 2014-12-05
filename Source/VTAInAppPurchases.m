@@ -881,8 +881,11 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                 //                NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
                 //                NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
                 // Process transaction
-                
                 if ( transaction.downloads ) {
+#if VTAInAppPurchasesDebug
+                    NSLog(@"Begin download: %@", transaction.payment.productIdentifier);
+#endif
+                    
                     [[SKPaymentQueue defaultQueue] startDownloads:transaction.downloads];
                 } else {
                     [self provideContentForTransaction:transaction];
@@ -900,6 +903,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
             case SKPaymentTransactionStateDeferred: {
                 // Allow user to continue to use the app
                 // It may be some time (up to 24 hours)
+                
+#if VTAInAppPurchasesDebug
+                NSLog(@"Deferring: %@", transaction.payment.productIdentifier);
+#endif
                 break;
             }
         }
@@ -915,6 +922,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 // DOWNLOADS
 -(void)paymentQueue:(SKPaymentQueue *)queue updatedDownloads:(NSArray *)downloads {
     
+    
     // When a hosted download updates
     for ( SKDownload *download in downloads ) {
         
@@ -923,7 +931,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         
         switch (download.downloadState) {
             case SKDownloadStateFailed: {
-                
+
+#if VTAInAppPurchasesDebug
+                NSLog(@"Download failed: %@", download.error.localizedDescription);
+#endif
                 downloadError = download.error;
                 [[SKPaymentQueue defaultQueue] finishTransaction:download.transaction];
                 
