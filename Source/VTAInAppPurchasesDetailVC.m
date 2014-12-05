@@ -18,7 +18,9 @@
 
 @end
 
-@implementation VTAInAppPurchasesDetailViewController
+@implementation VTAInAppPurchasesDetailViewController {
+    BOOL _isSecondProduct;
+}
 
 #pragma mark - Properties
 
@@ -48,12 +50,6 @@
     }
 
     if ( self.secondProduct ) {
-        self.secondTitleLabel.hidden = NO;
-        self.secondPriceLabel.hidden = NO;
-        self.secondDescriptionField.hidden = NO;
-        self.secondBuyButton.hidden = NO;
-        self.secondFeaturedImage.hidden = NO;
-
         self.secondTitleLabel.text = self.secondProduct.product.localizedTitle;
         self.secondPriceLabel.text = [self.priceFormatter stringFromNumber:self.secondProduct.product.price];
         if ( self.secondProduct.longDescription ) {
@@ -61,6 +57,11 @@
         } else {
             self.secondDescriptionField.text = self.secondProduct.product.localizedDescription;
         }
+    } else {
+        self.secondTitleLabel.text = nil;
+        self.secondPriceLabel.text = nil;
+        self.secondDescriptionField.text = nil;
+        self.secondBuyButton.hidden = YES;
     }
     
     
@@ -69,7 +70,6 @@
 }
 
 -(void)viewWillAppear:(BOOL)animated {
-    
     [super viewWillAppear:animated];
     
     if ( self.product.purchaseInProgress ) {
@@ -99,10 +99,10 @@
 
 #pragma mark - Methods
 
-
-
 -(void)resizeDescriptionField {
     [self.descriptionField sizeToFit];
+    [self.descriptionField layoutIfNeeded];
+    [self.secondDescriptionField sizeToFit];
     [self.descriptionField layoutIfNeeded];
 }
 
@@ -112,19 +112,28 @@
 
 -(void)completePurchase {
     
+    VTAProduct *product = ( _isSecondProduct ) ? self.secondProduct : self.product;
+    UIActivityIndicatorView *indicator = ( _isSecondProduct ) ? self.secondPurchaseIndicator : self.purchaseIndicator;
+    UILabel *label = ( _isSecondProduct ) ? nil : self.statusLabel;
+    UIProgressView *progresView = ( _isSecondProduct ) ? self.secondProgressView : self.progressView;
+    
     if ( self.product.consumable || !self.product.purchased ) {
         self.buyButton.enabled = YES;
     }
+    if ( self.secondProduct.consumable || !self.secondProduct.purchased ) {
+        self.secondBuyButton.enabled = YES;
+    }
 
-    [self.purchaseIndicator stopAnimating];
-    self.statusLabel.hidden = NO;
+    [indicator stopAnimating];
+    label.hidden = NO;
+    progresView.hidden = YES;
     
-    if ( self.product.consumable ) {
+    if ( product.consumable ) {
         [UIView animateWithDuration:0.5 delay:1.0 options:0 animations:^{
-            self.statusLabel.alpha = 0.0f;
+            label.alpha = 0.0f;
         } completion:^(BOOL finished) {
-            self.statusLabel.alpha = 1.0f;
-            self.statusLabel.hidden = YES;
+            label.alpha = 1.0f;
+            label.hidden = YES;
         }];
     }
 }
@@ -132,15 +141,26 @@
 #pragma mark - Actions
 
 -(IBAction)buyProduct:(id)sender {
-
     self.buyButton.enabled = NO;
-    [self.purchaseIndicator startAnimating];
-    [[VTAInAppPurchases sharedInstance] purchaseProduct:self.product];
+    self.secondBuyButton.enabled = NO;
+
+    _isSecondProduct = NO;
+    if ( sender == self.secondBuyButton) {
+        _isSecondProduct = YES;
+    }
     
-    if ( self.product.hosted ) {
-        self.progressView.hidden = NO;
-        self.statusLabel.alpha = 1.0f;
-        self.statusLabel.text = NSLocalizedString(@"Downloading", nil);
+    UIActivityIndicatorView *indicator = ( _isSecondProduct ) ? self.secondPurchaseIndicator : self.purchaseIndicator;
+    VTAProduct *product = ( _isSecondProduct ) ? self.secondProduct : self.product;
+    UIProgressView *progressView = (_isSecondProduct ) ? self.secondProgressView : self.progressView;
+    UILabel *statusLabel = (_isSecondProduct ) ? nil : self.statusLabel;
+    
+    [indicator startAnimating];
+    [[VTAInAppPurchases sharedInstance] purchaseProduct:product];
+    
+    if ( product.hosted ) {
+        progressView.hidden = NO;
+        statusLabel.alpha = 1.0f;
+        statusLabel.text = NSLocalizedString(@"Downloading", nil);
     }
 }
 
@@ -154,19 +174,21 @@
 -(void)updateDownload:(NSNotification *)note {
     VTAProduct *product = [[note.userInfo objectForKey:VTAInAppPurchasesProductsAffectedUserInfoKey] firstObject];
     
-    self.progressView.progress = product.progress;
+    UIProgressView *progressView = (_isSecondProduct ) ? self.secondProgressView : self.progressView;
+    UILabel *statusLabel = ( _isSecondProduct ) ? nil : self.statusLabel;
+    
+    progressView.progress = product.progress;
 
     if ( !product.purchaseInProgress ) {
         if ( [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey] ) {
-            self.statusLabel.text = NSLocalizedString(@"Error downloading", nil);
+            statusLabel.text = NSLocalizedString(@"Error downloading", nil);
         } else {
-            self.statusLabel.text = NSLocalizedString(@"Purchased", nil);
+            statusLabel.text = NSLocalizedString(@"Purchased", nil);
         }
-        self.progressView.hidden = YES;
+        progressView.hidden = YES;
         [self completePurchase];
     }
 }
-
 
 #pragma mark - VTAInAppPurchases Delegate
 
@@ -174,20 +196,15 @@
     VTAProduct *product = [[note.userInfo objectForKey:VTAInAppPurchasesProductsAffectedUserInfoKey] firstObject];
     NSError *error = [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey];
     
+    UILabel *statusLabel =  ( _isSecondProduct ) ? nil : self.statusLabel;
+    
     if ( error ) {
-        self.statusLabel.text = NSLocalizedString(@"Purchase failed", nil);
-        
+        statusLabel.text = NSLocalizedString(@"Purchase failed", nil);
         [self completePurchase];
-        
     } else if ( product ) {
-        
-        self.statusLabel.text = NSLocalizedString(@"Purchased", nil);
-        
+        statusLabel.text = NSLocalizedString(@"Purchased", nil);
         [self completePurchase];
-        
     }
 }
-
-
 
 @end

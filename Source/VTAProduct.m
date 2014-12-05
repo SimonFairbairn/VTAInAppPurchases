@@ -133,6 +133,11 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
             } else if (scale == 3.0f ) {
                 scaleString = @"@3x";
             }
+            
+            if ( [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad ) {
+                scaleString = [scaleString stringByAppendingString:@"~ipad"];
+            }
+            
             NSString *scaledImage = [[fileNameNoExtension stringByAppendingString:scaleString] stringByAppendingFormat:@".%@", fileNameExtension];
             NSURL *fileURL = [cachesDirectory URLByAppendingPathComponent:scaledImage];
             
