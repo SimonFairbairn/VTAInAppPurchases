@@ -13,7 +13,7 @@
 #import "VTAInAppPurchasesReceiptValidation.h"
 
 #ifdef DEBUG
-#define VTAInAppPurchasesDebug 0
+#define VTAInAppPurchasesDebug 1
 #define VTAInAppPurchasesPListError 0
 #define VTAInAppPurchasesCacheError 0
 #define VTAInAppPurchasesClearInstantUnlock 0
@@ -825,7 +825,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     if ( request == self.refreshRequest ) {
         
 #if VTAInAppPurchasesDebug
-        NSLog(@"Receipt refresh failed");
+        NSLog(@"Receipt refresh failed: %@", error.localizedDescription);
 #endif
         _receiptRefreshFailed = YES;
         self.completion(NO);

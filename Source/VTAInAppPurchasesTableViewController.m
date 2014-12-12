@@ -242,9 +242,10 @@
     
     if ( [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey] ) {
         
-        NSError *error = [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey];
+        
         
 #ifdef DEBUG
+        NSError *error = [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey];        
         NSLog(@"Couldn't display products: %@", error.localizedDescription);
 #endif
         // List purchased non-consumables
