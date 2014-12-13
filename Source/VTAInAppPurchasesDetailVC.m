@@ -128,6 +128,10 @@
     label.hidden = NO;
     progresView.hidden = YES;
     
+    if ( self.delegate ) {
+        [self.delegate vtaInAppPurchasesDetailViewController:self productWasPurchased:product];
+    }
+    
     if ( product.consumable ) {
         [UIView animateWithDuration:0.5 delay:1.0 options:0 animations:^{
             label.alpha = 0.0f;

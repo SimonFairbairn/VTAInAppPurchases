@@ -151,17 +151,22 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     if ( ![self.validator validateReceipt] ) {
         [self failValidation];
     } else {
+        
+        _receiptValidationFailed = NO;
+        _originalVersionNumber = self.validator.originalPurchasedVersion;        
 
 #if VTAInAppPurchasesDebug
         NSLog(@"Receipt is valid.");
 #endif
         if ( self.completion ) {
+#if VTAInAppPurchasesDebug
+            NSLog(@"Running completion handler.");
+#endif
+            
             self.completion(YES);
         }
 
-        _receiptValidationFailed = NO;
-        _originalVersionNumber = self.validator.originalPurchasedVersion;
-        [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesReceiptDidValidateNotification object:self];        
+        [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesReceiptDidValidateNotification object:self];
     }
 }
 

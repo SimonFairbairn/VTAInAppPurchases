@@ -52,7 +52,7 @@
     self.tableView.estimatedRowHeight = 93.0f;
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(reload:) forControlEvents:UIControlEventValueChanged];
-
+    
 }
 
 -(void)viewWillAppear:(BOOL)animated {
@@ -63,21 +63,26 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateProduct:) name:VTAProductStatusDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productDownloadChanged:) name:VTAInAppPurchasesProductDownloadStatusDidChangeNotification object:nil];
     
-    [self.tableView reloadData];    
+    [self.tableView reloadData];
 }
 
 -(void)viewDidAppear:(BOOL)animated {
     
     [super viewDidAppear:animated];
-
+    
     // Only refresh automatically if we haven't already loaded the products
-    if ( !self.products ) {
+    if ( !self.products  ) {
         
-        [self.refreshControl beginRefreshing];
-        [self.tableView setContentOffset:CGPointMake(0, self.tableView.contentOffset.y-self.refreshControl.frame.size.height) animated:YES];
-        
-        // Passing nil lets the method know that this was not a user-generated refresh
-        [self reload:nil];
+        if ( [VTAInAppPurchases sharedInstance].productsLoadingStatus != VTAInAppPurchasesStatusProductsLoaded ) {
+            
+            [self.refreshControl beginRefreshing];
+            [self.tableView setContentOffset:CGPointMake(0, self.tableView.contentOffset.y-self.refreshControl.frame.size.height) animated:YES];
+            
+            // Passing nil lets the method know that this was not a user-generated refresh
+            [self reload:nil];
+        } else {
+            [self displayProducts:nil];
+        }
     }
 }
 
@@ -113,7 +118,7 @@
         // Set the model object to nil
         self.products = nil;
         self.purchasedProducts = nil;
-
+        
         BOOL forceReload = NO;
         // If there's a sender, then it means it's been activated by the user, so animate nicely
         if ( sender ) {
@@ -123,13 +128,13 @@
             // Otherwise, straight reload
             [self.tableView reloadData];
         }
-
+        
         if ( forceReload || [VTAInAppPurchases sharedInstance].productsLoadingStatus != VTAInAppPurchasesStatusProductsLoaded ) {
             // Call the IAP singleton to reload the products
             [[VTAInAppPurchases sharedInstance] validateReceiptWithCompletionHandler:^(BOOL receiptIsValid) {
                 [[VTAInAppPurchases sharedInstance] loadProducts];
             }];
-
+            
         } else {
             [self displayProducts:nil];
         }
@@ -158,7 +163,7 @@
         return count;
     }
     
-    return [self.products count]; 
+    return [self.products count];
 }
 
 
@@ -184,7 +189,7 @@
     } else {
         product = [self.products objectAtIndex:indexPath.row];
     }
-
+    
     [self.formatter setLocale:product.product.priceLocale];
     
     cell.statusLabel.text = nil;
@@ -199,7 +204,7 @@
     cell.nonConsumable = product.consumable;
     cell.titleLabel.text = (product.product.localizedTitle) ? product.product.localizedTitle : product.productTitle;
     cell.priceLabel.text = (!product.consumable && product.purchased) ? NSLocalizedString(@"Purchased", nil) : [self.formatter stringFromNumber:product.product.price];
-
+    
     [cell addThumbnailImage:product.productIcon animated:NO];
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
@@ -238,14 +243,14 @@
  */
 -(void)displayProducts:(NSNotification *)note {
     
-    [self listPurchasedProducts];    
+    [self listPurchasedProducts];
     
     if ( [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey] ) {
         
         
         
 #ifdef DEBUG
-        NSError *error = [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey];        
+        NSError *error = [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey];
         NSLog(@"Couldn't display products: %@", error.localizedDescription);
 #endif
         // List purchased non-consumables
@@ -254,13 +259,13 @@
     } else {
         
         NSMutableArray *array = [NSMutableArray new];
-
+        
         for ( VTAProduct *product in [VTAInAppPurchases sharedInstance].productList ) {
- 
+            
             switch (self.productType) {
                 case VTAInAppPurchasesTableViewControllerProductTypeAll: {
                     if ( self.separatePurchased && product.purchased ) {
-
+                        
                     } else {
                         [array addObject:product];
                     }
@@ -270,19 +275,19 @@
                 case VTAInAppPurchasesTableViewControllerProductTypeConsumables: {
                     if ( product.consumable ) {
                         if ( self.separatePurchased && product.purchased ) {
-
+                            
                         } else {
                             [array addObject:product];
                         }
                     }
-
+                    
                     break;
                     
                 }
                 case VTAInAppPurchasesTableViewControllerProductTypeNonConsumables: {
                     if ( !product.consumable ) {
                         if ( self.separatePurchased && product.purchased ) {
-
+                            
                         } else {
                             [array addObject:product];
                         }
@@ -301,7 +306,7 @@
             VTAProduct *vtaProductToIgnore = [[VTAInAppPurchases sharedInstance] vtaProductForIdentifier:productToIgnore];
             [array removeObject:vtaProductToIgnore];
         }
-                
+        
         self.products = array;
     }
     

@@ -8,9 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
-@class VTAProduct;
+@class VTAProduct, VTAInAppPurchasesDetailViewController;
+
+@protocol VTAInAppPurchasesDetailViewControllerDelegate <NSObject>
+
+-(void)vtaInAppPurchasesDetailViewController:(VTAInAppPurchasesDetailViewController *)controller productWasPurchased:(VTAProduct *)product;
+
+@end
 
 @interface VTAInAppPurchasesDetailViewController : UIViewController
+
+@property (nonatomic, assign) id<VTAInAppPurchasesDetailViewControllerDelegate> delegate;
 
 @property (nonatomic, strong) VTAProduct *product;
 @property (nonatomic, strong) VTAProduct *secondProduct;
