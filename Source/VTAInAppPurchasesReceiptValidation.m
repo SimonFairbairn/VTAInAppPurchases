@@ -13,7 +13,7 @@
 #import "sha.h"
 
 #ifdef DEBUG
-#define VTAInAppPurchasesReceiptValidationDebug 1
+#define VTAInAppPurchasesReceiptValidationDebug 0
 #endif
 
 @interface VTAInAppPurchasesReceiptValidation ()
