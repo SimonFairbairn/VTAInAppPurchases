@@ -170,6 +170,8 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     VTAInAppPurchasesTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:VTAInAppPurchasesTableViewCellIdentifier  forIndexPath:indexPath];
+    cell.priceLabel.hidden = NO;
+    cell.statusLabel.hidden = NO;
     
     VTAProduct *product;
     if ( indexPath.section == 1 ) {
@@ -402,8 +404,13 @@
             if ( product.purchaseInProgress && product.hosted ) {
                 cell.progressView.progress = product.progress;
             } else if ( !product.purchaseInProgress ) {
-                [self.tableView reloadRowsAtIndexPaths:@[ip] withRowAnimation:UITableViewRowAnimationFade];
-                [self.loadingProducts removeObject:product];
+                if ( self.purchasedProducts ) {
+                    [self reload:nil];
+                    [self.tableView reloadData];
+                } else {
+                    [self.tableView reloadRowsAtIndexPaths:@[ip] withRowAnimation:UITableViewRowAnimationFade];
+                    [self.loadingProducts removeObject:product];
+                }
             }
         } else {
             [self.tableView reloadRowsAtIndexPaths:@[ip] withRowAnimation:UITableViewRowAnimationFade];
