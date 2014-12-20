@@ -393,11 +393,23 @@
 }
 
 -(void)productDownloadChanged:(NSNotification *)note {
-    
     VTAProduct *product = [[note.userInfo objectForKey:VTAInAppPurchasesProductsAffectedUserInfoKey] firstObject];
     if ( product ) {
         NSUInteger row = [self.products indexOfObject:product];
-        NSIndexPath *ip = [NSIndexPath indexPathForRow:row inSection:0];
+        NSInteger section = 0;
+        if ( [self.purchasedProducts containsObject:product] ) {
+            row = [self.purchasedProducts indexOfObject:product];
+            if ( self.defaultPurchasedRow ) {
+                row++;
+            }
+            section = 1;
+            if ( [self.purchasedProductsToIgnore containsObject:product] ) {
+                return;
+            }
+        }
+        
+
+        NSIndexPath *ip = [NSIndexPath indexPathForRow:row inSection:section];
         if ( [self.loadingProducts containsObject:product] ) {
             VTAInAppPurchasesTableViewCell *cell = (VTAInAppPurchasesTableViewCell *)[self.tableView cellForRowAtIndexPath:ip];
             
@@ -413,8 +425,12 @@
                 }
             }
         } else {
-            [self.tableView reloadRowsAtIndexPaths:@[ip] withRowAnimation:UITableViewRowAnimationFade];
-            [self.loadingProducts addObject:product];
+            if ( [self.tableView numberOfRowsInSection:ip.section] < 1 ) {
+                // Product not in table view, don't do anything.
+            } else {
+                [self.tableView reloadRowsAtIndexPaths:@[ip] withRowAnimation:UITableViewRowAnimationFade];
+                [self.loadingProducts addObject:product];
+            }
         }
     }
 }
