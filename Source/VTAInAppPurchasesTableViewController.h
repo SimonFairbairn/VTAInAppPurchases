@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class VTAProduct;
+
 static NSString * const IAPESTableViewCellIdentifier = @"IAPESTableViewCellIdentifier";
 
 typedef NS_ENUM(NSUInteger, VTAInAppPurchasesTableViewControllerProductType) {
@@ -35,21 +37,6 @@ typedef NS_ENUM(NSUInteger, VTAInAppPurchasesTableViewControllerProductType) {
 @property (nonatomic, copy) NSArray *productsToIgnore;
 
 /**
- *  A read-only list of the currently available products
- */
-@property (nonatomic, readonly) NSArray *purchasedProducts;
-
-/**
- *  An array of product identifiers that should be ignored when constructing the purchased product list
- */
-@property (nonatomic, copy) NSArray *purchasedProductsToIgnore;
-
-/**
- *  Set this to YES to have the view controller ignore any non-consumables that have already been purchased
- */
-@property (nonatomic) BOOL separatePurchased;
-
-/**
  *  Set this to have the first row of the purchased section be a non-IAP default value, for when
  *  you want to always have a row in the purchased section even when everything else is unpurchased.
  */
@@ -74,5 +61,7 @@ typedef NS_ENUM(NSUInteger, VTAInAppPurchasesTableViewControllerProductType) {
  *  @param note The NSNotification that initiated the reload, in this case the VTAInAppPurchasesProductsDidFinishUpdatingNotification.
  */
 -(void)displayProducts:(NSNotification *)note;
+
+-(VTAProduct *)productForIndexPath:(NSIndexPath *)ip;
 
 @end

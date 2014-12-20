@@ -30,6 +30,7 @@ NSString * const VTAProductStatusDidChangeNotification = @"VTAProductStatusDidCh
         _childProducts = dict[@"childProducts"];
         _productTitle = dict[@"productTitle"];
         _purchased = [dict[@"purchased"] boolValue];
+        _maximumChildPurchasesBeforeHiding = dict[@"maxChildren"];
         NSDictionary *descriptionDictionary = dict[@"longDescription"];
         
         [self objectIsDictionary:dict];

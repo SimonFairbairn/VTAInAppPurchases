@@ -13,7 +13,7 @@
 #import "VTAInAppPurchasesReceiptValidation.h"
 
 #ifdef DEBUG
-#define VTAInAppPurchasesDebug 1
+#define VTAInAppPurchasesDebug 0
 #define VTAInAppPurchasesResetCache 0
 #define VTAInAppPurchasesPListError 0
 #define VTAInAppPurchasesCacheError 0
@@ -434,6 +434,15 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     }
     
     self.productList = [array copy];
+
+    for ( VTAProduct *product in self.productList ) {
+        if ( product.childProducts ) {
+            for ( NSString *childProductId in product.childProducts ) {
+                VTAProduct *childProduct = [self vtaProductForIdentifier:childProductId];
+                childProduct.parentProduct = product;
+            }
+        }
+    }
     
 #if VTAInAppPurchasesDebug
     NSLog(@"VTAInAppPurchases: New product list: %@", self.productList);
