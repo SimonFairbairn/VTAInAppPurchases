@@ -363,8 +363,6 @@
     VTAProduct *product = [[note.userInfo objectForKey:VTAInAppPurchasesProductsAffectedUserInfoKey] firstObject];
     if ( product ) {
         
-        NSLog(@"Product (%@) download changed.", product.productIdentifier);
-        
         NSIndexPath *ip = [self indexPathForProduct:product];
         if ( [self.loadingProducts containsObject:product] ) {
             [self updateCellAtIndexPath:ip withProduct:product];
@@ -373,7 +371,6 @@
                 if ( [self.loadingProducts containsObject:childProduct] ) {
                     NSIndexPath *childIP = [self indexPathForProduct:childProduct];
                     if ( childIP ) {
-                        NSLog(@"Child product: %@ exists. Reloading cell at index path: %@", childProduct.productIdentifier, childIP);
                         [self updateCellAtIndexPath:childIP withProduct:childProduct];
                     }
                 }
@@ -389,7 +386,6 @@
 
                 NSIndexPath *ip = [self indexPathForProduct:childProduct];
                 if ( ip ) {
-                    NSLog(@"Child product found: %@ with Index Path: %@", childProduct.productIdentifier, ip);
                     [ips addObject:ip];
                     [self.loadingProducts addObject:childProduct];
                 }
@@ -429,6 +425,9 @@
         [self.loadingProducts removeObject:product];
         if ( product.parentProduct ) {
             [self.loadingProducts removeObject:product.parentProduct];
+        }
+        if ( [self.loadingProducts count] < 1 ) {
+            [self displayProducts:nil];
         }
     }
     
