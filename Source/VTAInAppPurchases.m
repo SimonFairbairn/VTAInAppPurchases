@@ -13,8 +13,8 @@
 #import "VTAInAppPurchasesReceiptValidation.h"
 
 #ifdef DEBUG
-#define VTAInAppPurchasesDebug 0
-#define VTAInAppPurchasesResetCache 0
+#define VTAInAppPurchasesDebug 1
+#define VTAInAppPurchasesResetCache 1
 #define VTAInAppPurchasesPListError 0
 #define VTAInAppPurchasesCacheError 0
 #define VTAInAppPurchasesClearInstantUnlock 0
@@ -1031,10 +1031,8 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         }
         
         NSMutableDictionary *productsAffected = [NSMutableDictionary new];
-        NSArray *productArray;
         if ( product ) {
             [productsAffected setObject:@[product] forKey:VTAInAppPurchasesProductsAffectedUserInfoKey];
-            productArray = @[product];
         }
         if ( downloadError ) {
             [productsAffected setObject:downloadError forKey:VTAInAppPurchasesNotificationErrorUserInfoKey];

@@ -64,4 +64,6 @@ typedef NS_ENUM(NSUInteger, VTAInAppPurchasesTableViewControllerProductType) {
 
 -(VTAProduct *)productForIndexPath:(NSIndexPath *)ip;
 
+-(NSIndexPath *)indexPathForProduct:(VTAProduct *)product;
+
 @end

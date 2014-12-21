@@ -288,11 +288,14 @@
                 }
                 case VTAInAppPurchasesTableViewControllerProductTypeNonConsumables: {
                     if ( !product.consumable ) {
-                        if ( product.childProducts ) {
+                        if ( product.childProducts && product.maximumChildPurchasesBeforeHiding ) {
+                            NSLog(@"%@", product.maximumChildPurchasesBeforeHiding);
                             NSInteger numberToHide = 0;
                             for ( NSString *identifier in product.childProducts ) {
 
                                 VTAProduct *product = [[VTAInAppPurchases sharedInstance] vtaProductForIdentifier:identifier];
+
+                                
                                 if ( product.purchased ) {
                                     numberToHide++;
                                 }
