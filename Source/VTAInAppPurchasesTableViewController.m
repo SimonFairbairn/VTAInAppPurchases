@@ -355,6 +355,8 @@
 }
 
 -(void)productDownloadChanged:(NSNotification *)note {
+    
+    
     VTAProduct *product = [[note.userInfo objectForKey:VTAInAppPurchasesProductsAffectedUserInfoKey] firstObject];
     if ( product ) {
         
@@ -391,6 +393,17 @@
             }
             [self.tableView reloadRowsAtIndexPaths:ips withRowAnimation:UITableViewRowAnimationNone];
         }
+    }
+    
+    NSError *error = [note.userInfo objectForKey:VTAInAppPurchasesNotificationErrorUserInfoKey];
+    if ( error ) {
+        
+        NSString *text = NSLocalizedString(@"Couldn't download files. Please check your Internet connection, then try restoring again.", nil);
+        if ( product ) {
+            text = [NSString stringWithFormat:NSLocalizedString(@"Couldn't download files for %@. Please check your Internet connection, then try restoring again.", nil), product.product.localizedTitle];
+        }
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Download Failed", nil) message:text delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+        [self.tableView reloadData];
     }
 }
 

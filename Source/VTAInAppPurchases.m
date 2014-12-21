@@ -19,6 +19,7 @@
 #define VTAInAppPurchasesCacheError 0
 #define VTAInAppPurchasesClearInstantUnlock 0
 #define VTAInAppPurchasesForceInvalidReceipt 0
+#define VTAInAppPurchasesForceNilProduct 0
 #endif
 
 NSString * const VTAInAppPurchasesProductListDidUpdateNotification = @"VTAInAppPurchasesProductListDidUpdateNotification";
@@ -352,7 +353,6 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         if ( secondsSinceLastUpdate && [[now laterDate:lastUpdate] isEqualToDate:lastUpdate]  ) {
             return YES;
         }
-        
     }
     return NO;
 }
@@ -427,9 +427,14 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     for ( id dictionary in updatedIncomingFile ) {
         if ( [dictionary isKindOfClass:[NSDictionary class]] ) {
             VTAProduct *product = [[VTAProduct alloc] initWithProductDetailDictionary:dictionary];
-            [array addObject:product];
-            [productIDs addObject:product.productIdentifier];
-            [self.productLookupDictionary setObject:product forKey:product.productIdentifier];
+#if VTAInAppPurchasesForceNilProduct
+//            product = nil;
+#endif
+            if ( product ) {
+                [array addObject:product];
+                [productIDs addObject:product.productIdentifier];
+                [self.productLookupDictionary setObject:product forKey:product.productIdentifier];
+            }
         }
     }
     
@@ -751,7 +756,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 -(void)provideContent:(SKPaymentTransaction *)transaction {
     
     VTAProduct *product = [self.productLookupDictionary objectForKey:transaction.payment.productIdentifier];
-    
+
     // If there's no product, which might happen if we have a product in iTunes connect but not in our plist
     // We need to return without taking any further action
     if ( !product ) return;
@@ -947,6 +952,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     for ( SKDownload *download in downloads ) {
         
         VTAProduct *product = [self.productLookupDictionary objectForKey:download.transaction.payment.productIdentifier];
+#if VTAInAppPurchasesForceNilProduct
+        product = nil;
+#endif
+        
         NSError *downloadError;
         
         switch (download.downloadState) {
@@ -989,11 +998,14 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                         NSLog(@"VTAInAppPurchases: %s Moving from %@ to %@", __PRETTY_FUNCTION__, [contentsPath stringByAppendingPathComponent:path], [[product.localContentURL URLByAppendingPathComponent:path] path]);
 #endif
                         
-                        if ( downloadError ) {
-                            break;
-                        }
+//                        if ( downloadError ) {
+//                            break;
+//                        }
                     }
                 }
+#if VTAInAppPurchasesDebug
+//                downloadError = [NSError errorWithDomain:@"VTAInAppPurchasesError" code:100 userInfo:@{NSLocalizedDescriptionKey : @"Forced download error"}];
+#endif
                 
                 if ( downloadError ) {
                     
@@ -1018,11 +1030,14 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                 break;
         }
         
-        NSDictionary *productsAffected;
+        NSMutableDictionary *productsAffected = [NSMutableDictionary new];
+        NSArray *productArray;
+        if ( product ) {
+            [productsAffected setObject:@[product] forKey:VTAInAppPurchasesProductsAffectedUserInfoKey];
+            productArray = @[product];
+        }
         if ( downloadError ) {
-            productsAffected = @{VTAInAppPurchasesNotificationErrorUserInfoKey : downloadError, VTAInAppPurchasesProductsAffectedUserInfoKey: @[product]};
-        } else {
-            productsAffected = @{VTAInAppPurchasesProductsAffectedUserInfoKey: @[product]};
+            [productsAffected setObject:downloadError forKey:VTAInAppPurchasesNotificationErrorUserInfoKey];
         }
         
         [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesProductDownloadStatusDidChangeNotification object:self userInfo:productsAffected];
