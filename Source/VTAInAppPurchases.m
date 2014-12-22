@@ -20,8 +20,10 @@
 #define VTAInAppPurchasesClearInstantUnlock 0
 #define VTAInAppPurchasesForceInvalidReceipt 0
 #define VTAInAppPurchasesForceNilProduct 0
+#define VTAInAppPurchasesCannotMakePurchases 0
 #endif
 
+NSString * const VTAInAppPurchasesErrorDomain = @"VTAInAppPurchasesErrorDomain";
 NSString * const VTAInAppPurchasesProductListDidUpdateNotification = @"VTAInAppPurchasesProductListDidUpdateNotification";
 NSString * const VTAInAppPurchasesProductsDidFinishUpdatingNotification = @"VTAInAppPurchasesProductsDidFinishUpdatingNotification";
 NSString * const VTAInAppPurchasesPurchasesDidCompleteNotification = @"VTAInAppPurchasesPurchasesDidCompleteNotification";
@@ -699,7 +701,13 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 // Purchasing and restoring
 -(void)purchaseProduct:(VTAProduct *)product {
     
-    if ( [SKPaymentQueue canMakePayments] ) {
+    BOOL canMakePayments = [SKPaymentQueue canMakePayments];
+    
+#if VTAInAppPurchasesCannotMakePurchases
+    canMakePayments = NO;
+#endif
+    
+    if ( canMakePayments ) {
         
         SKPayment *payment = [SKPayment paymentWithProduct:product.product];
         [[SKPaymentQueue defaultQueue] addPayment:payment];
@@ -707,8 +715,14 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         
     } else {
         
-        // Handle not allowed error
 
+        // Handle not allowed error
+        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : @"This Apple ID is unable to make payments. Please check your payment information." };
+        NSError *error = [NSError errorWithDomain:VTAInAppPurchasesErrorDomain code:VTAInAppPurchasesErrorCodeCannotMakePayments userInfo:userInfo];
+        
+        NSDictionary *errorDict = @{ VTAInAppPurchasesNotificationErrorUserInfoKey : error, VTAInAppPurchasesProductsAffectedUserInfoKey : @[product] };
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesPurchasesDidCompleteNotification object:nil userInfo:errorDict];
 #if VTAInAppPurchasesDebug
         NSLog(@"VTAInAppPurchases: Can't make payments");
 #endif

@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSUInteger, VTAInAppPurchasesErrorCode ) {
+    VTAInAppPurchasesErrorCodeCannotMakePayments = 200
+};
+
 typedef NS_ENUM(NSUInteger, VTAInAppPurchasesStatus) {
     VTAInAppPurchasesStatusProductsLoadFailed     = -2,
     VTAInAppPurchasesStatusProductsListLoadFailed = -1,
@@ -15,6 +19,12 @@ typedef NS_ENUM(NSUInteger, VTAInAppPurchasesStatus) {
     VTAInAppPurchasesStatusProductsListLoaded     = 1,
     VTAInAppPurchasesStatusProductsLoaded        = 2
 };
+
+/**
+ *  This notification will be sent when the product list is updated.
+ */
+extern NSString * const VTAInAppPurchasesErrorDomain;
+
 
 /**
  *  This notification will be sent when the product list is updated.

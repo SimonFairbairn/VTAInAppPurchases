@@ -246,7 +246,9 @@
 #pragma mark - Notifications
 
 -(void)handlePurchaseCompletion:(NSNotification *)note {
-    
+    if ( note.userInfo[VTAInAppPurchasesNotificationErrorUserInfoKey] ) {
+//        [UIAlertView alloc] initWithTitle:@"Purchase failed" message:<#(NSString *)#> delegate:<#(id)#> cancelButtonTitle:<#(NSString *)#> otherButtonTitles:<#(NSString *), ...#>, nil
+    }
 }
 
 -(void)handleRestoreCompletion:(NSNotification *)note {
