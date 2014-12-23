@@ -13,7 +13,7 @@
 #import "sha.h"
 
 #ifdef DEBUG
-#define VTAInAppPurchasesReceiptValidationDebug 0
+#define VTAInAppPurchasesReceiptValidationDebug 1
 #endif
 
 @interface VTAInAppPurchasesReceiptValidation ()
@@ -89,6 +89,10 @@
     OpenSSL_add_all_digests();
     
     NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+
+#if VTAInAppPurchasesReceiptValidationDebug
+    NSLog(@"%@", receiptURL);
+#endif
     
     if ( ![[NSFileManager defaultManager] fileExistsAtPath:receiptURL.path] ) {
         
@@ -290,6 +294,12 @@
 #endif
             
         }
+        
+        if ( !_originalPurchasedVersion ) {
+            _valid = NO;
+            return NO;
+        }
+        
         _valid = YES;
         return YES;
     }
