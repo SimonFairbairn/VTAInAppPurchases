@@ -13,7 +13,8 @@
 #import "VTAInAppPurchasesReceiptValidation.h"
 
 #ifdef DEBUG
-#define VTAInAppPurchasesDebug 0
+#define VTAInAppPurchasesDebug 1
+#define VTAInAppPurchasesDownloadDebug 0
 #define VTAInAppPurchasesResetCache 0
 #define VTAInAppPurchasesPListError 0
 #define VTAInAppPurchasesCacheError 0
@@ -771,6 +772,11 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     
     VTAProduct *product = [self.productLookupDictionary objectForKey:transaction.payment.productIdentifier];
 
+#if VTAInAppPurchasesDebug
+    NSLog(@"Providing content for product: %@", product.productIdentifier);
+#endif
+    
+    
     // If there's no product, which might happen if we have a product in iTunes connect but not in our plist
     // We need to return without taking any further action
     if ( !product ) return;
@@ -786,8 +792,6 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     NSDictionary *userInfo = @{VTAInAppPurchasesProductsAffectedUserInfoKey : @[product]};
     [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesPurchasesDidCompleteNotification object:self userInfo:userInfo];
 }
-
-
 
 #pragma mark -
 #pragma mark - SKProductsRequestDelegate
@@ -987,9 +991,12 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                 
             case SKDownloadStateFinished: {
                 product.purchaseInProgress = NO;
-                
                 NSString *contentsPath = [[download.contentURL URLByAppendingPathComponent:@"Contents"] path];
                 NSArray *array = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:contentsPath error:nil];
+                
+#if VTAInAppPurchasesDebug
+                NSLog(@"Download finished for product: %@", product.productIdentifier);
+#endif
                 
                 if ( [[NSFileManager defaultManager] createDirectoryAtPath:[product.localContentURL path] withIntermediateDirectories:YES attributes:nil error:&downloadError] ) {
                     for ( NSString *path in array ) {
@@ -1008,7 +1015,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                                                                                                error:nil];
                         
 
-#if VTAInAppPurchasesDebug
+#if VTAInAppPurchasesDownloadDebug
                         NSLog(@"VTAInAppPurchases: %s Moving from %@ to %@", __PRETTY_FUNCTION__, [contentsPath stringByAppendingPathComponent:path], [[product.localContentURL URLByAppendingPathComponent:path] path]);
 #endif
                         
@@ -1017,24 +1024,30 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 //                        }
                     }
                 }
-#if VTAInAppPurchasesDebug
+#if VTAInAppPurchasesDownloadDebug
 //                downloadError = [NSError errorWithDomain:@"VTAInAppPurchasesError" code:100 userInfo:@{NSLocalizedDescriptionKey : @"Forced download error"}];
 #endif
                 
                 if ( downloadError ) {
                     
-#if VTAInAppPurchasesDebug
+#if VTAInAppPurchasesDownloadDebug
                     NSLog(@"VTAInAppPurchases: %s Failed to move file: %@", __PRETTY_FUNCTION__, downloadError.localizedDescription);
 #endif
                     
                 } else {
                     [self provideContentForTransaction:download.transaction];
                 }
+                
+                // Finish transaction
                 [[SKPaymentQueue defaultQueue] finishTransaction:download.transaction];
                 break;
             }
             case SKDownloadStateActive: {
                 product.progress = download.progress;
+#if VTAInAppPurchasesDownloadDebug
+                NSLog(@"%s updating progress: %@ for product: %@", __PRETTY_FUNCTION__, @(product.progress), product.productIdentifer);
+#endif
+                
                 break;
             }
             case SKDownloadStateCancelled: {
