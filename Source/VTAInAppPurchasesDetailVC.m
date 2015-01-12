@@ -129,7 +129,9 @@
     progresView.hidden = YES;
     
     if ( self.delegate ) {
-        [self.delegate vtaInAppPurchasesDetailViewController:self productWasPurchased:product];
+        if ( [self.delegate respondsToSelector:@selector(vtaInAppPurchasesDetailViewController:productWasPurchased:)] ) {
+            [self.delegate vtaInAppPurchasesDetailViewController:self productWasPurchased:product];
+        }
     }
     
     if ( product.consumable ) {
