@@ -13,11 +13,12 @@
 #import "VTAInAppPurchasesReceiptValidation.h"
 
 #ifdef DEBUG
-#define VTAInAppPurchasesDebug 1
+#define VTAInAppPurchasesDebug 0
 #define VTAInAppPurchasesDownloadDebug 0
 #define VTAInAppPurchasesResetCache 0
 #define VTAInAppPurchasesPListError 0
 #define VTAInAppPurchasesCacheError 0
+#define VTAInAppPurchasesCacheWriteError 0
 #define VTAInAppPurchasesClearInstantUnlock 0
 #define VTAInAppPurchasesForceInvalidReceipt 0
 #define VTAInAppPurchasesForceNilProduct 0
@@ -473,6 +474,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     
 #if VTAInAppPurchasesDebug
     NSLog(@"%s", __PRETTY_FUNCTION__);
+#endif
+    
+#if VTAInAppPurchasesCacheWriteError
+    file = nil;
 #endif
     
     if ( [file writeToURL:self.cacheURL atomically:YES] ) {
