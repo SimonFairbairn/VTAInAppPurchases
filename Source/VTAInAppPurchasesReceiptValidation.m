@@ -13,7 +13,8 @@
 #import "sha.h"
 
 #ifdef DEBUG
-#define VTAInAppPurchasesReceiptValidationDebug 1
+#define VTAInAppPurchasesReceiptValidationDebug 0
+#define VTAInAppPurchasesReceiptValidationAlwaysFail 0
 #endif
 
 @interface VTAInAppPurchasesReceiptValidation ()
@@ -84,6 +85,7 @@
     NSLog(@"%s ", __PRETTY_FUNCTION__);
 #endif
     
+    
     self.arrayOfPurchasedIAPs = nil;
     
     OpenSSL_add_all_digests();
@@ -93,6 +95,10 @@
 #if VTAInAppPurchasesReceiptValidationDebug
     NSLog(@"%@", receiptURL);
 #endif
+#if VTAInAppPurchasesReceiptValidationAlwaysFail
+    receiptURL = nil;
+#endif
+    
     
     if ( ![[NSFileManager defaultManager] fileExistsAtPath:receiptURL.path] ) {
         

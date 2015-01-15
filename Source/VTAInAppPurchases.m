@@ -13,10 +13,10 @@
 #import "VTAInAppPurchasesReceiptValidation.h"
 
 #ifdef DEBUG
-#define VTAInAppPurchasesDebug 1
+#define VTAInAppPurchasesDebug 0
 #define VTAInAppPurchasesDownloadDebug 0
-#define VTAInAppPurchasesSKProductLoadFailure 1
-#define VTAInAppPurchasesShortCacheTime 1
+#define VTAInAppPurchasesSKProductLoadFailure 0
+#define VTAInAppPurchasesShortCacheTime 0
 #define VTAInAppPurchasesResetCache 0
 #define VTAInAppPurchasesCacheError 0
 #define VTAInAppPurchasesPListError 0
@@ -439,10 +439,23 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
             [updatedIncomingFile addObject:mutableIncomingDictionary];
         }
     } else if ( usingCache && !self.cachedPlistFile ) {
+#if VTAInAppPurchasesDebug
+        NSLog(@"VTAInAppPurchases %s: Using cache but no cachedPlistFile.", __PRETTY_FUNCTION__);
+#endif
+        
         updatedIncomingFile = [self.incomingPlistFile mutableCopy];
     } else if ( !usingCache && !self.cachedPlistFile ){
+#if VTAInAppPurchasesDebug
+        NSLog(@"VTAInAppPurchases %s: Not using cache and no cachedPlistFile.", __PRETTY_FUNCTION__);
+#endif
+        
         updatedIncomingFile = [self.incomingPlistFile mutableCopy];
     } else if ( usingCache ) {
+        
+#if VTAInAppPurchasesDebug
+        NSLog(@"VTAInAppPurchases %s: Using cache.", __PRETTY_FUNCTION__);
+#endif
+        
         updatedIncomingFile = [self.cachedPlistFile mutableCopy];
     }
 
@@ -517,6 +530,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
  *  SKProduct objects or there will have been some sort of failure.
  */
 -(void)productLoadingDidFinishWithError:(NSError *)error {
+    
+#if VTAInAppPurchasesSKProductLoadFailure
+    error = [NSError errorWithDomain:VTAInAppPurchasesErrorDomain code:102 userInfo:@{NSLocalizedDescriptionKey : @"Couldn't load products from App Store"}];
+#endif
     
     if ( self.productList ) {
         [self updateCache];
