@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSUInteger, VTAInAppPurchasesErrorCode ) {
+    VTAInAppPurchasesErrorCodePlistFileInvalid = 100,
     VTAInAppPurchasesErrorCodeCannotMakePayments = 200
 };
 
@@ -114,6 +115,11 @@ extern NSString * const VTAInAppPurchasesNotificationErrorUserInfoKey;
  *  The original purchased version of the app
  */
 @property (nonatomic, readonly) NSString *originalVersionNumber;
+
+/**
+ *  Number of days to store the cache (default is 1)
+ */
+@property (nonatomic, strong) NSNumber *cacheDays;
 
 // METHODS
 
