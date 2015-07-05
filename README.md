@@ -12,13 +12,15 @@ It also includes receipt validation but this is provided as a convenience. It in
 
 USE AT YOUR OWN RISK. Although I hope it helps you get up and running with In App Purchases quickly and easily, I can accept no responsibility for any loss of revenue resulting from the use of this code.
 
-### A Four-and-a-bit Step Guide to Getting Set Up
+### A Five-and-a-bit Step Guide to Getting Set Up
 
 1) Set up your In App Purchases in iTunesConnect. Make a note of the identifiers.
 
 2) Add this repository as a submodule. Pull in the `source` folder into Xcode (uncheck `copy items`). You should have the `VTAProduct` and `VTAInAppPurchases` classes, along with the `productListExample.plist` file)
 
-3) Import `"VTAInAppPurchases.h"` somewhere useful (e.g. your app delegate) then set either the remote or local URL pointing to your plist file:
+3) If you decide to use the OpenSSL and receipt validation, you'll need to set up your header and library search paths. In your project `Build Settings`, find `Header Search Paths` and add `$(SRCROOT)/<submodule folder>/Source/include` (`<submodule folder>` should be changed to the folder in which the VTAInAppPurchases source resides). Then, under `Library Search Paths`, add `$(PROJECT_DIR)/<submodule folder>/Source/lib`. Also make sure that `librcypto.a` and `libssl.a` are included in your `Link Binary With Libraries` build phase.
+
+4) Import `"VTAInAppPurchases.h"` somewhere useful (e.g. your app delegate) then set either the remote or local URL pointing to your plist file:
 
     [VTAInAppPurchases sharedInstance].localURL = [[NSBundle mainBundle] URLForResource:@"ExampleProductList" withExtension:@"plist"];  
     // OR: [VTAInAppPurchases sharedInstance].remoteURL = [NSURL URLWithString:@"http://yourwebsite.com/ExampleProductList.plist"];
@@ -35,9 +37,9 @@ Valid plist keys are (currently not enforced, but may be in future):
 	hosted					(optional) A BOOL indicating whether the additional content is hosted by Apple or is contained within the bundle.
     childProducts           (optional) An array of non-consumable product identifiers that will be automatically unlocked when this one is. Good for multipacks or "buy all" IAPs.
 
-4) In your app delegate (or wherever you want to start loading products), call `[[VTAInAppPurchases sharedInstance] loadProducts];` on the shared instance. 
+5) In your app delegate (or wherever you want to start loading products), call `[[VTAInAppPurchases sharedInstance] loadProducts];` on the shared instance. 
 
-4.b) If you want to use receipt validation, use this instead:
+5.b) If you want to use receipt validation, use this instead:
 
     [[VTAInAppPurchases sharedInstance] validateReceiptWithCompletionHandler:^(BOOL receiptIsValid) {
         [[VTAInAppPurchases sharedInstance] loadProducts];
@@ -54,4 +56,4 @@ Once this is complete, users can start making purchases. An example implementati
 ### Other Notes
 
 * There is also a notification available for the VTAProduct objects as well, `VTAProductStatusDidChangeNotification`, which is sent out when a property is changed. Useful especially when a product's purchased status changes. 
-* Products can be instantly unlocked in code and there's an `originalPurchasedVersion` property on the singleton that tells you when the user first downloaded the app. This can be useful for grandfathering in previous paid users into a freemium model. The product identifiers are stored in user defaults which is read on each launch. s
+* Products can be instantly unlocked in code and there's an `originalPurchasedVersion` property on the singleton that tells you when the user first downloaded the app. This can be useful for grandfathering in previous paid users into a freemium model. The product identifiers are stored in user defaults which is read on each launch. 
