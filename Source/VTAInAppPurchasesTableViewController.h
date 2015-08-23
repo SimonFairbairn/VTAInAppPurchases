@@ -8,7 +8,20 @@
 
 #import <UIKit/UIKit.h>
 
-@class VTAProduct;
+
+@class VTAProduct, VTAInAppPurchasesTableViewController, VTAInAppPurchasesTableViewCell, VTAInAppPurchasesDetailViewController;
+
+@protocol VTAInAppPurchasesTableViewControllerDelegate <NSObject>
+
+@optional
+
+-(void)configureVTAInAppPurchasesTableViewController:(VTAInAppPurchasesTableViewController *)vc;
+-(void)configureTableViewCell:(VTAInAppPurchasesTableViewCell *)cell atIndexPath:(NSIndexPath *)ip forVTAInAppPurchasesTableViewController:(VTAInAppPurchasesTableViewController *)vc;
+-(void)vtaInAppPurchasesTableViewController:(VTAInAppPurchasesTableViewController *)vc willSegueToVTAInAppPurchasesDetailViewController:(VTAInAppPurchasesDetailViewController *)detailVC;
+-(void)vtaInAppPurchasesTableViewController:(VTAInAppPurchasesTableViewController *)vc productWasPurchased:(VTAProduct *)product;
+
+@end
+
 
 static NSString * const IAPESTableViewCellIdentifier = @"IAPESTableViewCellIdentifier";
 
@@ -20,6 +33,14 @@ typedef NS_ENUM(NSUInteger, VTAInAppPurchasesTableViewControllerProductType) {
 
 @interface VTAInAppPurchasesTableViewController : UITableViewController 
 
+
+@property (nonatomic, strong) UIBarButtonItem *restoreButton;
+
+/**
+ *  The controller delegate, for customising the controller and cell views
+ */
+@property (nonatomic, weak) id<VTAInAppPurchasesTableViewControllerDelegate> delegate;
+
 /**
  *  A configurable number formatter for displaying product prices. Defaults to standard currency, and 
  *  configures the locale to the locale of the priceLocale property of SKProduct
@@ -30,6 +51,9 @@ typedef NS_ENUM(NSUInteger, VTAInAppPurchasesTableViewControllerProductType) {
  *  A read-only list of the currently available products
  */
 @property (nonatomic, readonly) NSArray *products;
+
+
+@property (nonatomic) BOOL showRestoreButtonInNavBar;
 
 /**
  *  An array of product identifiers that should be ignored when constructing the product list

@@ -64,6 +64,10 @@
         self.secondBuyButton.hidden = YES;
     }
     
+    if ( self.delegate && [self.delegate respondsToSelector:@selector(configureVTAInAppPurchasesDetailViewController:)] ) {
+        [self.delegate configureVTAInAppPurchasesDetailViewController:self];
+    }
+    
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePurchase:) name:VTAInAppPurchasesPurchasesDidCompleteNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDownload:) name:VTAInAppPurchasesProductDownloadStatusDidChangeNotification object:nil];
@@ -128,10 +132,10 @@
     label.hidden = NO;
     progresView.hidden = YES;
     
-    if ( self.delegate ) {
-        if ( [self.delegate respondsToSelector:@selector(vtaInAppPurchasesDetailViewController:productWasPurchased:)] ) {
-            [self.delegate vtaInAppPurchasesDetailViewController:self productWasPurchased:product];
-        }
+    if ( self.delegate && [self.delegate respondsToSelector:@selector(vtaInAppPurchasesDetailViewController:productWasPurchased:)] ) {
+
+        [self.delegate vtaInAppPurchasesDetailViewController:self productWasPurchased:product];
+
     }
     
     if ( product.consumable ) {

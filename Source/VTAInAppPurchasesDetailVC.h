@@ -12,7 +12,10 @@
 
 @protocol VTAInAppPurchasesDetailViewControllerDelegate <NSObject>
 
+@optional
+
 -(void)vtaInAppPurchasesDetailViewController:(VTAInAppPurchasesDetailViewController *)controller productWasPurchased:(VTAProduct *)product;
+-(void)configureVTAInAppPurchasesDetailViewController:(VTAInAppPurchasesDetailViewController *)controller;
 
 @end
 

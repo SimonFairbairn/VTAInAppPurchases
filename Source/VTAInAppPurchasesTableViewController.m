@@ -22,6 +22,7 @@
 @property (nonatomic, strong) NSMutableArray *loadingProducts;
 @property (nonatomic, strong) NSMutableArray *internalProductsToIgnore;
 
+
 @end
 
 @implementation VTAInAppPurchasesTableViewController
@@ -51,6 +52,25 @@
     return _internalProductsToIgnore;
 }
 
+-(void)setShowRestoreButtonInNavBar:(BOOL)showRestoreButtonInNavBar {
+    _showRestoreButtonInNavBar = showRestoreButtonInNavBar;
+    
+    if ( _showRestoreButtonInNavBar ) {
+            self.navigationItem.rightBarButtonItem = self.restoreButton;
+    } else {
+        self.navigationItem.rightBarButtonItem = nil;
+    }
+    
+}
+
+-(UIBarButtonItem *)restoreButton {
+    if ( !_restoreButton ) {
+        _restoreButton = [[UIBarButtonItem alloc] initWithTitle:@"Restore Purchases" style:UIBarButtonItemStylePlain target:self action:@selector(restorePurchases:)];
+    }
+    return _restoreButton;
+}
+
+
 #pragma mark - View Lifecycle
 
 - (void)viewDidLoad {
@@ -60,6 +80,10 @@
     self.tableView.estimatedRowHeight = 93.0f;
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(reload:) forControlEvents:UIControlEventValueChanged];
+    
+    if ( self.delegate && self.delegate && [self.delegate respondsToSelector:@selector(configureVTAInAppPurchasesTableViewController:)]  ) {
+        [self.delegate configureVTAInAppPurchasesTableViewController:self];
+    }
 }
 
 -(void)viewWillAppear:(BOOL)animated {
@@ -71,6 +95,11 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productDownloadChanged:) name:VTAInAppPurchasesProductDownloadStatusDidChangeNotification object:nil];
     
     [self.tableView reloadData];
+}
+
+-(void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 -(void)viewDidAppear:(BOOL)animated {
@@ -227,13 +256,17 @@
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
     
+    if ( self.delegate && [self.delegate respondsToSelector:@selector(configureTableViewCell:atIndexPath:forVTAInAppPurchasesTableViewController:)] ) {
+        [self.delegate configureTableViewCell:cell atIndexPath:indexPath forVTAInAppPurchasesTableViewController:self];
+    }
+    
     return cell;
 }
 
 #pragma mark - UITableViewDelegate
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    //    [self performSegueWithIdentifier:@"pushDetail" sender:self];
+        [self performSegueWithIdentifier:@"detailSegue" sender:self];
 }
 
 -(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
@@ -248,11 +281,18 @@
 -(void)handlePurchaseCompletion:(NSNotification *)note {
     if ( note.userInfo[VTAInAppPurchasesNotificationErrorUserInfoKey] ) {
 //        [UIAlertView alloc] initWithTitle:@"Purchase failed" message:<#(NSString *)#> delegate:<#(id)#> cancelButtonTitle:<#(NSString *)#> otherButtonTitles:<#(NSString *), ...#>, nil
+    } else {
+        NSArray *products = note.userInfo[VTAInAppPurchasesProductsAffectedUserInfoKey];
+        VTAProduct *product = products.firstObject;
+        
+        if ( self.delegate && [self.delegate respondsToSelector:@selector(vtaInAppPurchasesTableViewController:productWasPurchased:)]) {
+            [self.delegate vtaInAppPurchasesTableViewController:self productWasPurchased:product];
+        }
     }
 }
 
 -(void)handleRestoreCompletion:(NSNotification *)note {
-    
+    [self displayProducts:note];    
 }
 
 /**
@@ -435,14 +475,46 @@
     
 }
 
+-(IBAction)restorePurchases:(id)sender {
+    self.products = nil;
+    [self.tableView reloadData];
+    [self.refreshControl beginRefreshing];
+    
+    [[VTAInAppPurchases sharedInstance] validateReceiptWithCompletionHandler:^(BOOL receiptIsValid) {
+        [[VTAInAppPurchases sharedInstance] restoreProducts];
+    }];
+}
+
 #pragma mark - Segue
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     NSIndexPath *ip = [self.tableView indexPathForSelectedRow];
     VTAProduct *product = [self productForIndexPath:ip];
     
-    VTAInAppPurchasesDetailViewController *detailVC = (VTAInAppPurchasesDetailViewController *)[segue destinationViewController];
+    VTAInAppPurchasesDetailViewController *detailVC;
+    if ( [segue.destinationViewController isKindOfClass:[UINavigationController class]] ) {
+        UINavigationController *navVC = (UINavigationController *)segue.destinationViewController;
+        if ( [navVC.topViewController isKindOfClass:[VTAInAppPurchasesDetailViewController class]] ) {
+            detailVC = (VTAInAppPurchasesDetailViewController *)navVC.topViewController;
+        }
+    }
+    
+    if ( [segue.destinationViewController isKindOfClass:[VTAInAppPurchasesDetailViewController class]] ) {
+        detailVC = (VTAInAppPurchasesDetailViewController *)segue.destinationViewController;
+    }
+    
+    if ( self.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomPad ) { 
+        detailVC.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
+    }
+    self.title = @"Products";
+    
     detailVC.product = product;
+    
+    
+    if ( self.delegate && [self.delegate respondsToSelector:@selector(vtaInAppPurchasesTableViewController:willSegueToVTAInAppPurchasesDetailViewController:)] ) {
+        [self.delegate vtaInAppPurchasesTableViewController:self willSegueToVTAInAppPurchasesDetailViewController:detailVC];
+    }
+    
 }
 
 @end
