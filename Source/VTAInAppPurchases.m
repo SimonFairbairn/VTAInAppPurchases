@@ -13,7 +13,7 @@
 #import "VTAInAppPurchasesReceiptValidation.h"
 
 #ifdef DEBUG
-#define VTAInAppPurchasesDebug 1
+#define VTAInAppPurchasesDebug 0
 #define VTAInAppPurchasesDownloadDebug 0
 #define VTAInAppPurchasesSKProductLoadFailure 0
 #define VTAInAppPurchasesShortCacheTime 0
