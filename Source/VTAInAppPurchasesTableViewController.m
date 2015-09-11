@@ -285,8 +285,14 @@
         NSArray *products = note.userInfo[VTAInAppPurchasesProductsAffectedUserInfoKey];
         VTAProduct *product = products.firstObject;
         
+        // If the purchase was unsuccessful for any reason, bail out here.
+        if ( !product.purchased ) {
+            return;
+        }
+        
         if ( self.delegate && [self.delegate respondsToSelector:@selector(vtaInAppPurchasesTableViewController:productWasPurchased:)]) {
-            [self.delegate vtaInAppPurchasesTableViewController:self productWasPurchased:product];
+            
+                [self.delegate vtaInAppPurchasesTableViewController:self productWasPurchased:product];
         }
     }
 }

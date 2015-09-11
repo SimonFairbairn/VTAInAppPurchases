@@ -76,6 +76,10 @@
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    if ( self.product.purchased ) {
+        self.buyButton.enabled = NO;
+    }
+    
     if ( self.product.purchaseInProgress ) {
         self.buyButton.enabled = NO;
         [self.purchaseIndicator startAnimating];
@@ -133,9 +137,9 @@
     progresView.hidden = YES;
     
     if ( self.delegate && [self.delegate respondsToSelector:@selector(vtaInAppPurchasesDetailViewController:productWasPurchased:)] ) {
-
-        [self.delegate vtaInAppPurchasesDetailViewController:self productWasPurchased:product];
-
+        if ( self.product.purchased ) {
+            [self.delegate vtaInAppPurchasesDetailViewController:self productWasPurchased:product];
+        }
     }
     
     if ( product.consumable ) {

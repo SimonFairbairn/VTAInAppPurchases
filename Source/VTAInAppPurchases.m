@@ -13,7 +13,7 @@
 #import "VTAInAppPurchasesReceiptValidation.h"
 
 #ifdef DEBUG
-#define VTAInAppPurchasesDebug 0
+#define VTAInAppPurchasesDebug 1
 #define VTAInAppPurchasesDownloadDebug 0
 #define VTAInAppPurchasesSKProductLoadFailure 0
 #define VTAInAppPurchasesShortCacheTime 0
@@ -988,7 +988,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                 //                NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
                 //                NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
                 // Process transaction
-                if ( transaction.downloads ) {
+                if ( transaction.downloads && transaction.downloads.count > 0 ) {
 #if VTAInAppPurchasesDebug
                     NSLog(@"%s: Begin download: %@", __PRETTY_FUNCTION__, transaction.payment.productIdentifier);
 #endif
