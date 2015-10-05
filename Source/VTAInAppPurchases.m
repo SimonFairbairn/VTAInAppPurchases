@@ -967,7 +967,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                 break;
             }
             case SKPaymentTransactionStateRestored: {
-                if ( transaction.downloads ) {
+                if ( transaction.downloads && transaction.downloads.count > 0 ) {
                     
                     VTAProduct *product = [self.productLookupDictionary objectForKey:transaction.payment.productIdentifier];
                     product.purchased = NO;
