@@ -15,6 +15,7 @@
 #ifdef DEBUG
 #define VTAInAppPurchasesReceiptValidationDebug 0
 #define VTAInAppPurchasesReceiptValidationAlwaysFail 0
+#define VTAInAppPurchasesReceiptValidationAlwaysSucceed 1
 #endif
 
 @interface VTAInAppPurchasesReceiptValidation ()
@@ -86,17 +87,13 @@
 #endif
     
     
-//#warning This needs to be updated with the latest date
-    NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
-    dateComponents.calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
-    dateComponents.day = 4;
-    dateComponents.month = 3;
-    dateComponents.year = 2015;
-    
-    NSDate *expiryDate = [dateComponents date];
-    if ( [expiryDate timeIntervalSinceReferenceDate] > [NSDate timeIntervalSinceReferenceDate] ) {
+#if VTAInAppPurchasesReceiptValidationAlwaysSucceed
+    if ( /* DISABLES CODE */ (YES) ) {
         return YES;
     }
+
+#endif
+
     
     self.arrayOfPurchasedIAPs = nil;
     
