@@ -10,7 +10,8 @@
 
 typedef NS_ENUM(NSUInteger, VTAInAppPurchasesErrorCode ) {
     VTAInAppPurchasesErrorCodePlistFileInvalid = 100,
-    VTAInAppPurchasesErrorCodeCannotMakePayments = 200
+    VTAInAppPurchasesErrorCodeCannotMakePayments = 200,
+	VTAInAppPurchasesErrorCodeCacheWriteFailure = 300
 };
 
 typedef NS_ENUM(NSUInteger, VTAInAppPurchasesStatus) {

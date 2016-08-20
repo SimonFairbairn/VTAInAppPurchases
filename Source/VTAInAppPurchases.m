@@ -7,6 +7,7 @@
 //
 
 #import <StoreKit/StoreKit.h>
+#import <Crashlytics/Crashlytics.h> // If using Answers with Crashlytics
 
 #import "VTAInAppPurchases.h"
 #import "VTAProduct.h"
@@ -543,7 +544,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 #if VTAInAppPurchasesDebug
         NSLog(@"%s: Cache write failure", __PRETTY_FUNCTION__);
 #endif
+		NSError *error = [NSError errorWithDomain:VTAInAppPurchasesErrorDomain code:VTAInAppPurchasesErrorCodeCacheWriteFailure userInfo:nil];
+		[CrashlyticsKit recordError:error];
     }
+	
     return NO;
 }
 
