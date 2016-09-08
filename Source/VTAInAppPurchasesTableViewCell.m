@@ -49,7 +49,7 @@ NSString * const VTAInAppPurchasesTableViewCellIdentifier = @"VTAInAppPurchasesT
 
 - (void)awakeFromNib
 {
-    // Initialization code
+	[super awakeFromNib];
     [self setup];
 }
 
