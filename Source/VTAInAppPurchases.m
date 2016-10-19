@@ -545,7 +545,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         NSLog(@"%s: Cache write failure", __PRETTY_FUNCTION__);
 #endif
 		
-		NSDictionary *userInfo = @{@"File" : file};
+		NSDictionary *userInfo = [NSDictionary new];
+		if ( file ) {
+			userInfo = @{@"File" : file};
+		}
 		
 		NSError *error = [NSError errorWithDomain:VTAInAppPurchasesErrorDomain code:VTAInAppPurchasesErrorCodeCacheWriteFailure userInfo:userInfo];
 		[CrashlyticsKit recordError:error];
