@@ -312,11 +312,13 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                     
                 } else {
                     productIDs = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:&error];
+                    NSDate *interval = [NSDate new];
 #if VTAInAppPurchasesDebug
-                    NSLog(@"%s: New file received. Setting cache expiry", __PRETTY_FUNCTION__);
+					NSLog(@"%s: New file received. Setting cache expiry: %@", __PRETTY_FUNCTION__, interval);
 #endif
-                    NSTimeInterval interval = [NSDate timeIntervalSinceReferenceDate];
-                    [[NSUserDefaults standardUserDefaults] setObject:@(interval) forKey:VTAInAppPurchasesCacheRequestKey];
+					
+                    [[NSUserDefaults standardUserDefaults] setObject:interval forKey:VTAInAppPurchasesCacheRequestKey];
+					[[NSUserDefaults standardUserDefaults] synchronize];
                 }
                 
 #if VTAInAppPurchasesPListError
@@ -362,26 +364,32 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 -(BOOL)cacheIsValid {
     
     if ( self.cachedPlistFile ) {
-        
-        NSNumber *secondsSinceLastUpdate = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesCacheRequestKey];
+		
+		NSLog(@"%@",  [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesCacheRequestKey]);
+		
+        id isPreviousDate = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesCacheRequestKey];
+		NSDate *previousDate;
+		if ( [isPreviousDate isKindOfClass:[NSDate class]] ) {
+			previousDate = (NSDate *)isPreviousDate;
+		}
         
 #if VTAInAppPurchasesResetCache
         NSLog(@"%s: Debug. Clearing cache.", __PRETTY_FUNCTION__);
-        secondsSinceLastUpdate = nil;
+//        secondsSinceLastUpdate = nil;
 #endif
-        
-        NSDate *lastUpdate = [NSDate dateWithTimeIntervalSinceReferenceDate:([secondsSinceLastUpdate intValue] + [self.cacheDays integerValue] * 24 * 60 * 60)];
+		NSDate *expiryDate = [previousDate dateByAddingTimeInterval:([self.cacheDays integerValue] * 24 * 60 * 60 )];
+	
         
 #if VTAInAppPurchasesShortCacheTime
-        lastUpdate = [NSDate dateWithTimeIntervalSinceReferenceDate:([secondsSinceLastUpdate intValue] + 30)];
+        expiryDate = [NSDate dateWithTimeIntervalSinceReferenceDate:([secondsSinceLastUpdate intValue] + 30)];
 #endif
         NSDate *now = [NSDate date];
 
 #if VTAInAppPurchasesDebug
-        NSLog(@"%s: Last updated: %@. Now: %@", __PRETTY_FUNCTION__, lastUpdate, now);
+        NSLog(@"%s: Last updated: %@. Now: %@", __PRETTY_FUNCTION__, expiryDate, now);
 #endif
         
-        if ( secondsSinceLastUpdate && [[now laterDate:lastUpdate] isEqualToDate:lastUpdate]  ) {
+        if ( previousDate && [[now laterDate:expiryDate] isEqualToDate:expiryDate]  ) {
             return YES;
         }
     }
@@ -622,6 +630,9 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     [self writePlistFileToCache:arrayOfProductsInPlist];
     self.incomingPlistFile = [arrayOfProductsInPlist copy];
 //    self.cachedPlistFile = [arrayOfProductsInPlist copy];
+#if VTAInAppPurchasesDebug
+	NSLog(@"%@", self.incomingPlistFile);
+#endif
 }
 
 /**
