@@ -555,11 +555,12 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 		
 		NSDictionary *userInfo = [NSDictionary new];
 		if ( file ) {
-			userInfo = @{@"File" : file};
+			userInfo = @{@"File" : file, @"Failure" : @"Couldn't write to the cache"};
+			
 		}
 		
 		NSError *error = [NSError errorWithDomain:VTAInAppPurchasesErrorDomain code:VTAInAppPurchasesErrorCodeCacheWriteFailure userInfo:userInfo];
-		[CrashlyticsKit recordError:error];
+		[CrashlyticsKit recordError:error withAdditionalUserInfo:userInfo];
     }
 	
     return NO;
