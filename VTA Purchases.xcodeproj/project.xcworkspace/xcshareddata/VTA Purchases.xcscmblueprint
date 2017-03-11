@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "0DB0D15EC5497AA352ACF859F1C7052C2FF8C034",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "0DB0D15EC5497AA352ACF859F1C7052C2FF8C034" : 0,
+    "0E423B1570EAD3FD203F1734C9E392235D82DCC8" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "3976892F-78D5-4432-99B6-6D92C136460C",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "0DB0D15EC5497AA352ACF859F1C7052C2FF8C034" : "VTAInAppPurchases\/",
+    "0E423B1570EAD3FD203F1734C9E392235D82DCC8" : ""
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "VTA Purchases",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "VTA Purchases.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/SimonFairbairn\/VTAInAppPurchases.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "0DB0D15EC5497AA352ACF859F1C7052C2FF8C034"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "66.175.211.175:~\/gitrepos\/VTAIAPHelper.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "0E423B1570EAD3FD203F1734C9E392235D82DCC8"
+    }
+  ]
+}

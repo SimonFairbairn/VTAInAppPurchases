@@ -19,9 +19,10 @@
 
     // Set the type of purchases we're interested in (default is all)
     self.productType = VTAInAppPurchasesTableViewControllerProductTypeAll;
-    
-    if ( [VTAInAppPurchases sharedInstance].productsLoading == VTAInAppPurchaseStatusProductListLoaded
-        || [VTAInAppPurchases sharedInstance].productsLoading == VTAInAppPurchaseStatusProductsLoaded ) {
+
+	
+    if ( [VTAInAppPurchases sharedInstance].productsLoadingStatus == VTAInAppPurchasesStatusProductsListLoaded
+        || [VTAInAppPurchases sharedInstance].productsLoadingStatus == VTAInAppPurchasesStatusProductsLoaded ) {
         
         // If we've loaded either the list or all of the products, we have enough information to provide the content
         [self unlockLocalContent];
@@ -44,7 +45,7 @@
 -(IBAction)restorePurchases:(id)sender {
 
     // Delete the product list. This will be reloaded on completion.
-    self.products = nil;
+//    self.products = nil;
     [self.tableView reloadData];
     [self.refreshControl beginRefreshing];
     [[VTAInAppPurchases sharedInstance] restoreProducts];

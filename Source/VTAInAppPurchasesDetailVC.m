@@ -215,7 +215,13 @@
     if ( error ) {
         
         if ( [error.domain isEqualToString:VTAInAppPurchasesErrorDomain] && error.code == VTAInAppPurchasesErrorCodeCannotMakePayments ) {
-            [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Cannot make payments", nil) message:NSLocalizedString(@"This Apple ID is unable to make payments to the App Store. Please check your payment information.", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles: nil] show];
+			
+			UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Cannot make payments", nil) message:NSLocalizedString(@"This Apple ID is unable to make payments to the App Store. Please check your payment information.", nil) preferredStyle:UIAlertControllerStyleAlert];
+			
+			UIAlertAction *action = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleCancel handler:nil];
+			[controller addAction:action];
+			
+			[self presentViewController:controller animated:YES completion:nil];
         }
         
         statusLabel.text = NSLocalizedString(@"Purchase failed", nil);
