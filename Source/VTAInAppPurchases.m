@@ -15,7 +15,7 @@
 
 #ifdef DEBUG
 #define VTAInAppPurchasesDebug 0
-#define VTAInAppPurchasesDownloadDebug 0
+#define VTAInAppPurchasesDownloadDebug 1
 #define VTAInAppPurchasesSKProductLoadFailure 0
 #define VTAInAppPurchasesShortCacheTime 0
 #define VTAInAppPurchasesResetCache 0
@@ -1077,47 +1077,38 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                 
             case SKDownloadStateFinished: {
                 product.purchaseInProgress = NO;
-                NSString *contentsPath = [[download.contentURL URLByAppendingPathComponent:@"Contents"] path];
-                NSArray *array = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:contentsPath error:nil];
-                
-#if VTAInAppPurchasesDebug
-                NSLog(@"%s: Download finished for product: %@", __PRETTY_FUNCTION__, product.productIdentifier);
-#endif
-                
-                if ( [[NSFileManager defaultManager] createDirectoryAtPath:[product.localContentURL path] withIntermediateDirectories:YES attributes:nil error:&downloadError] ) {
-                    for ( NSString *path in array ) {
-                        
-                        [[NSFileManager defaultManager] removeItemAtPath:[[product.localContentURL URLByAppendingPathComponent:path] path] error:nil];
-                        
-                        [[NSFileManager defaultManager] copyItemAtPath:[contentsPath stringByAppendingPathComponent:path] toPath:[[product.localContentURL URLByAppendingPathComponent:path] path] error:&downloadError];
-                        
-                        if ( downloadError.code == 516 ) {
-                            // File exists. Ignore.
-                            downloadError = nil;
-                        }
-                        
-                        [[product.localContentURL URLByAppendingPathComponent:path] setResourceValue:[NSNumber numberWithBool:YES]
-                                                                                              forKey:NSURLIsExcludedFromBackupKey
-                                                                                               error:nil];
-                        
-
+				
+				NSError *deleteError;
+				[[NSFileManager defaultManager] removeItemAtURL:product.localContentURL error:&deleteError];
+				
+				if ( deleteError ) {
 #if VTAInAppPurchasesDownloadDebug
-                        NSLog(@"VTAInAppPurchases: %s Moving from %@ to %@", __PRETTY_FUNCTION__, [contentsPath stringByAppendingPathComponent:path], [[product.localContentURL URLByAppendingPathComponent:path] path]);
+					NSLog(@"%s: Error deleting content at %@: %@", __PRETTY_FUNCTION__, product.localContentURL, [deleteError localizedDescription]);
 #endif
-                        
-//                        if ( downloadError ) {
-//                            break;
-//                        }
-                    }
-                }
+				}
+				
+				NSError *moveError;
+				[[NSFileManager defaultManager] copyItemAtURL:[download.contentURL URLByAppendingPathComponent:@"Contents"] toURL:product.localContentURL error:&moveError];
+				
+				if ( moveError ) {
 #if VTAInAppPurchasesDownloadDebug
-//                downloadError = [NSError errorWithDomain:@"VTAInAppPurchasesError" code:100 userInfo:@{NSLocalizedDescriptionKey : @"Forced download error"}];
+					NSLog(@"%s: Error moving content from %@ %@: %@", __PRETTY_FUNCTION__, [download.contentURL URLByAppendingPathComponent:@"Contents"], product.localContentURL, [moveError localizedDescription]);
 #endif
-                
+				}
+				
+				NSError *exclusionError;
+				[product.localContentURL  setResourceValue:[NSNumber numberWithBool:YES] forKey:NSURLIsExcludedFromBackupKey error:&exclusionError];
+				if ( exclusionError ) {
+#if VTAInAppPurchasesDownloadDebug
+					NSLog(@"%s: Error excluding content from backup at %@: %@", __PRETTY_FUNCTION__, product.localContentURL, [exclusionError localizedDescription]);
+#endif
+				}
+				
+				
                 if ( downloadError ) {
                     
 #if VTAInAppPurchasesDownloadDebug
-                    NSLog(@"VTAInAppPurchases: %s Failed to move file: %@", __PRETTY_FUNCTION__, downloadError.localizedDescription);
+                    NSLog(@"VTAInAppPurchases: %s Download Error: %@", __PRETTY_FUNCTION__, downloadError.localizedDescription);
 #endif
                     
                 } else {
@@ -1125,7 +1116,11 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                 }
                 
                 // Finish transaction
-                [[SKPaymentQueue defaultQueue] finishTransaction:download.transaction];
+				[[SKPaymentQueue defaultQueue] finishTransaction:download.transaction];
+#if VTAInAppPurchaesDownloadDebug
+					NSLog(@"%s: Transaction finished", __PRETTY_FUNCTION__);
+#endif
+				
                 break;
             }
             case SKDownloadStateActive: {
