@@ -449,7 +449,15 @@
         if ( product ) {
             text = [NSString stringWithFormat:NSLocalizedString(@"Couldn't download files for %@. Please check your Internet connection, then try restoring again.", nil), product.product.localizedTitle];
         }
-        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Download Failed", nil) message:text delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+		
+		
+		
+		UIAlertController *storeUnavailableAlertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Download Failed", nil) message:text preferredStyle:UIAlertControllerStyleAlert];
+
+		UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"ok-button", @"OK") style:UIAlertActionStyleCancel handler:nil];
+		[storeUnavailableAlertController addAction:cancelAction];
+		[self presentViewController:storeUnavailableAlertController animated:YES completion:nil];
+		
         [self.tableView reloadData];
     }
 }
