@@ -15,7 +15,7 @@
 
 #ifdef DEBUG
 #define VTAInAppPurchasesDebug 0
-#define VTAInAppPurchasesDownloadDebug 1
+#define VTAInAppPurchasesDownloadDebug 0
 #define VTAInAppPurchasesSKProductLoadFailure 0
 #define VTAInAppPurchasesShortCacheTime 0
 #define VTAInAppPurchasesResetCache 0
@@ -361,6 +361,11 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 
 #pragma mark - Cache methods
 
+-(void)deleteCache {
+	self.cachedPlistFile = nil;
+	[self loadProducts];
+}
+
 -(BOOL)cacheIsValid {
     
     if ( self.cachedPlistFile ) {
@@ -376,6 +381,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 #if VTAInAppPurchasesResetCache
         NSLog(@"%s: Debug. Clearing cache.", __PRETTY_FUNCTION__);
 //        secondsSinceLastUpdate = nil;
+		if ( self.cachedPlistFile ) {
+			return NO;
+		}
+		
 #endif
 		NSDate *expiryDate = [previousDate dateByAddingTimeInterval:([self.cacheDays integerValue] * 24 * 60 * 60 )];
 	
@@ -1088,13 +1097,19 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 				}
 				
 				NSError *moveError;
-				[[NSFileManager defaultManager] copyItemAtURL:[download.contentURL URLByAppendingPathComponent:@"Contents"] toURL:product.localContentURL error:&moveError];
 				
-				if ( moveError ) {
+				if ( product ) {
+					[[NSFileManager defaultManager] copyItemAtURL:[download.contentURL URLByAppendingPathComponent:@"Contents"] toURL:product.localContentURL error:&moveError];
+					
+					if ( moveError ) {
 #if VTAInAppPurchasesDownloadDebug
-					NSLog(@"%s: Error moving content from %@ %@: %@", __PRETTY_FUNCTION__, [download.contentURL URLByAppendingPathComponent:@"Contents"], product.localContentURL, [moveError localizedDescription]);
+						NSLog(@"%s: Error moving content from %@ %@: %@", __PRETTY_FUNCTION__, [download.contentURL URLByAppendingPathComponent:@"Contents"], product.localContentURL, [moveError localizedDescription]);
 #endif
+					}
+				} else {
+					
 				}
+
 				
 				NSError *exclusionError;
 				[product.localContentURL  setResourceValue:[NSNumber numberWithBool:YES] forKey:NSURLIsExcludedFromBackupKey error:&exclusionError];

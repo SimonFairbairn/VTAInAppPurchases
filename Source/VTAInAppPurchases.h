@@ -172,5 +172,7 @@ extern NSString * const VTAInAppPurchasesNotificationErrorUserInfoKey;
  */
 -(VTAProduct *)vtaProductForIdentifier:(NSString *)identifier;
 
+-(void)deleteCache;
+
 @end
 
