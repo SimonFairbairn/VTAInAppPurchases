@@ -973,6 +973,14 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 
 #pragma mark - SKPaymentTransactionObserver
 
+-(BOOL)paymentQueue:(SKPaymentQueue *)queue shouldAddStorePayment:(SKPayment *)payment forProduct:(SKProduct *)product {
+	VTAProduct *vtaProduct = [self.productLookupDictionary objectForKey:product.productIdentifier];
+	if ( vtaProduct && vtaProduct.purchased ) {
+		return NO;
+	}
+	return YES;
+}
+
 -(void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
     
     for ( SKPaymentTransaction *transaction in transactions ) {
