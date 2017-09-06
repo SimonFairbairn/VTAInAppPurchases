@@ -362,6 +362,8 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 #pragma mark - Cache methods
 
 -(void)deleteCache {
+	[[NSFileManager defaultManager] removeItemAtURL:self.cacheURL error:nil];
+	[[NSFileManager defaultManager] removeItemAtURL:self.documentsURL error:nil];
 	self.cachedPlistFile = nil;
 	[self loadProducts];
 }
