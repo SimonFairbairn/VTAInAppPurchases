@@ -14,7 +14,7 @@
 #import "VTAInAppPurchasesReceiptValidation.h"
 
 #ifdef DEBUG
-#define VTAInAppPurchasesDebug 0
+#define VTAInAppPurchasesDebug 1
 #define VTAInAppPurchasesDownloadDebug 0
 #define VTAInAppPurchasesSKProductLoadFailure 0
 #define VTAInAppPurchasesShortCacheTime 0
@@ -1096,7 +1096,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                 
             case SKDownloadStateFinished: {
                 product.purchaseInProgress = NO;
-				
+				product.progress = 1;
 				NSError *deleteError;
 				[[NSFileManager defaultManager] removeItemAtURL:product.localContentURL error:&deleteError];
 				
