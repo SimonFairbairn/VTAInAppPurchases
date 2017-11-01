@@ -77,9 +77,19 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     BOOL _receiptValidationFailed;
     BOOL _receiptRefreshFailed;
     BOOL _observerAdded;
+	NSError *_productListError;
 }
 
 #pragma mark - Properties
+
+-(void)setProductsLoadingStatus:(VTAInAppPurchasesStatus)productsLoadingStatus {
+	_productsLoadingStatus = productsLoadingStatus;
+	NSDictionary *userInfo;
+	if ( _productListError ) {
+		userInfo = @{VTAInAppPurchasesNotificationErrorUserInfoKey : _productListError };
+	}
+	[[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesProductListDidUpdateNotification object:self userInfo:userInfo];
+}
 
 -(NSMutableDictionary *) productLookupDictionary {
     if ( !_productLookupDictionary ) {
@@ -249,9 +259,9 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     if ( !error ) {
         [NSException raise:NSInvalidArgumentException format:@"The method listLoadFailedWithError: requires an NSError paramter"];
     }
-    _productsLoadingStatus = VTAInAppPurchasesStatusProductsListLoadFailed;
-    NSDictionary *userInfo = @{VTAInAppPurchasesNotificationErrorUserInfoKey : error };
-    [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesProductsDidFinishUpdatingNotification object:self userInfo:userInfo];
+	_productListError = error;
+	self.productsLoadingStatus = VTAInAppPurchasesStatusProductsListLoadFailed;
+
 }
 
 /**
@@ -270,7 +280,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         return;
     }
     
-    _productsLoadingStatus = VTAInAppPurchasesStatusProductsLoading;
+    self.productsLoadingStatus = VTAInAppPurchasesStatusProductsLoading;
     
     if ( [self cacheIsValid] ) {
 
@@ -539,9 +549,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         request.delegate = self;
         [request start];
         
-        _productsLoadingStatus = VTAInAppPurchasesStatusProductsListLoaded;
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesProductListDidUpdateNotification object:self];
+        self.productsLoadingStatus = VTAInAppPurchasesStatusProductsListLoaded;
     }
 }
 
@@ -610,9 +618,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 #endif
         
         userInfo = @{VTAInAppPurchasesNotificationErrorUserInfoKey : error };
-        _productsLoadingStatus = VTAInAppPurchasesStatusProductsLoadFailed;
+		_productListError = error;
+        self.productsLoadingStatus = VTAInAppPurchasesStatusProductsLoadFailed;
     } else {
-        _productsLoadingStatus = VTAInAppPurchasesStatusProductsLoaded;
+        self.productsLoadingStatus = VTAInAppPurchasesStatusProductsLoaded;
     }
     
     [self validateProducts];
