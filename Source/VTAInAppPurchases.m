@@ -392,7 +392,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 	
         
 #if VTAInAppPurchasesShortCacheTime
-        expiryDate = [NSDate dateWithTimeIntervalSinceReferenceDate:([secondsSinceLastUpdate intValue] + 30)];
+        expiryDate = [NSDate dateWithTimeIntervalSinceNow:30];
 #endif
         NSDate *now = [NSDate date];
 
@@ -550,6 +550,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 #if VTAInAppPurchasesCacheWriteError
     file = nil;
 #endif
+	
+	if ( [file count ] == 0 ) {
+		return NO;
+	}
     
     if ( [file writeToURL:self.documentsURL atomically:YES] ) {
         self.cachedPlistFile = nil;
@@ -918,7 +922,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         
         [newProductList removeObject:productToRemove];
     }
-    
+
     for ( SKProduct *product in response.products ) {
         VTAProduct *vtaProduct = [self.productLookupDictionary objectForKey:product.productIdentifier];
         vtaProduct.product = product;
