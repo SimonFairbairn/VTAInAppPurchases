@@ -801,7 +801,8 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     if ( !product ) {
         
 #if VTAInAppPurchasesDebug
-        NSLog(@"%s. Product not available. Attempting to load from cache.", __PRETTY_FUNCTION__);
+        NSLog(@"%s. Product %@ not available. Attempting to load from cache.", __PRETTY_FUNCTION__, identifier);
+		NSLog(@"%s. Product Lookup Dictionary: %@", __PRETTY_FUNCTION__, self.productLookupDictionary);
 #endif
         
         [self setupProductsUsingCache:YES startProductRequest:NO];
