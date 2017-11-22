@@ -38,8 +38,19 @@
 -(void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.priceFormatter setLocale:self.product.product.priceLocale];
-    
+	
+	
+	if ( !self.product ) {
+		self.titleLabel.text = @"Product unavailable";
+		self.descriptionField.text = @"Unfortunately, we were unable to load this product. Possible Reasons for this include:\n\n1. Unable to connect to our server to get our latest product list\n2. Unable to connect to Apple's App Store\n3. This product has been removed from sale but the app has not yet been updated to reflect this\n\nSome things you can try:\n\n1. Check your internet connection\n2. Refresh or restore your purchases\n3. Contact the developer and ask them what the heck is going on\n\nApologies for the inconvenience!";
+		self.priceLabel.text = @"";
+		self.statusLabel.text = @"";
+		self.buyButton.hidden = YES;
+		return;
+	}
+	
+	[self.priceFormatter setLocale:self.product.product.priceLocale];
+	
     self.titleLabel.text = self.product.product.localizedTitle;
     self.priceLabel.text = [self.priceFormatter stringFromNumber:self.product.product.price];
     
