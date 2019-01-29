@@ -88,6 +88,7 @@ NSString * const VTAInAppPurchasesTableViewCellIdentifier = @"VTAInAppPurchasesT
     self.imageWidth.constant = 0.0f;
     self.imageMargin.constant = 0.0f;
     self.thumbnailContainer.image = nil;
+	[super prepareForReuse];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated

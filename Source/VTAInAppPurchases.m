@@ -7,6 +7,7 @@
 //
 
 #import <StoreKit/StoreKit.h>
+//#import <Crashlytics/Crashlytics.h> // If using Answers with Crashlytics
 
 #import "VTAInAppPurchases.h"
 #import "VTAProduct.h"
@@ -76,9 +77,19 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     BOOL _receiptValidationFailed;
     BOOL _receiptRefreshFailed;
     BOOL _observerAdded;
+	NSError *_productListError;
 }
 
 #pragma mark - Properties
+
+-(void)setProductsLoadingStatus:(VTAInAppPurchasesStatus)productsLoadingStatus {
+	_productsLoadingStatus = productsLoadingStatus;
+	NSDictionary *userInfo;
+	if ( _productListError ) {
+		userInfo = @{VTAInAppPurchasesNotificationErrorUserInfoKey : _productListError };
+	}
+	[[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesProductListDidUpdateNotification object:self userInfo:userInfo];
+}
 
 -(NSMutableDictionary *) productLookupDictionary {
     if ( !_productLookupDictionary ) {
@@ -248,9 +259,9 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     if ( !error ) {
         [NSException raise:NSInvalidArgumentException format:@"The method listLoadFailedWithError: requires an NSError paramter"];
     }
-    _productsLoadingStatus = VTAInAppPurchasesStatusProductsListLoadFailed;
-    NSDictionary *userInfo = @{VTAInAppPurchasesNotificationErrorUserInfoKey : error };
-    [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesProductsDidFinishUpdatingNotification object:self userInfo:userInfo];
+	_productListError = error;
+	self.productsLoadingStatus = VTAInAppPurchasesStatusProductsListLoadFailed;
+
 }
 
 /**
@@ -269,7 +280,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         return;
     }
     
-    _productsLoadingStatus = VTAInAppPurchasesStatusProductsLoading;
+    self.productsLoadingStatus = VTAInAppPurchasesStatusProductsLoading;
     
     if ( [self cacheIsValid] ) {
 
@@ -311,11 +322,13 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                     
                 } else {
                     productIDs = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:&error];
+                    NSDate *interval = [NSDate new];
 #if VTAInAppPurchasesDebug
-                    NSLog(@"%s: New file received. Setting cache expiry", __PRETTY_FUNCTION__);
+					NSLog(@"%s: New file received. Setting cache expiry: %@", __PRETTY_FUNCTION__, interval);
 #endif
-                    NSTimeInterval interval = [NSDate timeIntervalSinceReferenceDate];
-                    [[NSUserDefaults standardUserDefaults] setObject:@(interval) forKey:VTAInAppPurchasesCacheRequestKey];
+					
+                    [[NSUserDefaults standardUserDefaults] setObject:interval forKey:VTAInAppPurchasesCacheRequestKey];
+					[[NSUserDefaults standardUserDefaults] synchronize];
                 }
                 
 #if VTAInAppPurchasesPListError
@@ -358,29 +371,46 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 
 #pragma mark - Cache methods
 
+-(void)deleteCache {
+	[[NSFileManager defaultManager] removeItemAtURL:self.cacheURL error:nil];
+	[[NSFileManager defaultManager] removeItemAtURL:self.documentsURL error:nil];
+	self.cachedPlistFile = nil;
+	[self loadProducts];
+}
+
 -(BOOL)cacheIsValid {
     
     if ( self.cachedPlistFile ) {
-        
-        NSNumber *secondsSinceLastUpdate = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesCacheRequestKey];
+		
+		NSLog(@"%@",  [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesCacheRequestKey]);
+		
+        id isPreviousDate = [[NSUserDefaults standardUserDefaults] objectForKey:VTAInAppPurchasesCacheRequestKey];
+		NSDate *previousDate;
+		if ( [isPreviousDate isKindOfClass:[NSDate class]] ) {
+			previousDate = (NSDate *)isPreviousDate;
+		}
         
 #if VTAInAppPurchasesResetCache
         NSLog(@"%s: Debug. Clearing cache.", __PRETTY_FUNCTION__);
-        secondsSinceLastUpdate = nil;
+//        secondsSinceLastUpdate = nil;
+		if ( self.cachedPlistFile ) {
+			return NO;
+		}
+		
 #endif
-        
-        NSDate *lastUpdate = [NSDate dateWithTimeIntervalSinceReferenceDate:([secondsSinceLastUpdate intValue] + [self.cacheDays integerValue] * 24 * 60 * 60)];
+		NSDate *expiryDate = [previousDate dateByAddingTimeInterval:([self.cacheDays integerValue] * 24 * 60 * 60 )];
+	
         
 #if VTAInAppPurchasesShortCacheTime
-        lastUpdate = [NSDate dateWithTimeIntervalSinceReferenceDate:([secondsSinceLastUpdate intValue] + 30)];
+        expiryDate = [NSDate dateWithTimeIntervalSinceNow:30];
 #endif
         NSDate *now = [NSDate date];
 
 #if VTAInAppPurchasesDebug
-        NSLog(@"%s: Last updated: %@. Now: %@", __PRETTY_FUNCTION__, lastUpdate, now);
+        NSLog(@"%s: Last updated: %@. Now: %@", __PRETTY_FUNCTION__, expiryDate, now);
 #endif
         
-        if ( secondsSinceLastUpdate && [[now laterDate:lastUpdate] isEqualToDate:lastUpdate]  ) {
+        if ( previousDate && [[now laterDate:expiryDate] isEqualToDate:expiryDate]  ) {
             return YES;
         }
     }
@@ -519,9 +549,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         request.delegate = self;
         [request start];
         
-        _productsLoadingStatus = VTAInAppPurchasesStatusProductsListLoaded;
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:VTAInAppPurchasesProductListDidUpdateNotification object:self];
+        self.productsLoadingStatus = VTAInAppPurchasesStatusProductsListLoaded;
     }
 }
 
@@ -530,6 +558,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 #if VTAInAppPurchasesCacheWriteError
     file = nil;
 #endif
+	
+	if ( [file count ] == 0 ) {
+		return NO;
+	}
     
     if ( [file writeToURL:self.documentsURL atomically:YES] ) {
         self.cachedPlistFile = nil;
@@ -543,7 +575,18 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 #if VTAInAppPurchasesDebug
         NSLog(@"%s: Cache write failure", __PRETTY_FUNCTION__);
 #endif
+		
+		NSDictionary *userInfo = [NSDictionary new];
+		if ( file ) {
+			userInfo = @{@"File" : file, @"Failure" : @"Couldn't write to the cache"};
+			
+		}
+		
+//		NSError *error = [NSError errorWithDomain:VTAInAppPurchasesErrorDomain code:VTAInAppPurchasesErrorCodeCacheWriteFailure userInfo:userInfo];
+	
+//		[CrashlyticsKit recordError:error withAdditionalUserInfo:userInfo];
     }
+	
     return NO;
 }
 
@@ -576,9 +619,10 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 #endif
         
         userInfo = @{VTAInAppPurchasesNotificationErrorUserInfoKey : error };
-        _productsLoadingStatus = VTAInAppPurchasesStatusProductsLoadFailed;
+		_productListError = error;
+        self.productsLoadingStatus = VTAInAppPurchasesStatusProductsLoadFailed;
     } else {
-        _productsLoadingStatus = VTAInAppPurchasesStatusProductsLoaded;
+        self.productsLoadingStatus = VTAInAppPurchasesStatusProductsLoaded;
     }
     
     [self validateProducts];
@@ -612,6 +656,9 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     [self writePlistFileToCache:arrayOfProductsInPlist];
     self.incomingPlistFile = [arrayOfProductsInPlist copy];
 //    self.cachedPlistFile = [arrayOfProductsInPlist copy];
+#if VTAInAppPurchasesDebug
+	NSLog(@"%@", self.incomingPlistFile);
+#endif
 }
 
 /**
@@ -755,7 +802,8 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
     if ( !product ) {
         
 #if VTAInAppPurchasesDebug
-        NSLog(@"%s. Product not available. Attempting to load from cache.", __PRETTY_FUNCTION__);
+        NSLog(@"%s. Product %@ not available. Attempting to load from cache.", __PRETTY_FUNCTION__, identifier);
+		NSLog(@"%s. Product Lookup Dictionary: %@", __PRETTY_FUNCTION__, self.productLookupDictionary);
 #endif
         
         [self setupProductsUsingCache:YES startProductRequest:NO];
@@ -885,7 +933,7 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
         
         [newProductList removeObject:productToRemove];
     }
-    
+
     for ( SKProduct *product in response.products ) {
         VTAProduct *vtaProduct = [self.productLookupDictionary objectForKey:product.productIdentifier];
         vtaProduct.product = product;
@@ -941,6 +989,14 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
 }
 
 #pragma mark - SKPaymentTransactionObserver
+
+-(BOOL)paymentQueue:(SKPaymentQueue *)queue shouldAddStorePayment:(SKPayment *)payment forProduct:(SKProduct *)product {
+	VTAProduct *vtaProduct = [self.productLookupDictionary objectForKey:product.productIdentifier];
+	if ( vtaProduct && vtaProduct.purchased ) {
+		return NO;
+	}
+	return YES;
+}
 
 -(void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
     
@@ -1055,47 +1111,44 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                 
             case SKDownloadStateFinished: {
                 product.purchaseInProgress = NO;
-                NSString *contentsPath = [[download.contentURL URLByAppendingPathComponent:@"Contents"] path];
-                NSArray *array = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:contentsPath error:nil];
-                
-#if VTAInAppPurchasesDebug
-                NSLog(@"%s: Download finished for product: %@", __PRETTY_FUNCTION__, product.productIdentifier);
+				product.progress = 1;
+				NSError *deleteError;
+				[[NSFileManager defaultManager] removeItemAtURL:product.localContentURL error:&deleteError];
+				
+				if ( deleteError ) {
+#if VTAInAppPurchasesDownloadDebug
+					NSLog(@"%s: Error deleting content at %@: %@", __PRETTY_FUNCTION__, product.localContentURL, [deleteError localizedDescription]);
 #endif
-                
-                if ( [[NSFileManager defaultManager] createDirectoryAtPath:[product.localContentURL path] withIntermediateDirectories:YES attributes:nil error:&downloadError] ) {
-                    for ( NSString *path in array ) {
-                        
-                        [[NSFileManager defaultManager] removeItemAtPath:[[product.localContentURL URLByAppendingPathComponent:path] path] error:nil];
-                        
-                        [[NSFileManager defaultManager] copyItemAtPath:[contentsPath stringByAppendingPathComponent:path] toPath:[[product.localContentURL URLByAppendingPathComponent:path] path] error:&downloadError];
-                        
-                        if ( downloadError.code == 516 ) {
-                            // File exists. Ignore.
-                            downloadError = nil;
-                        }
-                        
-                        [[product.localContentURL URLByAppendingPathComponent:path] setResourceValue:[NSNumber numberWithBool:YES]
-                                                                                              forKey:NSURLIsExcludedFromBackupKey
-                                                                                               error:nil];
-                        
+				}
+				
+				NSError *moveError;
+				
+				if ( product ) {
+					[[NSFileManager defaultManager] copyItemAtURL:[download.contentURL URLByAppendingPathComponent:@"Contents"] toURL:product.localContentURL error:&moveError];
+					
+					if ( moveError ) {
+#if VTAInAppPurchasesDownloadDebug
+						NSLog(@"%s: Error moving content from %@ %@: %@", __PRETTY_FUNCTION__, [download.contentURL URLByAppendingPathComponent:@"Contents"], product.localContentURL, [moveError localizedDescription]);
+#endif
+					}
+				} else {
+					
+				}
 
+				
+				NSError *exclusionError;
+				[product.localContentURL  setResourceValue:[NSNumber numberWithBool:YES] forKey:NSURLIsExcludedFromBackupKey error:&exclusionError];
+				if ( exclusionError ) {
 #if VTAInAppPurchasesDownloadDebug
-                        NSLog(@"VTAInAppPurchases: %s Moving from %@ to %@", __PRETTY_FUNCTION__, [contentsPath stringByAppendingPathComponent:path], [[product.localContentURL URLByAppendingPathComponent:path] path]);
+					NSLog(@"%s: Error excluding content from backup at %@: %@", __PRETTY_FUNCTION__, product.localContentURL, [exclusionError localizedDescription]);
 #endif
-                        
-//                        if ( downloadError ) {
-//                            break;
-//                        }
-                    }
-                }
-#if VTAInAppPurchasesDownloadDebug
-//                downloadError = [NSError errorWithDomain:@"VTAInAppPurchasesError" code:100 userInfo:@{NSLocalizedDescriptionKey : @"Forced download error"}];
-#endif
-                
+				}
+				
+				
                 if ( downloadError ) {
                     
 #if VTAInAppPurchasesDownloadDebug
-                    NSLog(@"VTAInAppPurchases: %s Failed to move file: %@", __PRETTY_FUNCTION__, downloadError.localizedDescription);
+                    NSLog(@"VTAInAppPurchases: %s Download Error: %@", __PRETTY_FUNCTION__, downloadError.localizedDescription);
 #endif
                     
                 } else {
@@ -1103,7 +1156,11 @@ static NSString * const VTAInAppPurchasesListProductTitleKey = @"VTAInAppPurchas
                 }
                 
                 // Finish transaction
-                [[SKPaymentQueue defaultQueue] finishTransaction:download.transaction];
+				[[SKPaymentQueue defaultQueue] finishTransaction:download.transaction];
+#if VTAInAppPurchaesDownloadDebug
+					NSLog(@"%s: Transaction finished", __PRETTY_FUNCTION__);
+#endif
+				
                 break;
             }
             case SKDownloadStateActive: {

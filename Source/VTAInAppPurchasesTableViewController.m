@@ -448,13 +448,15 @@
         NSString *text = NSLocalizedString(@"Couldn't download files. Please check your Internet connection, then try restoring again.", nil);
         if ( product ) {
             text = [NSString stringWithFormat:NSLocalizedString(@"Couldn't download files for %@. Please check your Internet connection, then try restoring again.", nil), product.product.localizedTitle];
-        }		
-		UIAlertController *controller = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Download Failed", nil) message:text preferredStyle:UIAlertControllerStyleAlert];
+        }
 		
-		UIAlertAction *action = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleCancel handler:nil];
-		[controller addAction:action];
 		
-		[self presentViewController:controller animated:YES completion:nil];
+		
+		UIAlertController *storeUnavailableAlertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Download Failed", nil) message:text preferredStyle:UIAlertControllerStyleAlert];
+
+		UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"ok-button", @"OK") style:UIAlertActionStyleCancel handler:nil];
+		[storeUnavailableAlertController addAction:cancelAction];
+		[self presentViewController:storeUnavailableAlertController animated:YES completion:nil];
 		
         [self.tableView reloadData];
     }
